@@ -34,5 +34,6 @@
 	"license": "Vehícle license",
 	"main_menu": "Main menu",
 	"devices": "Devices",
+	"monitor_devices": "Monitor devices",
 	"update": "Update"						
 }

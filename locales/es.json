@@ -33,5 +33,6 @@
 	"license": "Matrícula",
 	"main_menu": "Menú principal",
 	"devices": "Dispositivos",
+	"monitor_devices": "Dispositivos monitorizados",
 	"update": "Actualizar"			
 }
