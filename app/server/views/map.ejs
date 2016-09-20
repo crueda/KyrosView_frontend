@@ -108,64 +108,59 @@
 var defaultData = [
           {
             text: 'Parent 1',
-            href: '#parent1',
-            tags: ['4'],
+            deviceId: '1',
+            type: 'aa',
             nodes: [
               {
                 text: 'Child 1',
-                href: '#child1',
-                tags: ['2'],
+                deviceId: '2',
                 nodes: [
                   {
                     text: 'Grandchild 1',
-                    href: '#grandchild1',
-                    tags: ['0']
+                    deviceId: '3'
                   },
                   {
                     text: 'Grandchild 2',
-                    href: '#grandchild2',
-                    tags: ['0']
+                    deviceId: '4'
                   }
                 ]
               },
               {
                 text: 'Child 2',
-                href: '#child2',
-                tags: ['0']
+                deviceId: '5'
+
               }
             ]
           },
           {
             text: 'Parent 2',
-            href: '#parent2',
-            tags: ['0']
+            deviceId: '6'
           },
           {
             text: 'Parent 3',
-            href: '#parent3',
-             tags: ['0']
+            deviceId: '7'
           },
           {
             text: 'Parent 4',
-            href: '#parent4',
-            tags: ['0']
+            deviceId: '8'            
           },
           {
             text: 'Parent 5',
-            href: '#parent5'  ,
-            tags: ['0']
+            deviceId: '9'
           }
         ];
 
 var $checkableTree = $('#treeview-checkable').treeview({
           data: defaultData,
-          showIcon: false,
+          showIcon: true,
           showCheckbox: true,
           onNodeChecked: function(event, node) {
-            $('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
+            console.log(node.deviceId + ' was checked');
+            //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
           },
           onNodeUnchecked: function (event, node) {
-            $('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
+            console.log(node.deviceId + ' was unchecked');
+            //$('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
           }
         });
 
@@ -1264,15 +1259,18 @@ var style =
         zIndex: -1
       }),
     new ol.style.Style(
-      { image: new ol.style.RegularShape(
+      { 
+
+
+      image: new ol.style.RegularShape(
         { radius: 5,
           radius2: 5,
           points: 12,
           fill: new ol.style.Fill({ color: '#0052cc' })
         }),
       stroke: new ol.style.Stroke(
-        { color: [0,0,255],
-          width: 2
+        { color: [0,0,0],
+          width: 3
         }),
       fill: new ol.style.Fill(
         { color: [0,0,255,0.3]
