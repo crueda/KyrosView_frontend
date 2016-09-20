@@ -285,7 +285,7 @@ table {
     width: 100px;
   }
   .ol-mouse-position {
-    right: 3em;
+    right: 5px;
     color: #fff;
     background-color: rgba(0,60,136,.5);
     padding: 2px 10px;
@@ -301,7 +301,7 @@ table {
   }
 
   .ol-zoom {
-    top: 7px;
+    top: 65px;
     left: 10px;
 
   }
@@ -309,12 +309,13 @@ table {
   .ol-zoomslider {
     width: 200px;
     height: 25px;
-    left: 3em;
+    left: 5em;
     top: 7px;
   }
   .ol-zoomslider-thumb {
     height: 16px;
   }
+
 
 #attr-button-logout
 {
@@ -361,9 +362,11 @@ table {
     background-image: url("./img/button_calendar.png");
 }
 
-#attr-button-kyros
+#attr-button-menu
 {
-    position:absolute; 
+    position:absolute;
+    top: 5px;
+    left: 5px; 
     z-index:100; 
     width:48px; 
     height:48px; 

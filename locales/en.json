@@ -32,5 +32,7 @@
 	"date": "GMT date",
 	"id": "Id",
 	"license": "Vehícle license",
-	"main_menu": "Main manu"			
+	"main_menu": "Main menu",
+	"devices": "Devices",
+	"update": "Update"						
 }

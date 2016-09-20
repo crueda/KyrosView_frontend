@@ -31,5 +31,7 @@
 	"date": "Fecha GMT",	
 	"id": "Identificador",
 	"license": "Matrícula",
-	"main_menu": "Menú principal"
+	"main_menu": "Menú principal",
+	"devices": "Dispositivos",
+	"update": "Actualizar"			
 }
