@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Kyros View</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+  <style>
+  html,body{
+   height:100%;
+	}
+
+	body {
+	    background-image:    url(./img/background_map.png);
+	    background-size:     cover;                      
+	    background-repeat:   no-repeat;
+	    background-position: center center;              
+	}
+
+	.main-div{
+		text-align:center;
+		margin : 0px auto;
+	}
+
+	</style>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+    <script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+
+<!--a href="" data-toggle="modal" data-target="#myModal">ss</a-->
+
+<!--div class="main-div">
+<br><br>
+<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Entrar
+</button>
+</div-->
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+
+			<div class="modal-header">
+				<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button-->
+				<h4 class="modal-title" id="myModalLabel">Recuperar contraseña</h4>
+			</div> <!-- /.modal-header -->
+
+			<div id="divUsername" class="modal-body">
+				<form role="form" id="passwdForm" action="/lost-password" method="POST">
+					<div class="form-group">
+						<div class="input-group">
+							<input type="text" class="form-control" id="uLogin" placeholder="Usuario" name="user">
+							<label for="uLogin" class="input-group-addon glyphicon glyphicon-user"></label>
+						</div>
+					</div> <!-- /.form-group -->
+
+				</form>
+
+			</div> <!-- /.modal-body -->
+
+			<div id="divMsg2" class="modal-body">
+					<div class="form-group">
+						<div class="input-group">
+							<h5 class="modal-title" id="msg2Label"></h5>
+						</div>
+					</div> <!-- /.form-group -->
+			</div> <!-- /.modal-body -->
+
+
+			<div class="modal-footer">
+				<button class="form-control btn btn-primary">Ok</button>
+
+				
+			</div> <!-- /.modal-footer -->
+
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+$(document).ready(function(){
+	
+	setTimeout(function(){
+  		$('#myModal').modal('show');
+	}, 250);
+
+	if ('<%=msg%>'!='') {
+		$('.modal-title').text("<%=msg%>");
+		$('.modal-title').css({ "color" : '<%=msg_color%>' });
+	}
+	if ('<%=msg2%>'!='') {
+		 document.getElementById('divUsername').style.display = 'none';    
+		 document.getElementById('divMsg2').style.display = 'block';    
+		 $('#msg2Label').text("<%=msg2%>");
+		 $('#msg2Label').css({ "color" : 'green' });
+		 $('#passwdForm').get(0).setAttribute('action', '/');
+		 $('#passwdForm').get(0).setAttribute('method', 'GET');
+	} else {
+		 document.getElementById('divUsername').style.display = 'block';    
+		 document.getElementById('divMsg2').style.display = 'none';    		
+	}
+
+	$('#uLogin').keypress(function(e) {
+            // Enter pressed?
+            if(e.which == 10 || e.which == 13) {
+                this.form.submit();
+            }
+    });
+	
+    $('.modal-footer button').click(function(){
+		var button = $(this);
+
+		if ( button.attr("data-dismiss") != "modal" ){
+			
+			$('#passwdForm').submit();
+		}
+	});
+
+	$('#myModal').on('hidden.bs.modal', function (e) {
+		var inputs = $('form input');
+		var title = $('.modal-title');
+		var progressBar = $('.progress-bar');
+		var button = $('.modal-footer button');
+
+		inputs.removeAttr("disabled");
+
+		//title.text("Log in");
+
+		progressBar.css({ "width" : "0%" });
+
+		button.removeClass("btn-success")
+				.addClass("btn-primary")
+				.text("Ok")
+				.removeAttr("data-dismiss");
+                
+	});
+});
+      
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+.circleOut {
+	position: relative;
+	margin: 0 auto;
+	padding: 0;
+	width: 0;
+	height: 0;
+}
+
+.circleOut:before {
+	position: relative;
+	top: -2.3em;
+	left: -2.5em;
+	display: block;
+		-moz-box-sizing: border-box;
+                   box-sizing: border-box;
+              margin: 0 auto;
+              width: 5em;
+              height: 5em;
+              border: 0.5em solid #FA8258;              
+              border-radius: 100%;
+              content: "";
+              -webkit-transform-origin: center;
+                  -ms-transform-origin: center;
+                      transform-origin: center;
+              -webkit-animation-name: fadeOut;
+                      animation-name: fadeOut;
+              -webkit-animation-duration: 2s;
+                      animation-duration: 2s;
+              -webkit-animation-timing-function: ease-in-out;
+                      animation-timing-function: ease-in-out;
+              -webkit-animation-delay: -1.5s;
+                      animation-delay: -1.5s;
+              -webkit-animation-iteration-count: infinite;
+                      animation-iteration-count: infinite;
+              -webkit-animation-direction: forwards;
+                      animation-direction: forwards;
+}
+
+.circleOut:after {
+	position: absolute;
+              top: -2.3em;
+              left: -2.5em;
+              display: block;
+              -moz-box-sizing: border-box;
+                   box-sizing: border-box;
+              margin: 0 auto;
+              width: 5em;
+              height: 5em;
+              border: 0.2em solid #FA8258;
+              border-radius: 100%;
+              content: "";
+              -webkit-transform-origin: center;
+                  -ms-transform-origin: center;
+                      transform-origin: center;
+              -webkit-animation-name: fadeOut;
+                      animation-name: fadeOut;
+              -webkit-animation-duration: 2s;
+                      animation-duration: 2s;
+              -webkit-animation-timing-function: ease;
+                      animation-timing-function: ease;
+              -webkit-animation-delay: -1.5s;
+                      animation-delay: -1.5s;
+              -webkit-animation-iteration-count: infinite;
+                      animation-iteration-count: infinite;
+              -webkit-animation-direction: forwards;
+                      animation-direction: forwards;
+}
+
+.circleOutPos {
+  position: relative;
+  margin: 0 auto;
+  padding: 0;
+  width: 0;
+  height: 0;
+}
+
+.circleOutPos:before {
+  position: relative;
+  top: -2.3em;
+  left: -2.5em;
+  display: block;
+    -moz-box-sizing: border-box;
+                   box-sizing: border-box;
+              margin: 0 auto;
+              width: 5em;
+              height: 5em;
+              border: 0.5em solid #00ff00;              
+              border-radius: 100%;
+              content: "";
+              -webkit-transform-origin: center;
+                  -ms-transform-origin: center;
+                      transform-origin: center;
+              -webkit-animation-name: fadeOut;
+                      animation-name: fadeOut;
+              -webkit-animation-duration: 2s;
+                      animation-duration: 2s;
+              -webkit-animation-timing-function: ease-in-out;
+                      animation-timing-function: ease-in-out;
+              -webkit-animation-delay: -1.5s;
+                      animation-delay: -1.5s;
+              -webkit-animation-iteration-count: infinite;
+                      animation-iteration-count: infinite;
+              -webkit-animation-direction: forwards;
+                      animation-direction: forwards;
+}
+
+.circleOutPos:after {
+  position: absolute;
+              top: -2.3em;
+              left: -2.5em;
+              display: block;
+              -moz-box-sizing: border-box;
+                   box-sizing: border-box;
+              margin: 0 auto;
+              width: 5em;
+              height: 5em;
+              border: 0.2em solid #FA8258;
+              border-radius: 100%;
+              content: "";
+              -webkit-transform-origin: center;
+                  -ms-transform-origin: center;
+                      transform-origin: center;
+              -webkit-animation-name: fadeOut;
+                      animation-name: fadeOut;
+              -webkit-animation-duration: 2s;
+                      animation-duration: 2s;
+              -webkit-animation-timing-function: ease;
+                      animation-timing-function: ease;
+              -webkit-animation-delay: -1.5s;
+                      animation-delay: -1.5s;
+              -webkit-animation-iteration-count: infinite;
+                      animation-iteration-count: infinite;
+              -webkit-animation-direction: forwards;
+                      animation-direction: forwards;
+}
+
+            @-webkit-keyframes fadeOut {
+              0% {
+                -webkit-transform: scale(0);
+                        transform: scale(0);
+              }
+              50% {
+                opacity: 1;
+              }
+              100% {
+                -webkit-transform: scale(1);
+                        transform: scale(1);
+                opacity: 0;
+              }
+            }
+
+            @keyframes fadeOut {
+              0% {
+                -webkit-transform: scale(0);
+                        transform: scale(0);
+              }
+              50% {
+                opacity: 1;
+              }
+              100% {
+                -webkit-transform: scale(1);
+                        transform: scale(1);
+                opacity: 0;
+              }
+            }
+#grad12 {
+    background: red; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(red, yellow); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(red, yellow); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(red, yellow); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(red, yellow); /* Standard syntax */
+}

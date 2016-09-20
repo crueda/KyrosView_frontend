@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kyros View</title>
+  <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+  
+  <!--link rel="stylesheet" href="./css/kyrosview.css?" type="text/css"-->
+  <!--link rel="stylesheet" href="http://openlayers.org/en/v3.17.1/css/ol.css" type="text/css"-->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.17.1/ol.css" />
+
+  <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <!--link rel="stylesheet" href="http://openlayers.org/en/v3.9.0/css/ol.css" type="text/css"-->
+  <link rel="stylesheet" href="./css/ol3-layerswitcher.css?1" type="text/css">
+  <link rel="stylesheet" href="./css/kyrosview.css?1" type="text/css">
+  <script type="text/javascript" src="http://openlayers.org/en/master/build/ol.js"></script>
+
+  <script src="./js/ol3-layerswitcher.js" type="text/javascript"></script>
+  <script src="./js/bootstrap3-typeahead.min.js" type="text/javascript"></script>
+
+ <script type="text/javascript" src="/bower_components/jquery/jquery.min.js"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+
+  <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+  <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
+
+
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/featureanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/dropanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/pathanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/slideanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/fadeanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/zoomanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/teleportanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/throwanimation.js"></script>
+
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
+<!--link rel="stylesheet" href="http://viglino.github.io/ol3-ext/examples/style.css" /-->
+
+<link href="./css/buttons.css?1" rel="stylesheet">
+
+  <style>
+   #map {
+     position: absolute;
+     top: 0;
+     left: 0;
+     height: 100%;
+     width: 100%;
+   }
+   #info {
+     position: absolute;
+     height: 1px;
+     width: 1px;
+     z-index: 100;
+   }
+   .tooltip.in {
+     opacity: 1;
+     filter: alpha(opacity=100);
+   }
+   .tooltip.top .tooltip-arrow {
+     border-top-color: white;
+   }
+   .tooltip-inner {
+     border: 2px solid white;
+   }
+
+table {
+    *border-collapse: collapse; /* IE7 and lower */
+    border-spacing: 0;
+    width: 100%;    
+}
+
+.bordered {
+    border: solid #ccc 1px;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    -webkit-box-shadow: 0 1px 1px #ccc; 
+    -moz-box-shadow: 0 1px 1px #ccc; 
+    box-shadow: 0 1px 1px #ccc;         
+}
+
+.bordered tr:hover {
+    background: #F09300;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;     
+}    
+    
+.bordered td, .bordered th {
+  font-family: Arial, Helvetica, sans-serif;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;    
+}
+
+.bordered tr {
+    background-color: #fff;
+ }
+
+.bordered th {
+    background-color: #dce9f9;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+    background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; 
+    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;  
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;        
+    border-top: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5); 
+}
+
+.bordered td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+
+.bordered th:first-child {
+    -moz-border-radius: 1px 0 0 0;
+    -webkit-border-radius: 1px 0 0 0;
+    border-radius: 1px 0 0 0;
+}
+
+.bordered th:last-child {
+    -moz-border-radius: 0 1px 0 0;
+    -webkit-border-radius: 0 1px 0 0;
+    border-radius: 0 1px 0 0;
+}
+
+.bordered th:only-child{
+    -moz-border-radius: 1px 1px 0 0;
+    -webkit-border-radius: 1px 1px 0 0;
+    border-radius: 1px 1px 0 0;
+}
+
+.bordered tr:last-child td:first-child {
+    -moz-border-radius: 0 0 0 1px;
+    -webkit-border-radius: 0 0 0 1px;
+    border-radius: 0 0 0 1px;
+}
+
+.bordered tr:last-child td:last-child {
+    -moz-border-radius: 0 0 1px 0;
+    -webkit-border-radius: 0 0 1px 0;
+    border-radius: 0 0 1px 0;
+}
+
+
+ </style>
+
+ <style>
+  .toggle {
+    width: 100px;
+  }
+  .ol-mouse-position {
+    right: 3em;
+    color: #fff;
+    background-color: rgba(0,60,136,.5);
+    padding: 2px 10px;
+    border-radius: 5px;
+  }
+
+  .ol-scale-line {
+    left: 175px;
+  }
+
+  .ol-rotate {
+    top: 3em;
+  }
+
+  .ol-zoom {
+    top: 7px;
+    left: 10px;
+
+  }
+
+  .ol-zoomslider {
+    width: 200px;
+    height: 25px;
+    left: 3em;
+    top: 7px;
+  }
+  .ol-zoomslider-thumb {
+    height: 16px;
+  }
+
+#attr-button-logout
+{
+    position:absolute; 
+    right:5px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_logout.png");
+}
+
+#attr-button-conf
+{
+    position:absolute; 
+    right:65px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/conf.png");
+}
+
+#attr-button-device
+{
+    position:absolute; 
+    right:125px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_device.png");
+}
+
+#attr-button-graphs
+{
+    position:absolute; 
+    right:185px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_graph.png");
+}
+
+#attr-button-calendar
+{
+    position:absolute; 
+    left: 5px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_calendar.png");
+}
+
+#attr-button-kyros
+{
+    position:absolute; 
+    left: 5px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_menu.png");
+}
+
+#attr-button-pois
+{
+    position:absolute; 
+    left: 60px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_pois.png");
+}
+
+#attr-button-globe
+{
+    position:absolute; 
+    left: 5px; 
+    bottom: 60px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_globe.png");
+}
+
+#attr-button-gmap
+{
+    position:absolute; 
+    left: 5px; 
+    bottom: 115px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_gmap.png");
+}
+
+#attr-button-update
+{
+    position:absolute; 
+    left:5px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_update.png");
+}
+
+  #attr-logo
+  {
+    position:absolute; 
+    left:10px; 
+    top: 50px; 
+    z-index:100; 
+    width:230px; 
+    height:106px; 
+    background-image: url("./img/kyroslbs.png");
+    background-size: 100% 100%;
+    //background-size: cover;
+  }
+
+#attr-loading
+{
+    position:absolute; 
+    top: 0; left: 0; bottom: 0; right: 0;
+    margin: auto;
+    z-index:100; 
+    width:128px; 
+    height:128px; 
+    background-image: url("./img/loading.gif");
+}
+  
+
+  #deviceOdometer
+  {
+    margin: 0 auto;
+  }
+
+
+}
+</style>
+
+<script type="text/javascript">    
+ var dict = {};
+ var dict_date = {};
+ var car = null;
+ var username = null;
+ var deviceId = null;
+ var iconDict = {};
+ var vehicleLicenseDict = {};
+ var aliasDict = {};
+ var latitudeDict = {};
+ var longitudeDict = {};
+ var speedDict = {};
+ var headingDict = {};
+ var daySpeedDict = {};
+ var weekSpeedDict = {};
+ var monthSpeedDict = {};
+ var dayDistanceDict = {};
+ var weekDistanceDict = {};
+ var monthDistanceDict = {};
+ var dayConsumeDict = {};
+ var weekConsumeDict = {};
+ var monthConsumeDict = {};
+ var dayHoursDict = {};
+ var weekHoursDict = {};
+ var monthHoursDict = {};
+ var monitorDevices = {};
+ var greenFlagOverlay = null;
+ var redFlagOverlay = null;
+ var actualPosOverlay = null;
+</script>
+
+
+<script>
+//window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); loadLayer(); setInterval(reloadLayer,5000); };
+ window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadLayer(); }//;
+ 
+ $(document).ready(function() {
+  $.ajaxSetup({ cache: false });
+  //if (!isMobile()) {
+  //  document.getElementById('attr-button-update').style.display = 'none';
+  //}
+
+
+  var nowDate = new Date();
+  var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+  var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
+  $('#datetimepicker1').datetimepicker({
+      locale: 'es',
+      maxDate: today,
+      defaultDate: today
+    });
+  $('#datetimepicker2').datetimepicker({
+      locale: 'es',
+      defaultDate: today2
+    });
+
+  var dateNow = new Date();
+
+  $('#datetimepicker1').datetimepicker();
+  $('#datetimepicker2').datetimepicker({
+    useCurrent: false //Important! See issue #1075
+  });
+        
+  $("#datetimepicker1").on("dp.change", function (e) {
+    $('#datetimepicker2').data("DateTimePicker").minDate(e.date);
+  });
+
+
+  $('#okButtonCalendar').click(function(){
+    var finit = document.getElementById('initDate').value; 
+    var finit_date = Date.parse(finit); 
+    var finit_epoch = finit_date.getTime();
+    var fend = document.getElementById('endDate').value; 
+    var fend_date = Date.parse(fend); 
+    var fend_epoch = fend_date.getTime();
+    var type = BootstrapDialog.TYPE_INFO;
+
+
+    showTrackingHist(finit_epoch, fend_epoch);
+     // add10();
+  });
+
+  if (isMobile()) {
+    document.getElementById('attr-logo').style.display = 'none';
+  } else {
+    var width_window = $(window).width();  //getting windows width
+    var height_window = $(window).height();  //getting windows height
+
+    $("#attr-logo").css({ width: width_window*0.1281 + 'px' });
+    $("#attr-logo").css({ height: height_window*0.1078+ 'px' });
+  }
+
+  if ('<%=msg%>'!='') {
+    $('#myModalMsgLabel').text("<%=msg%>");
+    $('#myModalMsgLabel').css({ "color" : 'green' });
+    $('#myModalMsg').modal('show');
+  }
+
+
+  $('#myModalMsg').on('hidden.bs.modal', function (e) {
+    var inputs = $('form input');
+    var title = $('.modal-title');
+    var progressBar = $('.progress-bar');
+    var button = $('.modal-footer button');
+
+    inputs.removeAttr("disabled");
+
+    //title.text("Log in");
+
+    progressBar.css({ "width" : "0%" });
+
+    button.removeClass("btn-success")
+        .addClass("btn-primary")
+        .text("Ok")
+        .removeAttr("data-dismiss");
+                
+  });
+
+});
+
+</script>
+
+<script>
+
+function isMobile(){
+  //return true;
+    return (
+        (navigator.userAgent.match(/Android/i)) ||
+        (navigator.userAgent.match(/webOS/i)) ||
+        (navigator.userAgent.match(/iPhone/i)) ||
+        (navigator.userAgent.match(/iPod/i)) ||
+        (navigator.userAgent.match(/iPad/i)) ||
+        (navigator.userAgent.match(/BlackBerry/))
+    );
+}
+
+  function closeTooltip() {
+    
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op <= 0.1){
+            clearInterval(timer);
+            document.getElementById('tooltip').style.display = 'none';
+        }
+        document.getElementById('tooltip').style.opacity = op;
+        document.getElementById('tooltip').style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.5;
+    }, 50);
+
+      document.getElementById('attr-logo').style.display = 'block';    
+  }
+
+  function showTracking5(deviceId) {
+    var fileJson = "/api/tracking5/device/"+deviceId;
+      $.getJSON( fileJson, function( data ) {
+        var lat1, lat2, lat3, lat4, lat5 = 0;
+        var lon1, lon2, lon3, lon4, lon5 = 0;
+        var trackingId1, trackingId2, trackingId3, trackingId4, trackingId5 = 0;
+        index = 1;
+        $.each( data, function( key, val ) {
+
+          switch(index) {
+            case 1:
+              lat1 = val.latitude;
+              lon1 = val.longitude;
+              trackingId1 = val.trackingId;
+              break;
+            case 2:
+              lat2 = val.latitude;
+              lon2 = val.longitude;
+              trackingId2 = val.trackingId;
+              break;
+            case 3:
+              lat3 = val.latitude;
+              lon3 = val.longitude;
+              trackingId3 = val.trackingId;
+              break;
+            case 4:
+              lat4 = val.latitude;
+              lon4 = val.longitude;
+              trackingId4 = val.trackingId;
+              break;
+            case 5:
+              lat5 = val.latitude;
+              lon5 = val.longitude;
+              trackingId5 = val.trackingId;
+              break;
+            }
+          index ++;
+          
+      }); 
+      addLinesTracking5(trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5)
+
+    });
+  }
+
+  function showTrackingHist(finit_epoch, fend_epoch) {
+
+    //alert($('#licenseHist').val());
+    //alert (monitorDevices[$('#licenseHist').val()]);
+    var deviceIdHist = monitorDevices[$('#licenseHist').val()];
+    var latHist = [];
+    var lonHist = [];
+    var trackingIdHist = [];
+
+    //alert("go");
+    vectorLinesSource.clear();
+    if (this.greenFlagOverlay!=null)
+      map.removeOverlay(this.greenFlagOverlay);
+    if (this.redFlagOverlay!=null)
+      map.removeOverlay(this.redFlagOverlay);
+
+    vectorTrackingHistSource.clear();
+    vectorLinesHistSource.clear();
+    var minLon=0;
+    var minLat=0;
+    var maxLon=0;
+    var maxLat=0;
+    var lon_anterior=0;
+    var lat_anterior=0;
+    var initPos=true;
+    var index = 0;
+    var fileJson = "/api/tracking/device/"+deviceIdHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
+    document.getElementById('attr-loading').style.display = 'block';
+      $.getJSON( fileJson, function( data ) {
+        $.each( data, function( key, val ) {
+
+
+
+            var lat = val.latitude;
+            var lon = val.longitude;
+            var trackingId = val._id;
+            if (initPos==true) {
+              minLon=lon;
+              minLat=lat;
+              maxLon=lon;
+              maxLat=lat;
+              lon_anterior=lon;
+              lat_anterior=lat;
+              initPos=false;
+            } else {
+              if (lat<minLat) 
+                minLat=lat;
+              if (lat>maxLat) 
+                maxLat=lat;
+              if (lon<minLon) 
+                minLon=lon;
+              if (lon>maxLon) 
+                maxLon=lon;              
+            }
+            
+            trackingIdHist.push(trackingId);
+            latHist.push(lat);
+            lonHist.push(lon);
+
+
+          if (lat_anterior!=lat || lon_anterior!=lon) {
+            addTrackingHistLine(lat_anterior, lon_anterior, lat, lon);
+          }
+          lon_anterior=lon;
+          lat_anterior=lat;          
+          index++;
+
+
+
+        });
+        document.getElementById('attr-loading').style.display = 'none';
+
+        // centrar
+        if (minLon != 0 && minLat != 0 && maxLon != 0 && maxLat != 0){
+         var bottomLeft = ol.proj.transform([minLon, minLat], 'EPSG:4326', 'EPSG:3857');
+         var topRight = ol.proj.transform([maxLon, maxLat], 'EPSG:4326', 'EPSG:3857');
+         extent = new ol.extent.boundingExtent([bottomLeft,topRight]);
+         map.getView().fit(extent, map.getSize());
+        }
+
+        // pintar historico
+        for (i=0; i<latHist.length;i++)
+        {
+          //setTimeout(function() {
+          if (i == 0) {
+            addTrackingHistPointStart(trackingIdHist[i], latHist[i], lonHist[i]);            
+          } else if (i == latHist.length -1 ) {
+            addTrackingHistPointEnd(trackingIdHist[i], latHist[i], lonHist[i]);            
+          } else {
+            //addTrackingHistPoint(trackingId, lat, lon);    
+            addFeatureAt(trackingIdHist[i], [lonHist[i],latHist[i]]);                    
+          }
+          //}, 100*i);
+        }
+
+
+      });      
+  }
+
+  function addActualPosition(lat, lon, accuracy) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: 0,
+        elementId: 'trackingPoint',
+        name: 'Posición actual'
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.6,
+         rotation: 0,
+         src: './img/beacon_ball_green.gif'
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vectorTrackingSource.addFeature(iconFeature); 
+
+      // circulo animado
+      var coordinate = iconFeature.getGeometry().getCoordinates();
+      var elem = document.createElement('div');
+      elem.setAttribute('class', 'circleOutPos');
+      this.actualPosOverlay = new ol.Overlay({
+                    element: elem,
+                    position: coordinate,
+                    positioning: 'center-center'
+      });
+      map.addOverlay(actualPosOverlay);
+
+  }
+
+  function addTrackingHistPoint(trackingId, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        elementId: 'trackingPoint',
+        name: trackingId
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.6,
+         rotation: 0,
+         src: './img/beacon_ball_blue.gif'
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vectorTrackingHistSource.addFeature(iconFeature); 
+  }
+
+    function addTrackingHistPointStart(trackingId, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        elementId: 'trackingPoint',
+        name: trackingId
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         rotation: 0,
+         src: './img/flag_green.png'
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vectorTrackingHistSource.addFeature(iconFeature); 
+
+      // circulo animado
+      var coordinate = iconFeature.getGeometry().getCoordinates();
+      var elem = document.createElement('div');
+      elem.setAttribute('class', 'circleOut');
+      this.greenFlagOverlay = new ol.Overlay({
+                    element: elem,
+                    position: coordinate,
+                    positioning: 'center-center'
+      });
+      map.addOverlay(greenFlagOverlay);
+  }
+
+    function addTrackingHistPointEnd(trackingId, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        elementId: 'trackingPoint',
+        name: trackingId
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         rotation: 0,
+         anchor: [0.5, 0.5],
+         offset: [10, 10],
+         src: './img/flag_red.png'
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vectorTrackingHistSource.addFeature(iconFeature); 
+
+      // circulo animado
+      var coordinate = iconFeature.getGeometry().getCoordinates();
+      var elem = document.createElement('div');
+      elem.setAttribute('class', 'circleOut');
+      this.redFlagOverlay = new ol.Overlay({
+                    element: elem,
+                    position: coordinate,
+                    positioning: 'center-center'
+      });
+      map.addOverlay(redFlagOverlay);      
+  }
+  
+  function addTrackingHistLine(lat1, lon1, lat2, lon2) {
+      var coords = [];
+      coords.push([lon1, lat1]);
+      coords.push([lon2, lat2]);
+
+      var lineString = new ol.geom.LineString(coords);
+      lineString.transform('EPSG:4326', 'EPSG:3857');
+
+      // create the feature
+      var featureLine = new ol.Feature({
+        geometry: lineString,
+        name: 'Tracking line'
+      });
+      vectorLinesHistSource.addFeature(featureLine);
+  }
+
+  function getPois() {
+    // comprobar nivel de zoom actual
+    if (map.getView().getZoom() < 10) {
+        $('#myModalMsgLabel').text("Nivel de zoom demasiado bajo para mostrar los POIs");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsgLabel2').text("Amplie el nivel de zoom e intentelo de nuevo");
+        $('#myModalMsg').modal('show');
+    }
+    else {
+      vectorPoiSource.clear();
+
+      var extent = map.getView().calculateExtent(map.getSize());
+      extent = ol.proj.transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
+
+      var fileJson = "/api/poi/box?ullon="+extent[0]+"&ullat="+extent[1]+"&drlon="+extent[2]+"&drlat="+extent[3]+"&username=<%=user%>";
+
+      //var fileJson = "/api/poi/box?ullon=-6.1&ullat=42.1&drlon=-5.1&drlat=41.1&username=<%=user%>"
+      document.getElementById('attr-loading').style.display = 'block';
+        $.getJSON( fileJson, function( data ) {
+          $.each( data, function( key, val ) {
+              var lat = val.location.coordinates[1];
+              var lon = val.location.coordinates[0];
+              var poiId = val._id;
+              var poiName = val.poiName;
+              var poiIcon = val.icon;
+
+              addPoiPoint(poiId, poiName, poiIcon, lat, lon);
+          });
+          document.getElementById('attr-loading').style.display = 'none';
+        });  
+    }    
+  }
+
+  function addPoiPoint(poiId, poiName, icon, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: poiId,
+        elementId: 'poi',
+        name: poiName
+      });
+
+      var iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         rotation: 0,
+         src: './images/pois/' + icon
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vectorPoiSource.addFeature(iconFeature); 
+  }
+
+  function openCalendar() {
+    $('#myModalCalendar').modal('show');
+  }
+
+
+  function openMenuKyros() {
+    $('#myModalMenuKyros').modal('show');
+  }
+
+  function openTooltip(deviceId) {
+    document.getElementById('formDeviceId').value = deviceId;
+    document.getElementById('formIcon').value = iconDict[deviceId];
+    document.getElementById('formAlias').value = aliasDict[deviceId];
+    document.getElementById('formVehicleLicense').value = vehicleLicenseDict[deviceId];
+    document.getElementById('formLatitude').value = latitudeDict[deviceId];
+    document.getElementById('formLongitude').value = longitudeDict[deviceId];
+    document.getElementById('formSpeed').value = speedDict[deviceId];
+    
+
+    document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[deviceId] + "'/>";
+    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
+    document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
+    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId];
+    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId];
+    document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId];
+    document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId];
+
+    document.getElementById('tooltipDaySpeed').innerHTML = '---';
+    document.getElementById('tooltipWeekSpeed').innerHTML = '---';
+    document.getElementById('tooltipMonthSpeed').innerHTML = '---';
+    document.getElementById('tooltipDayDistance').innerHTML = '---';
+    document.getElementById('tooltipWeekDistance').innerHTML = '---';
+    document.getElementById('tooltipMonthDistance').innerHTML = '---';
+    document.getElementById('tooltipDayConsume').innerHTML = '---';
+    document.getElementById('tooltipWeekConsume').innerHTML = '---';
+    document.getElementById('tooltipMonthConsume').innerHTML = '---';
+    
+var fileJson = "/api/odometer/"+deviceId;
+    $.getJSON( fileJson, function( data ) {
+
+      $.each( data, function( key, val ) {
+
+    document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed;
+    document.getElementById('tooltipWeekSpeed').innerHTML = val.weekSpeed;
+    document.getElementById('tooltipMonthSpeed').innerHTML = val.monthSpeed;
+    document.getElementById('tooltipDayDistance').innerHTML = val.dayDistance;
+    document.getElementById('tooltipWeekDistance').innerHTML = val.weekDistance;
+    document.getElementById('tooltipMonthDistance').innerHTML = val.monthDistance;
+    document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume;
+    document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume;
+    document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume;
+
+      });
+
+      $('#myModal').modal('show');
+    });
+    /*
+    document.getElementById('tooltipDayHours').innerHTML = dayHoursDict[deviceId];
+    document.getElementById('tooltipWeekHours').innerHTML = weekHoursDict[deviceId];
+    document.getElementById('tooltipMonthHours').innerHTML = monthHoursDict[deviceId];
+    */
+    
+
+    if (this.deviceId == deviceId) {
+       $('#tooltipHeader').css('background-color', '#F7BE81');
+       document.getElementById('selectButton').style.display = 'none';
+    } else {
+        $('#tooltipHeader').css('background-color', '#F2F2F2');
+        document.getElementById('selectButton').style.display = 'block';
+        $('#selectButtonText').text("<%= __('select_button') %>");
+
+    }
+  }
+
+function pad(value) {
+    if(value < 10) {
+        return '0' + value;
+    } else {
+        return value;
+    }
+}
+
+function openTooltipTrackingPoint(trackingId) {
+    
+    var fileJson = "/api/tracking/"+trackingId;
+      $.getJSON( fileJson, function( data ) {
+      $.each( data, function( key, val ) {
+
+      document.getElementById('tooltipTrackingTrackingId').innerHTML = trackingId;
+      var date = new Date(val.pos_date);
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      var hours = pad(date.getHours());
+      var minutes = pad(date.getMinutes());
+      var seconds = pad(date.getSeconds());
+
+
+      document.getElementById('tooltipTrackingDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
+      document.getElementById('tooltipTrackingLatitude').innerHTML = val.latitude;
+      document.getElementById('tooltipTrackingLongitude').innerHTML = val.longitude;
+      document.getElementById('tooltipTrackingSpeed').innerHTML = val.speed;
+      document.getElementById('tooltipTrackingHeading').innerHTML = val.heading;
+
+      });
+
+      $('#tooltipTrackingHeader').css('background-color', '#66c2ff');
+
+      $('#myModalTooltipTrackingPoint').modal('show');
+    });
+  }
+</script>
+
+</head>
+<body>
+ <form id="myformLogout" action="/logout" method="POST">
+ </form>
+
+ <form id="myform" action="/map" method="POST">
+  <input type="hidden" id="formDeviceId" name="deviceId" value="0" />
+  <input type="hidden" id="formAlias" name="alias" value="0" />
+  <input type="hidden" id="formIcon" name="icon" value="0" />
+  <input type="hidden" id="formVehicleLicense" name="vehicleLicense" value="0" />
+  <input type="hidden" id="formLatitude" name="latitude" value="0" />
+  <input type="hidden" id="formLongitude" name="longitude" value="0" />
+  <input type="hidden" id="formSpeed" name="speed" value="0" />
+</form>
+
+
+
+    
+
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('message') %></h4>
+      </div> <!-- /.modal-header -->
+
+    <div class="modal-body">
+      <div class="form-group">
+        <h4 class="modal-title" id="myModalMsgLabel"></h4>
+      </div> 
+      <div class="form-group">
+        <h5 class="modal-title" id="myModalMsgLabel2"></h5>
+      </div> 
+
+      <div id="okButton" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary">Ok</button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="myModalMenuKyros" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('main_menu') %></h4>
+      </div> <!-- /.modal-header -->
+
+    <div class="modal-body" id="grad1">
+      
+
+      
+    <table border="0" bgcolor="#bfbeb5">
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_map.png"/><br><br>Mapa OL</button>
+      </td>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_graph.png"/><br><br>Graphs</button>
+      </td>
+    </tr>
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_gmap.png"/><br><br>Mapa G.</button>
+      </td>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_device.png"/><br><br>Device</button>
+      </td>
+    </tr>
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_globe.png"/><br><br>Globo</button>
+      </td>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_pois.png"/><br><br>POIs</button>
+      </td>
+    </tr>
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/conf.png"/><br><br>Configuración</button>
+      </td>
+      <td align="center">
+        <button type="button" class="btn btn-primary raised"><img src="./img/button_logout.png"/><br><br>Cerrar sesión</button>
+      </td>
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr><td>&nbsp;</td><td></td></tr>
+    </tr>
+    </table>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div class="modal fade" id="myModalCalendar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('historic') %></h4>
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+      <div class="container">
+          <div class="row">
+              <div class='col-sm-6'>
+                  <div class="form-group">
+                      <h5 class="modal-title"><%= __('init_date') %>:</h5>
+
+                      <div class='input-group date' id='datetimepicker1'>
+                          <input type='text' class="form-control" id='initDate'/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                      </div>
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+
+      <div class="container">
+          <div class="row">
+              <div class='col-sm-6'>
+                  <div class="form-group">
+                      <h5 class="modal-title"><%= __('end_date') %>:</h5>
+
+                      <div class='input-group date' id='datetimepicker2'>
+                          <input type='text' class="form-control" id='endDate'/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                      </div>
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+
+
+      <div class="container">
+          <div class="row">
+              <div class='col-sm-2'>
+                  <div class="form-group">
+                      <h5 class="modal-title"><%= __('license') %>:</h5>
+
+                      
+                          <input type='text' class="form-control" id='licenseHist' data-provide="typeahead" placeholder=""/>
+                          
+                   
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+
+      <div id="okButtonCalendar" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary"><%= __('consult') %></button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div style="z-index: 10000;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header" id="tooltipHeader">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true"><img src="./img/close.png"/></button-->
+        <!--h4 class="modal-title" id="myModalLabel">Log in</h4-->
+            <table border="0">
+            <tr>
+              <td id="tooltipIcon"></td>
+              <td><b><font color="black" id="tooltipVehicleLicense">---</font></b></td>
+            </tr>
+            </table>
+
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+          <div class="form-group">
+          
+            <table border="0">
+            <!--tr>
+              <td><b>Vehicle license</b></td>
+              <td><font color="black" id="tooltipVehicleLicense">---</font></td>
+            </tr-->
+            <tr>
+              <td><b><%= __('alias') %></b></td>
+              <td><font color="black" id="tooltipAlias">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('coordinates') %></b></td>
+              <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('speed') %> (Km/h)</b></td>
+              <td><font color="black" id="tooltipSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('heading') %> (º)</b></td>
+              <td><font color="black" id="tooltipHeading">---</font></td>
+            </tr>
+            <!--tr>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr-->
+          </table>
+
+            
+          </div> <!-- /.form-group -->
+
+            <div class="form-group">
+<div id="deviceOdometer">
+          <table class="bordered">
+          <thead>
+          <tr>
+                <th class="numeric" width="20%"><%= __('day') %></th>
+                <th class="numeric" width="20%"><%= __('week') %></th>
+                <th class="numeric" width="20%"><%= __('month') %></th>
+                <th width="40%"></th>
+          <tr>
+          </thead>
+            <tbody>
+              <tr>
+                <td id="tooltipDaySpeed">---</td>
+                <td id="tooltipWeekSpeed">---</td>
+                <td id="tooltipMonthSpeed">---</td>
+                <td><font color="red"><%= __('average_speed') %></font> (km/h)</td>
+              </tr>
+              <tr>
+                <td id="tooltipDayDistance">---</td>
+                <td id="tooltipWeekDistance">---</td>
+                <td id="tooltipMonthDistance">---</td>
+                <td><font color="red"><%= __('distance') %></font> (Km)</td>
+              </tr>
+              <tr>
+                <td id="tooltipDayConsume">---</td>
+                <td id="tooltipWeekConsume">---</td>
+                <td id="tooltipMonthConsume">---</td>
+                <td><font color="red"><%= __('consume') %></font> (L)</td>
+              </tr>
+              <!--tr>
+                <td id="tooltipDayHours">---</td>
+                <td id="tooltipWeekHours">---</td>
+                <td id="tooltipMonthHours">---</td>
+                <td><font color="red">Horas</font> conducción</td>
+              </tr-->
+            </tbody>
+          </table>
+        </div>
+</div>
+    
+
+      </div> <!-- /.modal-body -->
+
+      <div id="selectButton" class="modal-footer" onclick="$('#myform').submit();">
+        <button id="selectButtonText" class="form-control btn btn-primary"><%= __('select_button') %></button>
+
+      </div> <!-- /.modal-footer -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div style="z-index: 10000;" class="modal fade" id="myModalTooltipTrackingPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header" id="tooltipTrackingHeader">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+            <table border="0">
+            <tr>
+              <td><b><%= __('id') %>: </b><font color="black" id="tooltipTrackingTrackingId">---</font></td>
+            </tr>
+            </table>
+
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+          <div class="form-group">
+          
+            <table border="0">
+            <tr>
+              <td><b><%= __('date') %></b></td>
+              <td><font color="black" id="tooltipTrackingDate">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('coordinates') %></b></td>
+              <td><font color="black" id="tooltipTrackingLatitude">---</font>, <font color="black" id="tooltipTrackingLongitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('speed') %> (Km/h)</b></td>
+              <td><font color="black" id="tooltipTrackingSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('heading') %> (º)</b></td>
+              <td><font color="black" id="tooltipTrackingHeading">---</font></td>
+            </tr>
+          </table>
+
+            
+          </div> <!-- /.form-group -->
+
+
+    
+
+      </div> <!-- /.modal-body -->
+
+
+      </div> <!-- /.modal-footer -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+  <div class="container-fluid">
+   <div class="row-fluid">
+    <div class="span12">
+     <div id="map" class="map">
+       <div id="attr-logo"></div>
+       <div id="attr-loading"></div>
+       <!--div id="attr-conf" onclick="javascript:location.href=window.location.host"></div-->
+       <div id="attr-button-logout" onclick="$('#myformLogout').submit();"></div>
+       <div id="attr-button-conf" onclick="javascript:location.href='http://view.kyroslbs.com/home'"></div>
+       <div id="attr-button-graphs" onclick="javascript:location.href='http://view.kyroslbs.com/graphs'"></div>
+       <div id="attr-button-globe" onclick="javascript:location.href='http://view.kyroslbs.com/globe'"></div>
+       <div id="attr-button-gmap" onclick="javascript:location.href='http://view.kyroslbs.com/gmap'"></div>
+       <div id="attr-button-device" onclick="javascript:openTooltip(deviceId);"></div>
+       <div id="attr-button-calendar" onclick="javascript:openCalendar();"></div>
+       <div id="attr-button-pois" onclick="javascript:getPois();"></div>
+       <div id="attr-button-kyros" onclick="javascript:openMenuKyros();"></div>
+       <!--div id="attr-button-update" onclick="javascript:reloadLayer();"></div-->
+       <div id="info"></div>
+
+
+
+     </div>
+   </div>
+ </div>
+</div>
+<script>
+  function getGET() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
+
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+      }
+      return get;
+    }
+  }
+
+  function getGETcar() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
+
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        if (unescape(decodeURI(tmp[0])) == 'car')
+          return unescape(decodeURI(tmp[1]));
+      }
+      return null;
+    }
+  }
+
+  function getGETdeviceId() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
+
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        if (unescape(decodeURI(tmp[0])) == 'deviceId')
+          return unescape(decodeURI(tmp[1]));
+      }
+      return null;
+    }
+  }
+
+  function getGETusername() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
+
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        if (unescape(decodeURI(tmp[0])) == 'username')
+          return unescape(decodeURI(tmp[1]));
+      }
+      return null;
+    }
+  }
+
+ // *******************************
+ // Sources y Layers 
+ // *******************************
+
+  var vectorPoiSource = new ol.source.Vector({
+   features: []
+  });
+  var vectorKyrosPoiLayer = new ol.layer.Vector({
+   title: 'POIs',
+   visible: true,
+   source: vectorPoiSource
+  });
+
+  var vectorTrackingSource = new ol.source.Vector({
+   features: []
+  });
+  var vectorKyrosTrackingLayer = new ol.layer.Vector({
+   title: 'All last position',
+   visible: true,
+   source: vectorTrackingSource
+  });
+
+  var vectorLinesSource = new ol.source.Vector({
+   features: []
+  });
+  var lineStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+        //color: '#0000ff',
+        color: '#66c2ff',        
+        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
+        width: 4
+    })
+  });
+  var vectorKyrosLinesLayer = new ol.layer.Vector({
+    title: 'Last 5 positions line',
+    visible: true,
+    style: lineStyle,
+    source: vectorLinesSource
+  });
+
+var style = 
+  [ new ol.style.Style(
+      { image: new ol.style.Shadow(
+        { radius: 4,
+        }),
+        stroke: new ol.style.Stroke(
+        { color: [0,0,0,0.3],
+          width: 1
+        }),
+        fill: new ol.style.Fill(
+          { color: [0,0,0,0.3]
+          }),
+        zIndex: -1
+      }),
+    new ol.style.Style(
+      { image: new ol.style.RegularShape(
+        { radius: 5,
+          radius2: 5,
+          points: 12,
+          fill: new ol.style.Fill({ color: '#0052cc' })
+        }),
+      stroke: new ol.style.Stroke(
+        { color: [0,0,255],
+          width: 2
+        }),
+      fill: new ol.style.Fill(
+        { color: [0,0,255,0.3]
+        })
+      })
+  ];
+  style[1].getImage().getAnchor()[1] += 10;
+
+  var vectorTrackingHistSource = new ol.source.Vector({
+   features: []
+  });
+  var vectorKyrosTrackingHistLayer = new ol.layer.Vector({
+   title: 'Historical positions',
+   visible: true,
+    style: style,
+   source: vectorTrackingHistSource
+  });
+
+  var vectorLinesHistSource = new ol.source.Vector({
+   features: []
+  });
+  var lineStyleHist = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+        //color: '#0000ff',
+        color: '#66c2ff',        
+        width: 3
+    })
+  });
+  var vectorKyrosLinesHistLayer = new ol.layer.Vector({
+    title: 'Historical line',
+    visible: true,
+    style: lineStyleHist,
+    source: vectorLinesHistSource
+  });
+ 
+ /*
+ vectorLinesHistSource.once('change', function(evt){
+  if (vectorLinesHistSource.getState() === 'ready') {
+    // now the source is fully loaded
+    if (vectorLinesHistSource.getSource().getFeatures().length > 0) {
+      map.getView().fitExtent(vectorLinesHistSource.getExtent(), map.getSize());
+
+      console.info(map.getView().getCenter());
+      console.info(map.getView().getZoom());
+    }
+  }
+});
+ */
+
+  var projection = ol.proj.get('EPSG:3857');
+
+
+    function getDeviceImage(vehicleState, posDate, iconReal, iconCover, iconAlarm) 
+    {
+      var now = new Date();
+      //console.log("-->" + now.getTime());
+      if (vehicleState==0)
+        if (posDate < now.getTime() - 600000)  // posicion antigua: 10 minutos
+          return './images/' + iconCover;
+        else
+          return './images/' + iconReal;
+      else
+        return './images/' + iconAlarm;
+    }
+
+
+    function followCar(car, new_car, lat, lon) {
+      if (car == new_car) {
+
+        var new_view = new ol.View({
+          center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
+          zoom: map.getView().getZoom()
+        });
+
+        var pan = ol.animation.pan({
+          duration: 700,
+          source:  (map.getView().getCenter()),
+        });
+        map.beforeRender(pan);
+        map.setView(new_view);
+      }
+    }
+
+    function moveMap(deviceId) {
+        var new_view = new ol.View({
+          center: ol.proj.transform([longitudeDict[deviceId], latitudeDict[deviceId]], 'EPSG:4326', 'EPSG:3857'),
+          zoom: map.getView().getZoom()
+        });
+        /*
+        var pan = ol.animation.pan({
+          duration: 500,
+          source:  (map.getView().getCenter()),
+        });
+        map.beforeRender(pan);*/
+        map.setView(new_view);
+    }
+
+function loadLayerFileJson() {
+ //$.getJSON( "./tracking_wrc_1.json?" + new Date().getTime(), function( data ) {
+ //$.getJSON( "./json/crueda.json?" + new Date().getTime(), function( data ) {
+ var fileJson = "./json/users/realTime/crueda.json?";
+ if (username != null)
+  fileJson = "./json/users/realTime/" + username + ".json?";
+  
+ //var fileJson = "./json/users/realTime/<%=user%>.json?";
+ var fileJson = "/api/devices/user/<%=user%>";
+
+ $.getJSON( fileJson, function( data ) {
+
+   var items = [];
+   $.each( data, function( key, val ) {
+     processDevice (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.vehicle_state, val.properties.iconReal, val.properties.iconCover, val.properties.iconAlarm, val.properties.pos_date, val.properties.deviceId);
+
+     if (car != null)
+      followCar(car, val.properties.license,val.geometry.coordinates[1],val.geometry.coordinates[0]);
+     else {
+      if (val.properties.deviceId == deviceId)
+        centerMap(val.geometry.coordinates[0],val.geometry.coordinates[1])
+
+     }
+
+     // Guardar los datos de odometro
+     daySpeedDict[val.properties.deviceId] = val.properties.daySpeed
+     weekSpeedDict[val.properties.deviceId] = val.properties.weekSpeed
+     monthSpeedDict[val.properties.deviceId] = val.properties.monthSpeed
+     dayDistanceDict[val.properties.deviceId] = val.properties.dayDistance
+     weekDistanceDict[val.properties.deviceId] = val.properties.weekDistance
+     monthDistanceDict[val.properties.deviceId] = val.properties.monthDistance
+     dayConsumeDict[val.properties.deviceId] = val.properties.dayConsume
+     weekConsumeDict[val.properties.deviceId] = val.properties.weekConsume
+     monthConsumeDict[val.properties.deviceId] = val.properties.monthConsume
+     /*dayHoursDict[val.properties.deviceId] = val.properties.dayHours
+     weekHoursDict[val.properties.deviceId] = val.properties.weekHours
+     monthHoursDict[val.properties.deviceId] = val.properties.monthHours
+      */
+  });               
+ });
+
+
+}
+
+function loadLayer() {
+  // posicion actual
+  navigator.geolocation.getCurrentPosition(function(location) {
+    //console.log(location.coords.latitude);
+    //console.log(location.coords.longitude);
+    //console.log(location.coords.accuracy);
+    addActualPosition(location.coords.latitude,location.coords.longitude,location.coords.accuracy);
+  });
+
+ var fileJson = "/api/tracking1/user/<%=user%>";
+
+ $.getJSON( fileJson, function( data ) {
+  
+  var strDevices = '[';
+ 
+   var ndata = data.length;
+   var index = 0;
+   $.each( data, function( key, val ) {
+     processDevice (val.license,val.alias,val.longitude,val.latitude,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+
+     monitorDevices[val.license] = val.deviceId;
+
+    if (val.deviceId == deviceId) {
+      centerMap(val.longitude,val.latitude);
+      //$('#licenseHist').attr("placeholder", val.license);
+      $('#licenseHist').val(val.license);
+      //document.getElementById('attr-loading').style.display = 'none';
+    }
+    index ++;
+    if (index == ndata) {
+      strDevices = strDevices + '{"id": ' + val.deviceId + ', "name": "' + val.license + '"}' ;
+      document.getElementById('attr-loading').style.display = 'none';
+    } else {
+      strDevices = strDevices + '{"id": ' + val.deviceId + ', "name": "' + val.license + '"},' ;
+    }
+  });               
+
+    strDevices = strDevices + ']';
+    var jsonDevices = JSON.parse(strDevices);
+
+      var $input = $('#licenseHist');
+      $input.typeahead({source:jsonDevices, 
+                autoSelect: true,
+              /*updater: function(selection){
+                //console.log("You selected: " + selection.id);
+              }*/
+            }); 
+
+     });
+
+
+
+//$('#licenseHist').value = "aa";
+
+    //$('#licenseHist').typeahead('val','FLAA-RUNKEEPER').blur();
+
+    //$input.typeahead('val', 'some value').blur()
+
+  //document.getElementById('attr-loading').style.display = 'none';
+
+}
+
+
+function reloadLayer() {
+  //if (!isMobile()) {  
+    var fileJson = "./json/users/realTime/<%=user%>.json?";
+
+     $.getJSON( fileJson, function( data ) {
+
+       var items = [];
+       $.each( data, function( key, val ) {
+        processDevice (val.license,val.alias,val.longitude,val.latitude,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+      });               
+     });
+  //}
+}
+
+function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+   //TODO: lo quito para que siempre salgan los coches ordenados ?
+   //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
+  iconDict[deviceId] = iconReal;
+  vehicleLicenseDict[deviceId] = ident;
+  aliasDict[deviceId] = alias;
+  latitudeDict[deviceId] = lat;
+  longitudeDict[deviceId] = lon;
+  speedDict[deviceId] = speed;
+  headingDict[deviceId] = heading;
+
+   if ( (dict_date[ident]==null) || (dict_date[ident]<posDate) )
+   {
+    dict_date[ident]=posDate;
+
+    // Eliminar el icono de todas las capas
+    iFeature = vectorTrackingSource.getFeatureById(ident);
+    if (iFeature!=null) {
+     vectorTrackingSource.removeFeature(iFeature);
+   }
+
+   // añadir el icono
+   add (ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
+
+ }
+}
+
+    function add(ident, alias, lon, lat, speed, heading, vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: deviceId,
+        elementId: 'device',
+        name: alias
+      });
+
+      var image_src = getDeviceImage(vehicleState, posDate, iconReal, iconCover, iconAlarm); 
+      
+      var iconStyle;
+      var iconScale = 1;
+
+      //iconScale = 0.8;
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         rotation: heading,
+         src: image_src
+       }))
+      })
+
+      ];
+
+      iconFeature.setStyle(iconStyle);
+      iconFeature.setId(ident);
+
+      vectorTrackingSource.addFeature(iconFeature); 
+
+      var deviceVectorSource = new ol.source.Vector({
+        features: []
+      });
+      deviceVectorSource.addFeature(iconFeature); 
+      var deviceVectorLayer = new ol.layer.Vector({
+        title: alias,
+        visible: false,
+        source: deviceVectorSource
+      });
+      //map.addLayer(deviceVectorLayer);
+      //if (!isMobile()) {
+        //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
+      //}
+
+    }
+
+  
+  function addLinesTracking5(trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5) {
+
+    vectorTrackingHistSource.clear();
+    vectorLinesHistSource.clear();
+
+    vectorLinesSource.clear();
+
+    //var coords = [[lon1, lat1],[lon2, lat2],[lon3, lat3],[lon4, lat4],[lon5, lat5] ]; 
+    
+    var coords = [];
+    if (lat1!=0) {
+      coords.push([lon1, lat1]);
+
+      var iconFeature1 = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([lon1, lat1], 'EPSG:4326', 'EPSG:3857')),
+        id: trackingId1,
+        elementId: 'trackingPoint',
+        name: trackingId1
+      });
+      iconFeature1.setStyle(new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         src: './img/beacon_ball_blue.gif'
+       }))
+      }));
+      vectorLinesSource.addFeature(iconFeature1); 
+    }
+    if (lat2!=0) {
+      coords.push([lon2, lat2]);
+
+      var iconFeature2 = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([lon2, lat2], 'EPSG:4326', 'EPSG:3857')),
+        id: trackingId2,
+        elementId: 'trackingPoint',
+        name: trackingId2
+      });
+      iconFeature2.setStyle(new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         src: './img/beacon_ball_blue.gif'
+       }))
+      }));
+      vectorLinesSource.addFeature(iconFeature2); 
+    }
+    if (lat3!=0) {
+      coords.push([lon3, lat3]);
+
+      var iconFeature3 = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([lon3, lat3], 'EPSG:4326', 'EPSG:3857')),
+        id: trackingId3,
+        elementId: 'trackingPoint',
+        name: trackingId3
+      });
+      iconFeature3.setStyle(new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         src: './img/beacon_ball_blue.gif'
+       }))
+      }));
+      vectorLinesSource.addFeature(iconFeature3);       
+    }
+    if (lat4!=0) {
+      coords.push([lon4, lat4]);
+
+      var iconFeature4 = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([lon4, lat4], 'EPSG:4326', 'EPSG:3857')),
+        id: trackingId4,
+        elementId: 'trackingPoint',
+        name: trackingId4
+      });
+      iconFeature4.setStyle(new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         src: './img/beacon_ball_blue.gif'
+       }))
+      }));
+      vectorLinesSource.addFeature(iconFeature4);       
+    }
+    if (lat5!=0) {
+      coords.push([lon5, lat5]);
+
+      var iconFeature5 = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.transform([lon5, lat5], 'EPSG:4326', 'EPSG:3857')),
+        id: trackingId5,
+        elementId: 'trackingPoint',
+        name: trackingId5        
+      });
+      iconFeature5.setStyle(new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         src: './img/beacon_ball_blue.gif'
+       }))
+      }));
+      vectorLinesSource.addFeature(iconFeature5); 
+
+    }
+
+    var lineString = new ol.geom.LineString(coords);
+    // transform to EPSG:3857
+    lineString.transform('EPSG:4326', 'EPSG:3857');
+
+    var lineStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
+        //color: '#0000ff',
+        color: '#66c2ff',        
+        width: 4
+    })
+  });
+
+  // create the feature
+  var featureLine = new ol.Feature({
+    geometry: lineString,
+    style: lineStyle,
+    name: 'Tracking line'
+  });
+  vectorLinesSource.addFeature(featureLine);
+
+    // centrar el mapa
+    map.getView().fit(vectorLinesSource.getExtent(), map.getSize());
+    if(map.getView().getZoom()>20){
+      map.getView().setZoom(20);
+    }
+  }
+
+ function centerMap(lon, lat) {
+  map.setView (new ol.View({
+    center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
+    zoom: 14,
+    maxZoom:22
+  }));
+ }
+
+ var fileJsonMonth = "./json/users/lastMonth/crueda.json?";
+ var fileJsonWeek = "./json/users/lastWeek/crueda.json?";
+ var fileJsonDay = "./json/users/lastDay/crueda.json?";
+ if (username != null) {
+  fileJsonMonth = "./json/users/lastMonth/" + username + ".json?";
+  fileJsonWeek = "./json/users/lastWeek/" + username + ".json?";
+  fileJsonDay = "./json/users/lastDay/" + username + ".json?";
+}
+
+var sourceHeatmapMonth = new ol.source.Vector({
+  url: fileJsonMonth,
+  format: new ol.format.GeoJSON(),
+  projection: 'EPSG:3857'
+});
+var sourceHeatmapWeek = new ol.source.Vector({
+  url: fileJsonWeek,
+  format: new ol.format.GeoJSON(),
+  projection: 'EPSG:3857'
+});
+var sourceHeatmapDay = new ol.source.Vector({
+  url: fileJsonDay,
+  format: new ol.format.GeoJSON(),
+  projection: 'EPSG:3857'
+});
+
+var heatmapMonth = new ol.layer.Heatmap({
+    title: 'Heatmap last month',
+    visible: false,
+    source: sourceHeatmapMonth,
+    opacity: .9
+ });
+var heatmapWeek = new ol.layer.Heatmap({
+    title: 'Heatmap last week',
+    visible: false,
+    source: sourceHeatmapWeek,
+    opacity: .9
+ });
+var heatmapDay = new ol.layer.Heatmap({
+    title: 'Heatmap last day',
+    visible: false,
+    source: sourceHeatmapDay,
+    opacity: .9
+ });
+
+
+var sourceClusterMonth = new ol.source.Vector({
+  url: './json/users/lastMonth/crueda.json',
+  format: new ol.format.GeoJSON(),
+  projection: 'EPSG:3857'
+});
+var clusterSourceMonth = new ol.source.Cluster({
+  distance: 40,
+  source: sourceClusterMonth
+});
+var styleCache = {};
+var clustersMonth = new ol.layer.Vector({
+  title: 'Cluster last month',
+  visible: false,
+  source: clusterSourceMonth,
+  style: function(feature, resolution) {
+    var size = feature.get('features').length;
+    var style = styleCache[size];
+    if (!style) {
+      style = [new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 20,
+          stroke: new ol.style.Stroke({
+            color: '#fff'
+          }),
+          fill: new ol.style.Fill({
+            //color: '#3399CC'
+            color: '#6411ED'
+          })
+        }),
+        text: new ol.style.Text({
+          text: size.toString(),
+          fill: new ol.style.Fill({
+            color: '#fff'
+          })
+        })
+      })];
+      styleCache[size] = style;
+    }
+    return style;
+  }
+});
+
+var sourceClusterWeek = new ol.source.Vector({
+  url: './json/users/lastWeek/crueda.json',
+  format: new ol.format.GeoJSON(),
+  projection: 'EPSG:3857'
+});
+var clusterSourceWeek = new ol.source.Cluster({
+  distance: 40,
+  source: sourceClusterWeek
+});
+var styleCache = {};
+var clustersWeek = new ol.layer.Vector({
+  title: 'Cluster last week',
+  visible: false,
+  source: clusterSourceWeek,
+  style: function(feature, resolution) {
+    var size = feature.get('features').length;
+    var style = styleCache[size];
+    if (!style) {
+      style = [new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 20,
+          stroke: new ol.style.Stroke({
+            color: '#fff'
+          }),
+          fill: new ol.style.Fill({
+            //color: '#3399CC'
+            color: '#11ED72'
+          })
+        }),
+        text: new ol.style.Text({
+          text: size.toString(),
+          fill: new ol.style.Fill({
+            color: '#fff'
+          })
+        })
+      })];
+      styleCache[size] = style;
+    }
+    return style;
+  }
+});
+
+var sourceClusterDay = new ol.source.Vector({
+  url: './json/users/lastDay/crueda.json',
+  format: new ol.format.GeoJSON(),
+  projection: 'EPSG:3857'
+});
+var clusterSourceDay = new ol.source.Cluster({
+  distance: 40,
+  source: sourceClusterDay
+});
+var styleCache = {};
+var clustersDay = new ol.layer.Vector({
+  title: 'Cluster last day',
+  visible: false,
+  source: clusterSourceDay,
+  style: function(feature, resolution) {
+    var size = feature.get('features').length;
+    var style = styleCache[size];
+    if (!style) {
+      style = [new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 20,
+          stroke: new ol.style.Stroke({
+            color: '#fff'
+          }),
+          fill: new ol.style.Fill({
+            //color: '#3399CC'
+            color: '#ED1111'
+          })
+        }),
+        text: new ol.style.Text({
+          text: size.toString(),
+          fill: new ol.style.Fill({
+            color: '#fff'
+          })
+        })
+      })];
+      styleCache[size] = style;
+    }
+    return style;
+  }
+});
+
+var toner = new ol.layer.Tile({
+ title: 'Toner',
+ type: 'base',
+ visible: false,
+ source: new ol.source.Stamen({
+   layer: 'toner'
+ })
+});
+
+var roads = new ol.layer.Tile({
+ title: 'Roads',
+ type: 'base',
+ visible: true,
+ source: new ol.source.XYZ({
+   url: 'http://1.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=es&app_id=XauXjbuily9soJuafQ8d&token=qg4GasqCW0lTKZbyeID3_A'
+ })
+});
+
+
+
+
+
+var osm = new ol.layer.Tile({
+ title: 'OpenStreetMap',
+ type: 'base',
+ visible: false,
+ source: new ol.source.OSM()
+});
+ 
+var kyrosDevicesGroup = new ol.layer.Group({
+    'title': 'Kyros devices',
+    //layers: [vectorLayer]
+    layers: []
+  });
+
+var kyrosGroup = new ol.layer.Group({
+    'title': 'Tracking',
+    layers: [vectorKyrosLinesHistLayer,vectorKyrosTrackingHistLayer, vectorKyrosLinesLayer, vectorKyrosTrackingLayer, vectorKyrosPoiLayer]
+  });
+
+var map = new ol.Map({
+  layers: [
+  new ol.layer.Group({
+   'title': 'Base maps',
+   layers: [toner, roads, osm]
+ }),
+
+kyrosDevicesGroup,
+kyrosGroup,
+
+  new ol.layer.Group({
+   'title': 'Heatmaps',
+   layers: [heatmapMonth, heatmapWeek, heatmapDay]
+ }),
+  new ol.layer.Group({
+   'title': 'Clustering',
+   layers: [clustersMonth, clustersWeek, clustersDay]
+ }),
+
+
+
+
+  
+
+
+  ],
+  target: 'map',
+  view: new ol.View({
+    center: ol.proj.transform([-3.75, 40.24], 'EPSG:4326', 'EPSG:3857'),
+    zoom: 7,
+    maxZoom:22
+  })
+});
+
+
+var layerSwitcher = new ol.control.LayerSwitcher({
+                             tipLabel: 'Capas' // Optional label for button
+                           });
+map.addControl(layerSwitcher);
+map.addControl(new ol.control.FullScreen());
+
+map.addControl(new ol.control.ZoomSlider({
+  maxResolution: 0.5972,
+  minResolution: 39135.76
+}));
+
+map.addControl(new ol.control.OverviewMap({
+  collapsed: true
+}));
+var scaleLineControl = new ol.control.ScaleLine();
+
+map.addControl(scaleLineControl);
+
+map.addControl(new ol.control.MousePosition({
+  undefinedHTML: '',
+  projection: 'EPSG:4326',
+  coordinateFormat: function(coordinate) {
+    return ol.coordinate.format(coordinate, '{x}, {y}', 4);
+  }
+}));
+
+//*****************
+
+
+// Vector layer
+  /*var source = new ol.source.Vector();
+  var vector = new ol.layer.Vector(
+  { source: source,
+    style: style
+  });
+  map.addLayer(vector);*/
+
+// Add a feature on the map
+  function addFeatureAt(trackingId, p) { 
+    var f, r = map.getView().getResolution() *10;
+ 
+        
+      var geo_point = new ol.geom.Point(ol.proj.transform([p[0], p[1]], 'EPSG:4326', 'EPSG:3857'));
+      var f = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        elementId: 'trackingPoint',
+        name: 'Posición actual'
+      });
+
+ 
+    vectorTrackingHistSource.addFeature(f);
+    vectorKyrosTrackingHistLayer.animateFeature (f, 
+      [ new ol.featureAnimation["Drop"](
+        { speed: Number(0.8), 
+          duration: Number(760),
+          side: false
+        }),
+        new ol.featureAnimation[
+        "Bounce"](
+        { speed: Number(0.8), 
+          duration: Number(760),
+          horizontal: /Slide/.test("Drop")
+        })
+      ]);
+  }
+
+  // Drop a feature on click 
+  map.on('singleclick', function(evt) 
+  { 
+ var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+  var lon = lonlat[0];
+  var lat = lonlat[1];
+    addFeatureAt (0, lonlat);
+  });
+
+
+
+
+
+
+ 
+//***
+
+var info = $('#info');
+info.tooltip({
+ animation: false,
+ trigger: 'manual'
+});
+
+var displayFeatureInfo = function(pixel) {
+ info.css({
+   left: pixel[0] + 'px',
+   top: (pixel[1] - 15) + 'px'
+ });
+ var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+   return feature;
+ });
+ if (feature) {
+    //if (isMobile()) {
+             //openTooltip(feature.get('id'));
+    //} else {
+             info.tooltip('hide')
+             .attr('data-original-title', feature.get('name'))
+             .tooltip('fixTitle')
+             .tooltip('show');
+
+             //openTooltip(feature.get('id')); 
+             //moveMap(feature.get('id'));     
+    //}
+             
+           } else {
+             info.tooltip('hide');
+             //closeTooltip();
+           }
+         };
+
+var displayTooltipInfo = function(pixel) {
+ info.css({
+   left: pixel[0] + 'px',
+   top: (pixel[1] - 15) + 'px'
+ });
+ var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+   return feature;
+ });
+ if (feature) {
+    if (feature.get('elementId')=='trackingPoint') {
+      openTooltipTrackingPoint(feature.get('id'));
+    }
+    else if (feature.get('elementId')=='device') {
+            //if (isMobile()) {
+             openTooltip(feature.get('id'));
+             showTracking5(feature.get('id'));
+            //} else {
+             info.tooltip('hide');
+            }
+          }
+         };
+
+         map.on('pointermove', function(evt) {
+           if (evt.dragging) {
+             info.tooltip('hide');
+             return;
+           }
+           displayFeatureInfo(map.getEventPixel(evt.originalEvent));
+         });
+         
+         map.on('click', function(evt) {
+           displayTooltipInfo(evt.pixel);
+           //if (!isMobile()) {
+           //   closeTooltip();
+            //}
+
+         });
+         
+       </script>
+     </body>
+     </html>

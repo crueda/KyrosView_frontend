@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Kyros View</title>
+
+    <link href="./css/map.css" rel="stylesheet" />
+    <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <script src="./js/vendor/jquery.easing.1.3.js"></script>
+    <script src="./js/vendor/markerAnimate.js"></script>
+    <script src="./js/SlidingMarker.js"></script>
+
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    .controlUI0 {
+      background-color: #fff;
+      height: 0px;
+      border: 0px solid #fff;
+      border-radius: 3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+      margin-bottom: 22px;
+      text-align: center;
+    }
+    .controlUI {
+      background-color: #fff;
+      width: 250px;
+      height: 100px;
+      border: 2px solid #fff;
+      border-radius: 3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.3);
+      margin-bottom: 22px;
+      text-align: center;
+    }
+    .controlText {
+      color: rgb(25,25,25);
+      font-family: Roboto,Arial,sans-serif;
+      font-size: 12px;
+      line-height: 18px;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+#attr-button-logout
+{
+    position:absolute; 
+    right:5px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_logout.png");
+}
+
+#attr-button-conf
+{
+    position:absolute; 
+    right:65px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/conf.png");
+}
+
+#attr-button-device
+{
+    position:absolute; 
+    right:125px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_device.png");
+}
+
+#attr-button-graphs
+{
+    position:absolute; 
+    right:125px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_graph.png");
+}
+
+#attr-button-globe
+{
+    position:absolute; 
+    left: 5px; 
+    bottom: 5px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_globe.png");
+}
+
+#attr-button-map
+{
+    position:absolute; 
+    left: 5px; 
+    bottom: 60px; 
+    z-index:100; 
+    width:48px; 
+    height:48px; 
+    background-image: url("./img/button_map.png");
+}
+#attr-loading
+{
+    position:absolute; 
+    top: 0; left: 0; bottom: 0; right: 0;
+    margin: auto;
+    z-index:100; 
+    width:128px; 
+    height:128px; 
+    background-image: url("./img/loading.gif");
+}
+
+    #attr-logo
+    {
+      position:absolute; 
+      left:10px; 
+      top: 50px; 
+      z-index:100; 
+      width:230px; 
+      height:106px; 
+      background-image: url("./img/kyroslbs.png");
+      background-size: 100% 100%;
+      //background-size: cover;
+    }
+
+
+    </style>
+
+    <script>
+
+        //SlidingMarker.initializeGlobally();
+        var marker, map;
+
+function MakeControl0(controlDiv, label) {
+
+  // Set up the control border.
+  var controlUI = document.createElement('div');
+  controlUI.title = label;
+  controlUI.className = 'controlUI0';
+  controlDiv.appendChild(controlUI);
+
+  // Set up the inner control.
+  var controlText = document.createElement('div');
+  controlText.innerHTML = label;
+  controlText.className = 'controlText';
+  controlUI.appendChild(controlText);
+}
+
+function MakeControl(controlDiv, label) {
+
+  // Set up the control border.
+  var controlUI = document.createElement('div');
+  controlUI.title = label;
+  controlUI.className = 'controlUI';
+  controlDiv.appendChild(controlUI);
+
+  // Set up the inner control.
+  var controlText = document.createElement('div');
+  controlText.innerHTML = "<img src='../img/plaque_monte.jpg'/>";
+  controlText.className = 'controlText';
+  controlUI.appendChild(controlText);
+}
+
+function isMobile(){
+  //return true;
+    return (
+        (navigator.userAgent.match(/Android/i)) ||
+        (navigator.userAgent.match(/webOS/i)) ||
+        (navigator.userAgent.match(/iPhone/i)) ||
+        (navigator.userAgent.match(/iPod/i)) ||
+        (navigator.userAgent.match(/iPad/i)) ||
+        (navigator.userAgent.match(/BlackBerry/))
+    );
+}
+
+        function initialize() {
+            //var myLatlng = new google.maps.LatLng(101.66, 21.11);
+            //var myLatlng = new google.maps.LatLng(60.0277, 13.6968);
+            var myLatlng = new google.maps.LatLng(40.24, -3.75);
+            var mapOptions = {
+                zoom: 7,
+                center: myLatlng,
+                //disableDefaultUI: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+
+
+            $.getJSON( "/api/tracking1/user/<%=user%>", function( data ) {
+               var ndata = data.length;
+               var index = 0;
+               $.each( data, function( key, val ) {
+                 add (val.deviceId,val.alias,val.longitude,val.latitude,val.vehicle_state, val.pos_date, val.iconReal, val.iconCover, val.iconAlarm );
+                 dict[val.deviceId] = [val.longitude,val.latitude];
+                 dict_state[val.deviceId] = val.vehicle_state;
+                  
+                  if (val.deviceId == <%=deviceId%>) {
+                    map.setCenter(new google.maps.LatLng(val.latitude, val.longitude));
+                    map.setZoom(15);
+                  }
+                  index ++;
+                  if (index == ndata)
+                    document.getElementById('attr-loading').style.display = 'none';
+
+
+             });                    
+           });
+                  
+        }
+
+        ///////////////////////////////////////////////////
+
+        $(function () {
+          
+          if (isMobile()) {
+            document.getElementById('attr-logo').style.display = 'none';
+          } else {
+            var width_window = $(window).width();  //getting windows width
+            var height_window = $(window).height();  //getting windows height
+
+            $("#attr-logo").css({ width: width_window*0.1281 + 'px' });
+            $("#attr-logo").css({ height: height_window*0.1078+ 'px' });
+          }
+
+          initialize();
+
+        });
+
+     function centerMap(lon, lat) {
+      var myLatlng = new google.maps.LatLng(lat, lon);
+       map.setCenter(myLatlng); 
+        map.setZoom(15);
+    }
+
+    
+    function getDeviceImage(vehicleState, posDate, iconReal, iconCover, iconAlarm){
+      var now = new Date();
+      if (vehicleState==0)
+        if (posDate < now.getTime() - 600000)  // posicion antigua: 10 minutos
+          return './images/' + iconCover;
+        else
+          return './images/' + iconReal;
+      else
+        return './images/' + iconAlarm;
+    }
+
+    </script>
+
+    <script>
+        window.onload = function() { setInterval(reloadLayer,10000)};
+    </script>
+
+    <script type="text/javascript">    
+       var dict = {};
+       var dict_state = [];
+       var marker = [];
+       var car = null;
+    </script>
+
+    <script type="text/javascript">
+
+    </script>
+
+</head>
+<body>
+    <div id="map_canvas"></div>
+    <div id="attr-logo"></div>
+    <div id="attr-loading"></div>
+    <div id="attr-button-logout" onclick="$('#myformLogout').submit();"></div>
+       <div id="attr-button-conf" onclick="javascript:location.href='http://view.kyroslbs.com/home'"></div>
+       <div id="attr-button-graphs" onclick="javascript:location.href='http://view.kyroslbs.com/graphs'"></div>
+       <div id="attr-button-globe" onclick="javascript:location.href='http://view.kyroslbs.com/globe'"></div>
+       <div id="attr-button-map" onclick="javascript:location.href='http://view.kyroslbs.com/map'"></div>
+       <!--div id="attr-button-device" onclick="javascript:openTooltip(deviceId);"></div-->
+       
+    <script>
+    function add(ident, alias, lon, lat, vehicle_state, posDate, iconReal, iconCover, iconAlarm) {
+        var myLatlng = new google.maps.LatLng(lat, lon);
+        var image_src = getDeviceImage(vehicle_state, posDate, iconReal, iconCover,iconAlarm ); 
+
+        var image_ancho = 30;
+        var image_alto = 30;
+
+        
+        var icon = new google.maps.MarkerImage(image_src, new google.maps.Size(image_ancho,image_alto), 
+            null, new google.maps.Point(image_ancho/2, image_alto/2), 
+            new google.maps.Size(image_ancho, image_alto));
+        
+        marker[ident] = new SlidingMarker({
+            position: myLatlng,
+            map: map,
+            icon: icon,
+            title: alias
+        });
+
+        google.maps.event.addListener(marker[ident], 'click', function() {
+            infowindow.setContent(this.content);
+            infowindow.open(map, this);
+          });
+
+    }
+
+ 
+    function reloadLayer() {
+        $.getJSON( "/api/tracking1/user/<%=user%>", function( data ) {
+            $.each( data, function( key, val ) {
+                check (val.deviceId,val.alias,val.longitude,val.latitude,val.vehicle_state, val.posDate, val.iconReal, val.iconCover, val.iconAlarm);
+            });               
+        });
+    }
+
+    function check(ident,alias,lon,lat,vehicle_state,posDate, iconReal, iconCover, iconAlarm) { 
+        //if (dict[ident][0] != lon) 
+        if (dict[ident][0] != lon  || dict[ident][1] != lat) 
+        {            
+            if (dict_state[ident] != vehicle_state) {
+                dict_state[ident] = vehicle_state;
+                marker[ident].setVisible(false);
+                add(ident, alias, lon, lat, vehicle_state,posDate, iconReal, iconCover, iconAlarm);
+            }
+            else {
+                var myLatlng = new google.maps.LatLng(lat, lon);
+                var duration = parseInt(2000);
+                marker[ident].setDuration(duration);
+                marker[ident].setEasing("linear");
+                marker[ident].setPosition(myLatlng);
+            }
+
+        }
+    }
+
+    </script>
+
+</body>
+</html>
