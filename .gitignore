@@ -3,10 +3,8 @@
 .brackets.json
 
 node_modules
-app/server/modules/email-settings-mine.js
 
 app/public/json/
-*.properties
 
 anotaciones.txt
 history.md
