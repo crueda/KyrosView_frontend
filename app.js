@@ -94,6 +94,7 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+
 /*
 var dbHost = process.env.DB_HOST || 'localhost'
 var dbPort = process.env.DB_PORT || 27017;
