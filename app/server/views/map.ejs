@@ -97,7 +97,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); loadLayer(); setInterval(reloadLayer,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadLayer(); }//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadMonitor();}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -105,11 +105,12 @@
   //  document.getElementById('attr-button-update').style.display = 'none';
   //}
 
-var defaultData = [
+
+        var defaultData = [
           {
             text: 'Parent 1',
             deviceId: '1',
-            type: 'aa',
+            type: 'aaa',
             nodes: [
               {
                 text: 'Child 1',
@@ -150,7 +151,8 @@ var defaultData = [
           }
         ];
 
-var $checkableTree = $('#treeview-checkable').treeview({
+/*
+        var $checkableTree = $('#treeview-checkable').treeview({
           data: defaultData,
           showIcon: true,
           showCheckbox: true,
@@ -164,7 +166,7 @@ var $checkableTree = $('#treeview-checkable').treeview({
           }
         });
 
-
+*/
   var nowDate = new Date();
   var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
   var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
@@ -855,11 +857,11 @@ function openTooltipTrackingPoint(trackingId) {
         <h4 class="modal-title" id="myModalLabel"><%= __('monitor_devices') %></h4>
       </div> <!-- /.modal-header -->
 
-      <div class="modal-body">
+      <div class="modal-body" id="treeBody">
 
       
       
-      <div class="col-sm-12">
+      <div class="col-sm-12" id="monitorDiv">
           <div id="treeview-checkable" class=""></div> 
         </div>     
 
@@ -1410,6 +1412,50 @@ function loadLayerFileJson() {
  });
 
 
+}
+
+function loadMonitor() {
+  var fileJson = "/api/monitor/<%=user%>";
+  $.getJSON( fileJson, function( data ) {
+    console.log(data);
+    //var treeData = data.split("name").join("text");
+    jsonString = JSON.stringify(data)
+
+    jsonString = jsonString.split("name").join("text");
+    jsonString = jsonString.split("childs").join("nodes");
+
+    jsonObject = JSON.parse(jsonString);
+    console.log(jsonObject);
+
+    $('#monitorDiv').height($(window).height()-200);
+
+    var $checkableTree = $('#treeview-checkable').treeview({
+          data: jsonObject,
+          showIcon: true,
+          showCheckbox: true,
+          onNodeChecked: function(event, node) {
+            console.log(node.deviceId + ' was checked');
+            //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
+          },
+          onNodeUnchecked: function (event, node) {
+            console.log(node.deviceId + ' was unchecked');
+            //$('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
+          }
+        });
+
+   $('#treeview-checkable').treeview('collapseAll', { silent: true });
+
+   /*
+   $.each( data, function( key, val ) {
+      console.log(val.name);
+      //console.log(val.childs[0]);
+      if (val.childs!=undefined) {
+        console.log(val.childs[0]);
+
+      }
+    });
+    */
+ });
 }
 
 function loadLayer() {

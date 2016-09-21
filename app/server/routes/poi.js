@@ -32,7 +32,7 @@ var log = require('tracer').console({
  * @apiVersion 1.0.1
  * @apiSampleRequest http://view.kyroslbs.com/api/poi/box?ullon=-6.19&ullat=42.34&drlon=-5.04&drlat=41.75
  *
- * @apiParam {String} username NOmbre de usuario en Kyros
+ * @apiParam {String} username Nombre de usuario en Kyros
  * @apiParam {Number} ullon Longitud de la esquina superior izquierda
  * @apiParam {Number} ullat Latitud de la esquina superior izquierda
  * @apiParam {Number} drlon Longitud de la esquina inferior derecha
