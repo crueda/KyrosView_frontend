@@ -1746,10 +1746,9 @@ function processDeviceTree(ident,alias,lon,lat,speed,heading,vehicleState, iconR
         source: deviceVectorSource
       });
       //map.addLayer(deviceVectorLayer);
-      //if (!isMobile()) {
-        //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
-      //}
-
+      if (!isMobile()) {
+        kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
+      }
     }
 
   
