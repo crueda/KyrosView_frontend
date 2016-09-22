@@ -293,18 +293,22 @@ table {
   }
 
   .ol-scale-line {
-    left: 175px;
+    left: 50px;
   }
 
   .ol-rotate {
     top: 3em;
   }
 
-  .ol-zoom {
-    top: 65px;
-    left: 10px;
+  
 
-  }
+.ol-zoom {
+   right: unset;
+   left: 8px;
+   top: unset;
+   bottom: 8px;
+}
+
 
   .ol-zoomslider {
     width: 200px;

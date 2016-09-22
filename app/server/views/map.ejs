@@ -1975,11 +1975,6 @@ kyrosGroup,
  }),
 
 
-
-
-  
-
-
   ],
   target: 'map',
   view: new ol.View({
@@ -1989,11 +1984,12 @@ kyrosGroup,
   })
 });
 
-
+if (!isMobile()) {
 var layerSwitcher = new ol.control.LayerSwitcher({
-                             tipLabel: 'Capas' // Optional label for button
-                           });
-map.addControl(layerSwitcher);
+    tipLabel: 'Capas' // Optional label for button
+  });
+  map.addControl(layerSwitcher);
+}
 
 if (!isMobile()) {
 map.addControl(new ol.control.FullScreen());
@@ -2006,9 +2002,13 @@ map.addControl(new ol.control.ZoomSlider({
 }));  
 }
 
-map.addControl(new ol.control.OverviewMap({
-  collapsed: true
-}));
+/*
+if (!isMobile()) {
+  map.addControl(new ol.control.OverviewMap({
+    collapsed: true
+  }));
+}*/
+
 var scaleLineControl = new ol.control.ScaleLine();
 
 map.addControl(scaleLineControl);
