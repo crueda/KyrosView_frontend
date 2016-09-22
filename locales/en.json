@@ -35,5 +35,12 @@
 	"main_menu": "Main menu",
 	"devices": "Devices",
 	"monitor_devices": "Monitor devices",
-	"update": "Update"						
+	"update": "Update",
+	"position_map": "Position over the map",
+	"actual_position": "Actual position",
+	"tracking_point": "Tracking point",						
+	"init_tracking_point": "Init tracking point",						
+	"end_tracking_point": "End tracking point",
+	"tracking_line": "Tracking line"						
 }
+

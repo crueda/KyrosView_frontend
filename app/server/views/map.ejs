@@ -60,6 +60,18 @@
     height:48px; 
     background-image: url("./img/buttons/button_menu.png");
 }
+#attr-logo
+  {
+    position:absolute; 
+    z-index:100; 
+    top: 60px;
+    left: 5px;
+    width:230px; 
+    height:106px; 
+    background-image: url("./img/kyroslbs.png");
+    background-size: 100% 100%;
+    //background-size: cover;
+  }
 
 </style>
 
@@ -71,6 +83,7 @@
  var deviceId = null;
  var iconDict = {};
  var vehicleLicenseDict = {};
+ var dateDict = {};
  var aliasDict = {};
  var latitudeDict = {};
  var longitudeDict = {};
@@ -97,7 +110,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); loadLayer(); setInterval(reloadLayer,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadMonitor();}//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadLayer(); loadMonitor();}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -209,9 +222,10 @@
   } else {
     var width_window = $(window).width();  //getting windows width
     var height_window = $(window).height();  //getting windows height
-
-    $("#attr-logo").css({ width: width_window*0.1281 + 'px' });
-    $("#attr-logo").css({ height: height_window*0.1078+ 'px' });
+    /*var relacion = width_window/height_window;
+    */
+    $("#attr-logo").css({ width: width_window*0.12 + 'px' });
+    $("#attr-logo").css({ height: height_window*0.12+ 'px' });
   }
 
   if ('<%=msg%>'!='') {
@@ -424,7 +438,7 @@ function isMobile(){
         geometry: geo_point,
         id: 0,
         elementId: 'trackingPoint',
-        name: 'Posición actual'
+        name: "<%= __('actual_position') %>"
       });
 
       iconStyle = [new ol.style.Style({
@@ -459,7 +473,7 @@ function isMobile(){
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
-        name: trackingId
+        name: "<%= __('tracking_point') %>"
       });
 
       iconStyle = [new ol.style.Style({
@@ -482,7 +496,7 @@ function isMobile(){
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
-        name: trackingId
+        name: "<%= __('init_tracking_point') %>"
       });
 
       iconStyle = [new ol.style.Style({
@@ -516,7 +530,7 @@ function isMobile(){
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
-        name: trackingId
+        name: "<%= __('end_tracking_point') %>"
       });
 
       iconStyle = [new ol.style.Style({
@@ -556,7 +570,7 @@ function isMobile(){
       // create the feature
       var featureLine = new ol.Feature({
         geometry: lineString,
-        name: 'Tracking line'
+        name: "<%= __('tracking_line') %>"
       });
       vectorLinesHistSource.addFeature(featureLine);
   }
@@ -645,6 +659,17 @@ function isMobile(){
 
     document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[deviceId] + "'/>";
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
+
+    var date = new Date(dateDict[deviceId]);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    var seconds = pad(date.getSeconds());
+
+      document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
+
     document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
     document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId];
     document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId];
@@ -735,6 +760,18 @@ function openTooltipTrackingPoint(trackingId) {
       $('#myModalTooltipTrackingPoint').modal('show');
     });
   }
+
+function openTooltipMapPoint(latitude, longitude) {
+    
+
+      document.getElementById('tooltipMapLatitude').innerHTML = latitude;
+      document.getElementById('tooltipMapLongitude').innerHTML = longitude;
+
+      //$('#tooltipTrackingHeader').css('background-color', '#66c2ff');
+
+      $('#myModalTooltipMapPoint').modal('show');
+  }
+
 </script>
 
 </head>
@@ -819,7 +856,7 @@ function openTooltipTrackingPoint(trackingId) {
         <button onclick="javascript:location.href='http://view.kyroslbs.com/globe'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br>Globo</button>
       </td>
       <td align="center">
-        <button onclick="javascript:openMonitor();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_device.png"/><br>Todos</button>
+        <button onclick="javascript:openMonitor();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br>Todos</button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
@@ -974,6 +1011,10 @@ function openTooltipTrackingPoint(trackingId) {
               <td><font color="black" id="tooltipVehicleLicense">---</font></td>
             </tr-->
             <tr>
+              <td><b><%= __('date') %></b></td>
+              <td><font color="black" id="tooltipDate">---</font></td>
+            </tr>
+            <tr>
               <td><b><%= __('alias') %></b></td>
               <td><font color="black" id="tooltipAlias">---</font></td>
             </tr>
@@ -1087,21 +1128,49 @@ function openTooltipTrackingPoint(trackingId) {
               <td><font color="black" id="tooltipTrackingHeading">---</font></td>
             </tr>
           </table>
-
             
-          </div> <!-- /.form-group -->
-
-
-    
+         </div> <!-- /.form-group -->
 
       </div> <!-- /.modal-body -->
-
 
       </div> <!-- /.modal-footer -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<!-- Ventana modal punto sobre el mapa -->
+<div style="z-index: 10000;" class="modal fade" id="myModalTooltipMapPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header" id="tooltipMapHeader">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+            <table border="0">
+            <tr>
+              <td><b><%= __('position_map') %></td>
+            </tr>
+            </table>
+
+      </div> <!-- /.modal-header -->
+      <div class="modal-body">
+          <div class="form-group">          
+            <table border="0">
+            <tr>
+              <td><b><%= __('coordinates') %></b></td>
+              <td><font color="black" id="tooltipMapLatitude">---</font>, <font color="black" id="tooltipMapLongitude">---</font></td>
+            </tr>
+          </table>
+            
+         </div> <!-- /.form-group -->
+      </div> <!-- /.modal-body -->
+      </div> <!-- /.modal-footer -->
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
   <div class="container-fluid">
    <div class="row-fluid">
     <div class="span12">
@@ -1119,6 +1188,7 @@ function openTooltipTrackingPoint(trackingId) {
    </div>
  </div>
 </div>
+
 <script>
   function getGET() {
     // capturamos la url
@@ -1281,6 +1351,44 @@ var style =
   ];
   style[1].getImage().getAnchor()[1] += 10;
 
+var style2 = 
+  [ new ol.style.Style(
+      { image: new ol.style.Shadow(
+        { radius: 6,
+        }),
+        stroke: new ol.style.Stroke(
+        { color: [0,0,0,0.3],
+          width: 1
+        }),
+        fill: new ol.style.Fill(
+          { color: [0,0,0,0.3]
+          }),
+        zIndex: -1
+      }),
+    new ol.style.Style(
+      { 
+
+
+      image: new ol.style.RegularShape(
+        { radius: 8,
+          radius2: 8,
+          points: 12,
+          fill: new ol.style.Fill({ color: '#ff8000' })
+        })
+      
+      })
+  ];
+  style2[1].getImage().getAnchor()[1] += 10;
+
+var vectorTrackingMapPointSource = new ol.source.Vector({
+   features: []
+  });
+  var vectorTrackingMapPointLayer = new ol.layer.Vector({
+   visible: true,
+    style: style2,
+   source: vectorTrackingMapPointSource
+  });
+
   var vectorTrackingHistSource = new ol.source.Vector({
    features: []
   });
@@ -1370,54 +1478,11 @@ var style =
         map.setView(new_view);
     }
 
-function loadLayerFileJson() {
- //$.getJSON( "./tracking_wrc_1.json?" + new Date().getTime(), function( data ) {
- //$.getJSON( "./json/crueda.json?" + new Date().getTime(), function( data ) {
- var fileJson = "./json/users/realTime/crueda.json?";
- if (username != null)
-  fileJson = "./json/users/realTime/" + username + ".json?";
-  
- //var fileJson = "./json/users/realTime/<%=user%>.json?";
- var fileJson = "/api/devices/user/<%=user%>";
-
- $.getJSON( fileJson, function( data ) {
-
-   var items = [];
-   $.each( data, function( key, val ) {
-     processDevice (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.vehicle_state, val.properties.iconReal, val.properties.iconCover, val.properties.iconAlarm, val.properties.pos_date, val.properties.deviceId);
-
-     if (car != null)
-      followCar(car, val.properties.license,val.geometry.coordinates[1],val.geometry.coordinates[0]);
-     else {
-      if (val.properties.deviceId == deviceId)
-        centerMap(val.geometry.coordinates[0],val.geometry.coordinates[1])
-
-     }
-
-     // Guardar los datos de odometro
-     daySpeedDict[val.properties.deviceId] = val.properties.daySpeed
-     weekSpeedDict[val.properties.deviceId] = val.properties.weekSpeed
-     monthSpeedDict[val.properties.deviceId] = val.properties.monthSpeed
-     dayDistanceDict[val.properties.deviceId] = val.properties.dayDistance
-     weekDistanceDict[val.properties.deviceId] = val.properties.weekDistance
-     monthDistanceDict[val.properties.deviceId] = val.properties.monthDistance
-     dayConsumeDict[val.properties.deviceId] = val.properties.dayConsume
-     weekConsumeDict[val.properties.deviceId] = val.properties.weekConsume
-     monthConsumeDict[val.properties.deviceId] = val.properties.monthConsume
-     /*dayHoursDict[val.properties.deviceId] = val.properties.dayHours
-     weekHoursDict[val.properties.deviceId] = val.properties.weekHours
-     monthHoursDict[val.properties.deviceId] = val.properties.monthHours
-      */
-  });               
- });
-
-
-}
 
 function loadMonitor() {
   var fileJson = "/api/monitor/<%=user%>";
   $.getJSON( fileJson, function( data ) {
-    console.log(data);
+    //console.log(data);
     //var treeData = data.split("name").join("text");
     jsonString = JSON.stringify(data)
 
@@ -1425,7 +1490,7 @@ function loadMonitor() {
     jsonString = jsonString.split("childs").join("nodes");
 
     jsonObject = JSON.parse(jsonString);
-    console.log(jsonObject);
+    //console.log(jsonObject);
 
     $('#monitorDiv').height($(window).height()-200);
 
@@ -1541,6 +1606,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
   iconDict[deviceId] = iconReal;
   vehicleLicenseDict[deviceId] = ident;
+  dateDict[deviceId] = posDate;
   aliasDict[deviceId] = alias;
   latitudeDict[deviceId] = lat;
   longitudeDict[deviceId] = lon;
@@ -1628,7 +1694,8 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
         geometry: new ol.geom.Point(ol.proj.transform([lon1, lat1], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId1,
         elementId: 'trackingPoint',
-        name: trackingId1
+        name: "<%= __('tracking_point') %>"
+
       });
       iconFeature1.setStyle(new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -1645,7 +1712,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
         geometry: new ol.geom.Point(ol.proj.transform([lon2, lat2], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId2,
         elementId: 'trackingPoint',
-        name: trackingId2
+        name: "<%= __('tracking_point') %>"
       });
       iconFeature2.setStyle(new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -1662,7 +1729,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
         geometry: new ol.geom.Point(ol.proj.transform([lon3, lat3], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId3,
         elementId: 'trackingPoint',
-        name: trackingId3
+        name: "<%= __('tracking_point') %>"
       });
       iconFeature3.setStyle(new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -1679,7 +1746,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
         geometry: new ol.geom.Point(ol.proj.transform([lon4, lat4], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId4,
         elementId: 'trackingPoint',
-        name: trackingId4
+        name: "<%= __('tracking_point') %>"
       });
       iconFeature4.setStyle(new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -1696,7 +1763,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
         geometry: new ol.geom.Point(ol.proj.transform([lon5, lat5], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId5,
         elementId: 'trackingPoint',
-        name: trackingId5        
+        name: "<%= __('tracking_point') %>"
       });
       iconFeature5.setStyle(new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -1725,7 +1792,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
   var featureLine = new ol.Feature({
     geometry: lineString,
     style: lineStyle,
-    name: 'Tracking line'
+    name: "<%= __('tracking_line') %>"
   });
   vectorLinesSource.addFeature(featureLine);
 
@@ -1952,7 +2019,7 @@ var kyrosDevicesGroup = new ol.layer.Group({
 
 var kyrosGroup = new ol.layer.Group({
     'title': 'Tracking',
-    layers: [vectorKyrosLinesHistLayer,vectorKyrosTrackingHistLayer, vectorKyrosLinesLayer, vectorKyrosTrackingLayer, vectorKyrosPoiLayer]
+    layers: [vectorKyrosLinesHistLayer,vectorKyrosTrackingHistLayer, vectorTrackingMapPointLayer, vectorKyrosLinesLayer, vectorKyrosTrackingLayer, vectorKyrosPoiLayer]
   });
 
 var map = new ol.Map({
@@ -2042,7 +2109,7 @@ map.addControl(new ol.control.MousePosition({
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
-        name: 'Posición actual'
+        name: "<%= __('tracking_point') %>"      
       });
 
  
@@ -2062,15 +2129,54 @@ map.addControl(new ol.control.MousePosition({
       ]);
   }
 
+function addFeaturePointAt(p) { 
+    var f, r = map.getView().getResolution() *10;
+ 
+        
+      var geo_point = new ol.geom.Point(ol.proj.transform([p[0], p[1]], 'EPSG:4326', 'EPSG:3857'));
+      var f = new ol.Feature({
+        geometry: geo_point,
+        id: 0,
+        elementId: 'positionPoint',
+        lon: p[0],
+        lat: p[1],
+        name: "<%= __('position_map') %>"  
+      });
+
+    vectorTrackingMapPointSource.clear();
+    vectorTrackingMapPointSource.addFeature(f);
+
+    vectorTrackingMapPointLayer.animateFeature (f, 
+      [ new ol.featureAnimation["Drop"](
+        { speed: Number(1.4), 
+          duration: Number(260),
+          side: false
+        }),
+        new ol.featureAnimation[
+        "Bounce"](
+        { speed: Number(0.8), 
+          duration: Number(760),
+          horizontal: /Slide/.test("Shake")
+        })
+      ]);
+  }
+
   // Drop a feature on click 
+  /*
   map.on('singleclick', function(evt) 
   { 
- var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-  var lon = lonlat[0];
-  var lat = lonlat[1];
-    addFeatureAt (0, lonlat);
-  });
+    var feature = map.forEachFeatureAtPixel(evt.coordinate, function(feature, layer) {
+      return feature;
+    });
+    if (feature==undefined) {
+     var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+      var lon = lonlat[0];
+      var lat = lonlat[1];
+        addFeaturePointAt (lonlat);
 
+    }
+  });
+*/
 
 
 
@@ -2112,12 +2218,12 @@ var displayFeatureInfo = function(pixel) {
            }
          };
 
-var displayTooltipInfo = function(pixel) {
+var displayTooltipInfo = function(evt) {
  info.css({
-   left: pixel[0] + 'px',
-   top: (pixel[1] - 15) + 'px'
+   left: evt.pixel[0] + 'px',
+   top: (evt.pixel[1] - 15) + 'px'
  });
- var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+ var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
    return feature;
  });
  if (feature) {
@@ -2131,6 +2237,18 @@ var displayTooltipInfo = function(pixel) {
             //} else {
              info.tooltip('hide');
             }
+    else if (feature.get('elementId')=='positionPoint') {
+            openTooltipMapPoint(feature.get('lat'), feature.get('lon'));
+          }
+
+          }
+
+          else {
+        var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+      var lon = lonlat[0];
+      var lat = lonlat[1];
+        addFeaturePointAt (lonlat);
+ 
           }
          };
 
@@ -2143,7 +2261,7 @@ var displayTooltipInfo = function(pixel) {
          });
          
          map.on('click', function(evt) {
-           displayTooltipInfo(evt.pixel);
+           displayTooltipInfo(evt);
            //if (!isMobile()) {
            //   closeTooltip();
             //}
