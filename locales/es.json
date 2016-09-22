@@ -40,7 +40,13 @@
 	"tracking_point": "Punto de tracking",
 	"init_tracking_point": "Punto de tracking inicial",						
 	"end_tracking_point": "Punto de tracking final",
-	"tracking_line": "Línea de tracking"												
+	"tracking_line": "Línea de tracking",
+	"show_over_map": "Mostrar en mapa",
+	"no_tracking": "No existen puntos de tracking",
+	"check_search": "Revise la busqueda solicitada e intentelo de nuevo",
+	"check_zoom_level": "Amplie el nivel de zoom e intentelo de nuevo",
+	"zoom_low": "Nivel de zoom demasiado bajo para mostrar los POIs"
+																								
 
 
 }

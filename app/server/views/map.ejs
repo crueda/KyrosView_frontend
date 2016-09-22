@@ -105,6 +105,8 @@
  var greenFlagOverlay = null;
  var redFlagOverlay = null;
  var actualPosOverlay = null;
+ var selectedDevices = [];
+ var selectedDevicesStr = "";
 </script>
 
 
@@ -118,68 +120,6 @@
   //  document.getElementById('attr-button-update').style.display = 'none';
   //}
 
-
-        var defaultData = [
-          {
-            text: 'Parent 1',
-            deviceId: '1',
-            type: 'aaa',
-            nodes: [
-              {
-                text: 'Child 1',
-                deviceId: '2',
-                nodes: [
-                  {
-                    text: 'Grandchild 1',
-                    deviceId: '3'
-                  },
-                  {
-                    text: 'Grandchild 2',
-                    deviceId: '4'
-                  }
-                ]
-              },
-              {
-                text: 'Child 2',
-                deviceId: '5'
-
-              }
-            ]
-          },
-          {
-            text: 'Parent 2',
-            deviceId: '6'
-          },
-          {
-            text: 'Parent 3',
-            deviceId: '7'
-          },
-          {
-            text: 'Parent 4',
-            deviceId: '8'            
-          },
-          {
-            text: 'Parent 5',
-            deviceId: '9'
-          }
-        ];
-
-/*
-        var $checkableTree = $('#treeview-checkable').treeview({
-          data: defaultData,
-          showIcon: true,
-          showCheckbox: true,
-          onNodeChecked: function(event, node) {
-            console.log(node.deviceId + ' was checked');
-            //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
-          },
-          onNodeUnchecked: function (event, node) {
-            console.log(node.deviceId + ' was unchecked');
-            //$('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
-          }
-        });
-
-*/
   var nowDate = new Date();
   var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
   var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
@@ -204,6 +144,17 @@
     $('#datetimepicker2').data("DateTimePicker").minDate(e.date);
   });
 
+  $('#showDevicesMapButton').click(function(){
+    for(var i = 0; i < selectedDevices.length; i++) {
+      if (i<selectedDevices.length-1)
+        selectedDevicesStr = selectedDevicesStr + selectedDevices[i] + ','
+      else
+        selectedDevicesStr = selectedDevicesStr + selectedDevices[i]
+    }
+    //console.log(selectedDevicesStr);
+    showSelectedDevices();
+  });
+  
 
   $('#okButtonCalendar').click(function(){
     var finit = document.getElementById('initDate').value; 
@@ -332,6 +283,80 @@ function isMobile(){
     });
   }
 
+  function showSelectedDevices() {
+    //alert("go");
+    vectorLinesSource.clear();
+    if (this.greenFlagOverlay!=null)
+      map.removeOverlay(this.greenFlagOverlay);
+    if (this.redFlagOverlay!=null)
+      map.removeOverlay(this.redFlagOverlay);
+
+    vectorTrackingHistSource.clear();
+    vectorLinesHistSource.clear();
+
+    vectorTrackingSource.clear();
+
+    var minLon=0;
+    var minLat=0;
+    var maxLon=0;
+    var maxLat=0;
+    var initPos=true;
+    var index = 0;
+    var fileJson = "/api/tracking1/devices?deviceIdList="+selectedDevicesStr;
+    document.getElementById('attr-loading').style.display = 'block';
+      $.getJSON( fileJson, function( data ) {
+        if (data.length == 0) {
+          $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
+          $('#myModalMsgLabel').css({ "color" : 'red' });
+          $('#myModalMsgLabel2').text("<%= __('check_search') %>");
+          $('#myModalMsg').modal('show');
+        }
+
+        $.each( data, function( key, val ) {
+            var lat = val.latitude;
+            var lon = val.longitude;
+            var trackingId = val._id;
+            if (initPos==true) {
+              minLon=lon;
+              minLat=lat;
+              maxLon=lon;
+              maxLat=lat;
+              initPos=false;
+            } else {
+              if (lat<minLat) 
+                minLat=lat;
+              if (lat>maxLat) 
+                maxLat=lat;
+              if (lon<minLon) 
+                minLon=lon;
+              if (lon>maxLon) 
+                maxLon=lon;              
+            }
+            
+          //pintar dispositivo
+          processDeviceTree (val.license,val.alias,val.longitude,val.latitude,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+
+          lon_anterior=lon;
+          lat_anterior=lat;          
+          index++;
+
+
+
+        });
+        document.getElementById('attr-loading').style.display = 'none';
+
+        // centrar el mapa
+        if (minLon != 0 && minLat != 0 && maxLon != 0 && maxLat != 0){
+         var bottomLeft = ol.proj.transform([minLon, minLat], 'EPSG:4326', 'EPSG:3857');
+         var topRight = ol.proj.transform([maxLon, maxLat], 'EPSG:4326', 'EPSG:3857');
+         extent = new ol.extent.boundingExtent([bottomLeft,topRight]);
+         map.getView().fit(extent, map.getSize());
+        }
+
+      });      
+  }
+
+
   function showTrackingHist(finit_epoch, fend_epoch) {
 
     //alert($('#licenseHist').val());
@@ -361,10 +386,14 @@ function isMobile(){
     var fileJson = "/api/tracking/device/"+deviceIdHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
     document.getElementById('attr-loading').style.display = 'block';
       $.getJSON( fileJson, function( data ) {
+        if (data.length == 0) {
+          $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
+          $('#myModalMsgLabel').css({ "color" : 'red' });
+          $('#myModalMsgLabel2').text("<%= __('check_search') %>");
+          $('#myModalMsg').modal('show');
+        }
+
         $.each( data, function( key, val ) {
-
-
-
             var lat = val.latitude;
             var lon = val.longitude;
             var trackingId = val._id;
@@ -580,9 +609,9 @@ function isMobile(){
 
     // comprobar nivel de zoom actual
     if (map.getView().getZoom() < 10) {
-        $('#myModalMsgLabel').text("Nivel de zoom demasiado bajo para mostrar los POIs");
+        $('#myModalMsgLabel').text("<%= __('zoom_low') %>");
         $('#myModalMsgLabel').css({ "color" : 'red' });
-        $('#myModalMsgLabel2').text("Amplie el nivel de zoom e intentelo de nuevo");
+        $('#myModalMsgLabel2').text("<%= __('check_zoom_level') %>");
         $('#myModalMsg').modal('show');
     }
     else {
@@ -903,7 +932,7 @@ function openTooltipMapPoint(latitude, longitude) {
         </div>     
 
       <div id="okButtonUpdateMonitor" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('update') %></button>
+        <button id="showDevicesMapButton" class="form-control btn btn-primary"><%= __('show_over_map') %></button>
       </div>
     </div> <!-- /.modal-body -->
 
@@ -1499,16 +1528,38 @@ function loadMonitor() {
           showIcon: true,
           showCheckbox: true,
           onNodeChecked: function(event, node) {
-            console.log(node.deviceId + ' was checked');
+            console.log(node.id + ' was checked');
+
+            if (node.type == "fleet") {
+              if (node.nodes !== undefined) {
+                for(var i in node.nodes) {
+                  var child = node.nodes[i];
+                  //$('#treeview-checkable').treeview('checkNode', node.nodes[i].id);
+                  $('#treeview-checkable').treeview('selectNode', [ child, { silent: false } ]);
+                }
+              }
+            }
+            else if (node.type == "device")
+              selectedDevices.push(node.id);
+
             //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
           },
           onNodeUnchecked: function (event, node) {
-            console.log(node.deviceId + ' was unchecked');
+            console.log(node.id + ' was unchecked');
+            if (node.type == "device") {
+              var index = selectedDevices.indexOf(node.id);
+              if (index > -1) {
+                selectedDevices.splice(index, 1);
+              }
+            }
             //$('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
           }
         });
 
    $('#treeview-checkable').treeview('collapseAll', { silent: true });
+
+//$('#treeview-checkable').treeview('selectNode', [ 655, { silent: false } ]);
+
 
    /*
    $.each( data, function( key, val ) {
@@ -1628,6 +1679,31 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
 
  }
 }
+
+function processDeviceTree(ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+   //TODO: lo quito para que siempre salgan los coches ordenados ?
+   //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
+  iconDict[deviceId] = iconReal;
+  vehicleLicenseDict[deviceId] = ident;
+  dateDict[deviceId] = posDate;
+  aliasDict[deviceId] = alias;
+  latitudeDict[deviceId] = lat;
+  longitudeDict[deviceId] = lon;
+  speedDict[deviceId] = speed;
+  headingDict[deviceId] = heading;
+
+
+    // Eliminar el icono de todas las capas
+    iFeature = vectorTrackingSource.getFeatureById(ident);
+    if (iFeature!=null) {
+     vectorTrackingSource.removeFeature(iFeature);
+   }
+
+   // añadir el icono
+   add (ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
+
+}
+
 
     function add(ident, alias, lon, lat, speed, heading, vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));

@@ -63,6 +63,28 @@ trackingModel.getTracking1FromDeviceId = function(deviceId,callback)
   });
 }
 
+trackingModel.getTracking1FromDevices = function(deviceIdList,callback)
+{
+  db.open(function(err, db) {
+    if(err) {
+        callback(err, null);
+    }
+    else {
+
+        log.info(deviceIdList);
+        deviceIdList_array = deviceIdList.split(",");
+        for (i=0; i<deviceIdList_array.length; i++)
+            deviceIdList_array[i] = parseInt(deviceIdList_array[i]);
+        log.info(deviceIdList_array);
+        var collection = db.collection('tracking1');
+        collection.find({'deviceId': {$in: deviceIdList_array}}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    }
+  });
+}
+
+
 trackingModel.getTracking5FromDeviceId = function(deviceId,callback)
 {
   db.open(function(err, db) {

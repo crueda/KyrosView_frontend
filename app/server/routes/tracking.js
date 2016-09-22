@@ -161,6 +161,79 @@ router.get('/tracking1/device/:deviceId', function(req, res)
 });
 
 /**
+ * @api {get} /api/tracking1/devices Últimas posiciones de los dispositivos que se indican por parámetro
+ * @apiName GetTracking1Devices Obtener información de último tracking de todos los dispositivos indicados
+ * @apiGroup Tracking
+ * @apiDescription Datos del último tracking para todos los dispositivos indicados
+ * @apiVersion 1.0.1
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking1/devices?deviceIdList=651,652,655
+ *
+ * @apiParam {String} deviceIsList Lista de deviceId separados por coma
+ *
+ * @apiSuccess {json} trackingData Datos de último tracking
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      [{"_id":399,
+ *        "deviceId":399,
+ *        "longitude":-4.72811,
+ *        "latitude":41.6283,
+ *        "speed":21.1,
+ *        "heading":0,
+ *        "pos_date":1346336184000,
+ *        "iconReal":"truck.png",
+ *        "iconCover":"truck_cover.png",
+ *        "iconAlarm":"truck_alarm.png",
+ *        "monitor":["flaa","crueda"],
+ *        "license":"Bici_Rohm",
+ *        "alias":"Bici rohm",
+ *        "vehicle_state":"0"
+ *        }]
+ *     }
+ */
+router.get('/tracking1/devices', function(req, res)
+{
+    if (req.session.user == null){
+      res.redirect('/');
+    } 
+    else {
+      var deviceIdList = req.query.deviceIdList;
+      log.info("GET: /tracking1/devices?deviceIdList="+deviceIdList);
+      if (deviceIdList==null) {
+        res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+      } 
+      else {
+        TrackingModel.getTracking1FromDevices(deviceIdList,function(error, data)
+        {
+          if (data == null)
+          {
+            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+          }
+          else
+          {
+            //si existe enviamos el json
+            if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json(data)
+            }
+            else if (typeof data == 'undefined' || data.length == 0)
+            {
+              res.status(200).json([])
+            }
+            //en otro caso mostramos un error
+            else
+            {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+          }
+        });    
+      }
+    }
+});
+
+
+/**
  * @api {get} /api/tracking5/device/:deviceId Últimas 5 posiciones de un dispositivo
  * @apiName GetTracking5DeviceId Obtener información los últimos 5 tracking de un dispositivo
  * @apiGroup Tracking

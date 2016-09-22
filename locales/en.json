@@ -41,6 +41,11 @@
 	"tracking_point": "Tracking point",						
 	"init_tracking_point": "Init tracking point",						
 	"end_tracking_point": "End tracking point",
-	"tracking_line": "Tracking line"						
-}
+	"tracking_line": "Tracking line",						
+	"show_over_map": "Show over map",
+	"no_tracking": "There are not tracking points",
+	"check_search": "Check the requested search and try again",
+	"check_zoom_level": "Increases the zoom level and try again",
+	"zoom_low": "Zoom level too low to display POIs"
 
+}
