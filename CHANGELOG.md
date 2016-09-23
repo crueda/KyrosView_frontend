@@ -1,11 +1,6 @@
 # KyrosView - Registro de cambios
 Todos los cambios importantes realizados en este proyecto será documentado en este fichero
 
-
-Acceso al proyecto en produccion: [KyrosView](http://view.kyroslbs.com/) 
-
-Acceso al proyecto en pre-produccion: [KyrosView-pre](http://viewpre.kyroslbs.com/) 
-
 ## [1.0.1] - 2016-09-21
 ### Funcionalidades añadidas
 - Todas las opciones en menú principal con acceso único.
