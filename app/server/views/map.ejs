@@ -102,7 +102,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); loadLayer(); setInterval(reloadLayer,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadLayer(); loadMonitor();}//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadLayer(); loadMonitor(); /*selectMonitor();*/}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -678,6 +678,25 @@ function isMobile(){
     $('#myModalMenuKyros').modal('show');
   }
 
+  function openDefaultDevice() {
+    $('#myModalMenuKyros').modal('hide');
+      
+      // centrar el mapa
+      var new_view = new ol.View({
+          center: ol.proj.transform([longitudeDict[deviceId], latitudeDict[deviceId]], 'EPSG:4326', 'EPSG:3857'),
+          zoom: 14
+        });
+
+        var pan = ol.animation.pan({
+          duration: 700,
+          source:  (map.getView().getCenter()),
+        });
+        map.beforeRender(pan);
+        map.setView(new_view);
+
+    openTooltip(deviceId);
+  }
+
   function openTooltip(deviceId) {
     document.getElementById('formDeviceId').value = deviceId;
     document.getElementById('formIcon').value = iconDict[deviceId];
@@ -878,7 +897,7 @@ function openTooltipMapPoint(latitude, longitude) {
         <button onclick="javascript:location.href='http://view.kyroslbs.com/gmap'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_gmap.png"/><br>Mapa G.</button>
       </td>
       <td align="center">
-        <button onclick="javascript:openTooltip(deviceId);" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_device.png"/><br>Dispos.</button>
+        <button onclick="javascript:openDefaultDevice();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_device.png"/><br>Dispos.</button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
@@ -1574,6 +1593,23 @@ function loadMonitor() {
     });
     */
  });
+
+/*
+  var fileJson2 = "/api/selectdevices/<%=user%>";
+  $.getJSON( fileJson, function( data ) {
+ $.each( data, function( key, val ) {
+  });
+*/
+
+
+
+
+}
+
+function selectMonitor() {
+  //alert("aa");
+  //$('#treeview-checkable').treeview('checkNode', 655);
+  $('#treeview-checkable').treeview('checkNode', [ 655, { silent: true } ]);
 }
 
 function loadLayer() {

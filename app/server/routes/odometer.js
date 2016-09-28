@@ -59,10 +59,10 @@ router.get('/odometer/:deviceId', function(req, res)
       res.redirect('/');
     } 
     else {
-      var id = req.params.id;
-      log.info("GET: /odometer/"+id);
+      var deviceId = req.params.deviceId;
+      log.info("GET: /odometer/"+deviceId);
 
-      OdometerModel.getOdometerData(id,function(error, data)
+      OdometerModel.getOdometerData(deviceId,function(error, data)
       {
         if (data == null)
         {

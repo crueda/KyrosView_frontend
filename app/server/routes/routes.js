@@ -86,6 +86,21 @@ module.exports = function(app) {
 		}
 	});
 
+	app.get('/mapmobile', function(req, res) {
+		if (req.session.user == null){
+	// if user is not logged-in redirect back to login page //
+			res.redirect('/mobile');
+		}	else{
+            //res.sendFile(__dirname+'/web/map.html');
+            res.render('map.ejs', {
+            	msg : '',
+                user : req.session.user.username,
+                deviceId : req.session.user.deviceId
+			});
+            
+		}
+	});
+
     app.get('/gmap', function(req, res) {
 		if (req.session.user == null){
 			// if user is not logged-in redirect back to login page //

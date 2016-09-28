@@ -26,7 +26,7 @@ var log = require('tracer').console({
 
 /**
  * @api {get} /api/monitor  Árbol de monitorización de un usuario
- * @apiName GetPoiBox Obtener el árbol de monitorización de un usuario
+ * @apiName GetMonitor Obtener el árbol de monitorización de un usuario
  * @apiGroup Monitor
  * @apiDescription Obtiene el árbol de monitorización de un usuario
  * @apiVersion 1.0.1
