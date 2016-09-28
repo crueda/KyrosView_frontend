@@ -38,7 +38,9 @@ activityModel.getActivity = function(requestData,callback)
     }
     else {
         var collection = db.collection('tracking');
-        collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
+        console.log(requestData.endDate);
+        log.info(requestData.endDate);
+        collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"datasets": 

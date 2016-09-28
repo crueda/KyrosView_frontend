@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var jsonfy = require('jsonfy');
+var moment = require('moment');
 
 var status = require("../utils/statusCodes.js");
 var messages = require("../utils/statusMessages.js");
@@ -72,8 +73,13 @@ router.get('/activity/:deviceId', function(req, res)
     else {
       var deviceId = req.params.deviceId;
       var initDate = req.query.initDate;
+      var endDate = req.query.endDate;
 
       log.info("GET: /activity/"+deviceId);
+
+      if (endDate==null) {
+        endDate = (new Date).getTime()
+      }
 
       if (initDate==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
@@ -81,7 +87,8 @@ router.get('/activity/:deviceId', function(req, res)
       else {
         var requestData = {
           deviceId : deviceId,
-          initDate : initDate
+          initDate : initDate,
+          endDate : endDate
         };
         ActivityModel.getActivity(requestData, function(error, data)
         {

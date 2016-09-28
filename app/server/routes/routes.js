@@ -56,6 +56,10 @@ module.exports = function(app) {
 		});
 	});
 	
+	app.get('/mobile', function(req, res){
+		res.render('login-mobile.ejs', { msg: '', 	msg_color: 'black'});
+	});
+
 // logged-in user homepage //
 	
 	 app.get('/globe', function(req, res) {
@@ -86,7 +90,7 @@ module.exports = function(app) {
 		}
 	});
 
-	app.get('/mapmobile', function(req, res) {
+	app.get('/map-mobile', function(req, res) {
 		if (req.session.user == null){
 	// if user is not logged-in redirect back to login page //
 			res.redirect('/mobile');
@@ -114,22 +118,6 @@ module.exports = function(app) {
 		}
 	});
 
-    /*
-    app.post('/map', function(req, res) {
-		if (req.session.user == null){
-	// if user is not logged-in redirect back to login page //
-			res.redirect('/');
-		}	else{
-            //res.sendFile(__dirname+'/web/map.html');
-            //res.render('map');
-            res.render('map.ejs', {
-            	msg : '',
-                user : req.session.user.username,
-                deviceId : req.session.user.deviceId
-			});
-		}
-	});*/
-
     app.get('/graphs', function(req, res) {
 		if (req.session.user == null){
 		// if user is not logged-in redirect back to login page //
@@ -143,53 +131,21 @@ module.exports = function(app) {
 		}
 	});
 
-    /*
-	app.post('/graphs', function(req, res) {
+    app.post('/graphs-hist', function(req, res) {
 		if (req.session.user == null){
 		// if user is not logged-in redirect back to login page //
 			res.redirect('/');
 		}	else{
-            res.render('map.ejs', {
-            	msg : '',
+            res.render('graphs-hist.ejs', {
                 user : req.session.user.username,
-                deviceId : req.session.user.deviceId
-			});
-		}
-	});
-	*/
-	/*
-    app.get('/device', function(req, res) {
-		if (req.session.user == null || req.session.user.deviceId == null){
-		// if user is not logged-in redirect back to login page //
-			res.redirect('/');
-		}	else{
-            res.render('device.ejs', {
-                user : req.session.user.username,
-                deviceId : req.session.user.deviceId,
-                icon : req.session.user.icon,
-                alias : req.session.user.alias,
-                vehicleLicense : req.session.user.vehicleLicense,
-                latitude : req.session.user.latitude,
-                longitude : req.session.user.longitude,
-                speed : req.session.user.speed
+                deviceId : req.body['deviceId'],
+                initDate : req.body['initDate'],
+                endDate : req.body['endDate']
 			});
             
 		}
-	});*/
-
-	/*app.get('/device', function(req, res) {
-		if (req.session.user == null){
-		// if user is not logged-in redirect back to login page //
-			res.redirect('/');
-		}	else{
-            res.render('device.ejs', {
-                user : req.session.user.username,
-                deviceId : req.body['deviceId']
-			});
-		}
 	});
-	*/
-    
+
 	app.post('/map', function(req, res){
 		if (req.session.user == null){
 			res.redirect('/');
@@ -202,12 +158,6 @@ module.exports = function(app) {
 					res.status(400).send('error-updating-device');
 				}	else{
 					req.session.user.deviceId = req.body['deviceId']; 
-					/*req.session.user.icon = req.body['icon']; 
-					req.session.user.alias = req.body['alias']; 
-					req.session.user.vehicleLicense = req.body['vehicleLicense']; 
-					req.session.user.latitude = req.body['latitude']; 
-					req.session.user.longitude = req.body['longitude']; 
-					req.session.user.speed = req.body['speed']; */
 					res.render('map.ejs', {
 						msg: res.__('device_selected'),
                 		user : req.session.user.username,
@@ -221,7 +171,7 @@ module.exports = function(app) {
 	app.get('/home', function(req, res) {
 		//console.log ("-->" + req.session.user.username);
 		if (req.session.user == null){
-	// if user is not logged-in redirect back to login page //
+			// if user is not logged-in redirect back to login page //
 			//res.redirect('/');
 			res.render('login.ejs', { msg: '', msg_color: 'black'});
 		}	else{
