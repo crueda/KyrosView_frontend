@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Kyros View</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+  <style>
+  html,body{
+   height:100%;
+	}
+
+	body {
+	    background-image:    url(./img/background_map.png);
+	    background-size:     cover;                      
+	    background-repeat:   no-repeat;
+	    background-position: center center;              
+	}
+
+
+form-signin
+{
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading, .form-signin .checkbox
+{
+    margin-bottom: 10px;
+}
+.form-signin .checkbox
+{
+    font-weight: normal;
+}
+.form-signin .form-control
+{
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.form-signin .form-control:focus
+{
+    z-index: 2;
+}
+.form-signin input[type="text"]
+{
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.form-signin input[type="password"]
+{
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.account-wall
+{
+    margin-top: 20px;
+    padding: 40px 0px 20px 0px;
+    background-color: #f7f7f7;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+.login-title
+{
+    color: #555;
+    font-size: 18px;
+    font-weight: 400;
+    display: block;
+}
+.profile-img
+{
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+.need-help
+{
+    margin-top: 10px;
+}
+.new-account
+{
+    display: block;
+    margin-top: 10px;
+}
+
+	</style>
+
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+
+    
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+    <script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  
+
+</head>
+<body>
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-md-offset-4">
+            <h1 class="text-center login-title"></h1>
+            <div class="account-wall">
+                <img class="profile-img" src="./img/kyros.png"
+                    alt="">
+                <form class="form-signin" action="/" method="POST">
+                <input type="text" name="user" class="form-control" placeholder="usuario" required autofocus>
+                <input type="password" name="pass" class="form-control" placeholder="contraseña" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">
+                    Entrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+$( document ).ready(function() {
+    // DOM ready
+
+    // Test data
+    /*
+     * To test the script you should discomment the function
+     * testLocalStorageData and refresh the page. The function
+     * will load some test data and the loadProfile
+     * will do the changes in the UI
+     */
+    // testLocalStorageData();
+    // Load profile if it exits
+    loadProfile();
+});
+
+/**
+ * Function that gets the data of the profile in case
+ * thar it has already saved in localstorage. Only the
+ * UI will be update in case that all data is available
+ *
+ * A not existing key in localstorage return null
+ *
+ */
+function getLocalProfile(callback){
+    var profileImgSrc      = localStorage.getItem("PROFILE_IMG_SRC");
+    var profileName        = localStorage.getItem("PROFILE_NAME");
+    var profileReAuthEmail = localStorage.getItem("PROFILE_REAUTH_EMAIL");
+
+    if(profileName !== null
+            && profileReAuthEmail !== null
+            && profileImgSrc !== null) {
+        callback(profileImgSrc, profileName, profileReAuthEmail);
+    }
+}
+
+/**
+ * Main function that load the profile if exists
+ * in localstorage
+ */
+function loadProfile() {
+    if(!supportsHTML5Storage()) { return false; }
+    // we have to provide to the callback the basic
+    // information to set the profile
+    getLocalProfile(function(profileImgSrc, profileName, profileReAuthEmail) {
+        //changes in the UI
+        $("#profile-img").attr("src",profileImgSrc);
+        $("#profile-name").html(profileName);
+        $("#reauth-email").html(profileReAuthEmail);
+        $("#inputEmail").hide();
+        $("#remember").hide();
+    });
+}
+
+/**
+ * function that checks if the browser supports HTML5
+ * local storage
+ *
+ * @returns {boolean}
+ */
+function supportsHTML5Storage() {
+    try {
+        return 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Test data. This data will be safe by the web app
+ * in the first successful login of a auth user.
+ * To Test the scripts, delete the localstorage data
+ * and comment this call.
+ *
+ * @returns {boolean}
+ */
+function testLocalStorageData() {
+    if(!supportsHTML5Storage()) { return false; }
+    localStorage.setItem("PROFILE_IMG_SRC", "//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" );
+    localStorage.setItem("PROFILE_NAME", "César Izquierdo Tello");
+    localStorage.setItem("PROFILE_REAUTH_EMAIL", "oneaccount@gmail.com");
+}
+      
+</script>
+</body>
+</html>
