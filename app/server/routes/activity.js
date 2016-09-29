@@ -32,10 +32,11 @@ var log = require('tracer').console({
  * @apiGroup Activity
  * @apiDescription Últimos datos de actividad de un determinado dispositivo
  * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/activity/655?initDate=1473915536000
+ * @apiSampleRequest http://view.kyroslbs.com/api/activity/655?initDate=1473915536000&endDate=1473915736000
  *
  * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
  * @apiParam {Number} initDate Fecha inicial de consulta (epoch)
+ * @apiParam {Number} [endDate] Fecha final de consulta (epoch)
  *
  * @apiSuccess {json} activityData Datos de actividad
  *

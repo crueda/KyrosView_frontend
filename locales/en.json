@@ -46,6 +46,8 @@
 	"no_tracking": "There are not tracking points",
 	"check_search": "Check the requested search and try again",
 	"check_zoom_level": "Increases the zoom level and try again",
-	"zoom_low": "Zoom level too low to display POIs"
+	"zoom_low": "Zoom level too low to display POIs",
+	"positions": "Positions",
+	"num_positions": "Number of Positions"
 
 }

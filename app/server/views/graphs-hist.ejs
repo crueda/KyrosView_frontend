@@ -230,15 +230,10 @@
         });
     });
 
+    //alert("/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10");
+
     // Grafica 2. Numero de posiciones
-    $.getJSON('/api/activity/<%=deviceId%>?initDate='+getInitDateLastDays(7), function (activity) {
-        $.each(activity.datasets, function (i, dataset) {
-
-            // Add X values
-            dataset.data = Highcharts.map(dataset.data, function (val, j) {
-                return [activity.xData[j], val];
-            });
-
+    $.getJSON('/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=30', function (numpositions) {
             $('<div class="chart">')
                 .appendTo('#container2')
                 .highcharts({
@@ -256,7 +251,7 @@
                         }
                     },
                     title: {
-                        text: 'Número de posiciones',
+                        text: '<%= __('num_positions') %>',
                         align: 'left',
                         margin: 0,
                         x: 30
@@ -276,7 +271,30 @@
                         enabled: false
                     },
                     xAxis: {
-                        categories: Highcharts.getOptions().lang.shortMonths
+                        //categories: Highcharts.getOptions().lang.shortMonths
+                        categories: numpositions.dataset.xData
+
+                        /*categories: function () {
+                            return (numpositions.dataset.xData - numpositions.dataset.xData[0])/1000;
+                        }*/
+
+                        //categories: Highcharts.dateFormat('%H:%M', new Date(numpositions.dataset.xData))
+
+                        //dataset.xdata
+                        /*crosshair: true,
+                        events: {
+                            setExtremes: syncExtremes
+                        },
+                        labels: {
+                            formatter: function () {
+                                var d = new Date()
+                                var n = d.getTimezoneOffset();
+                                var date1 = dataset.xdata;
+                                var date2 = parseInt(date1)-((n/60)*7200000);
+                                return Highcharts.dateFormat('%H:%M', new Date(date2));
+                            }
+                        }
+                        */
                     },
                     yAxis: {
                         title: {
@@ -285,22 +303,14 @@
                     },
                     
                     series: [{
-                        name: 'Posiciones',
-                        data: [2, 3, null, 4, 0, 5, 1, 4, 6, 3]
+                        name: '<%= __('positions') %>',
+                        data: numpositions.dataset.data
                     }]
                 });
-        });
     });
 
     // Grafica 3: Numero de posiciones por heading
-    $.getJSON('/api/activity/<%=deviceId%>?initDate='+getInitDateLastDays(15), function (activity) {
-        $.each(activity.datasets, function (i, dataset) {
-
-            // Add X values
-            dataset.data = Highcharts.map(dataset.data, function (val, j) {
-                return [activity.xData[j], val];
-            });
-
+    $.getJSON('/api/numpositionsGroupByHeading/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>', function (numpositions) {
             $('<div class="chart">')
                 .appendTo('#container3')
                 .highcharts({
@@ -354,13 +364,13 @@
                     series: [{
                         type: 'column',
                         name: 'Posiciones',
-                        data: [8, 7, 6, 5, 4, 3, 2, 1],
+                        //data: [8, 7, 6, 5, 4, 3, 2, 1],
+                        //data: [154, 0, 0, 0, 0, 0, 0, 0],
+                        data: numpositions.dataset.data,
                         pointPlacement: 'between'
                     }]
                 });
         });
-    });    
-
 
 });
     </script>
