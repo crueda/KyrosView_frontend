@@ -790,6 +790,12 @@ var fileJson = "/api/odometer/"+deviceId;
         $('#selectButtonText').text("<%= __('select_button') %>");
 
     }
+
+    var urlPostImageDevice = "/api/image/device/"+deviceId;
+    $.getJSON( urlPostImageDevice, function( data ) {
+    // Cargar la imagen del dispositivo
+    document.getElementById('imageDevice').setAttribute( 'src', 'data:image/png;base64,'+data);
+    });
   }
 
 function pad(value) {
@@ -1152,6 +1158,7 @@ function openTooltipMapPoint(latitude, longitude) {
         </div>
 </div>
     
+    <img id="imageDevice" src=""/>
 
       </div> <!-- /.modal-body -->
 
