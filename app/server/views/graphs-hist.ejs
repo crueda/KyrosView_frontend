@@ -230,10 +230,10 @@
         });
     });
 
-    alert("/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10");
+    //alert("/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10");
 
     // Grafica 2. Numero de posiciones
-    $.getJSON('/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=30', function (numpositions) {
+    $.getJSON('/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10', function (numpositions) {
             $('<div class="chart">')
                 .appendTo('#container2')
                 .highcharts({

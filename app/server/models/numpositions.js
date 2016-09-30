@@ -38,8 +38,6 @@ numpositionsModel.getNumpositions = function(requestData,callback)
     }
     else {
         var collection = db.collection('tracking');
-        console.log(requestData.endDate);
-        log.info(requestData.endDate);
         collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
@@ -50,36 +48,33 @@ numpositionsModel.getNumpositions = function(requestData,callback)
                 }
                 
             }
-            var numelements = 0;
+            var nTrackings = 0;
             for (item in jsondocs) { 
-                numelements +=1 ;
+                nTrackings +=1 ;
             }
             //console.log(jsondocs.lenght);
-            var numpositions = 1;
+            var nPositions = 0;            
             var indexElement = 0;
             if (jsondocs[0] != null) {
                 realInitDate = parseInt(jsondocs[0].pos_date);
-                realEndDate = parseInt(jsondocs[numelements-1].pos_date);
+                realEndDate = parseInt(jsondocs[nTrackings-1].pos_date);
                 step = (realEndDate - realInitDate) / requestData.slots
+                log.info("realinit:"+realInitDate);
+                log.info("realend:"+realEndDate);
+                log.info("step:"+step);
+                initDateSlot = parseInt(jsondocs[0].pos_date);
                 for (item in jsondocs) {                    
-                    if (indexElement==0) {
-                        initDate = parseInt(jsondocs[0].pos_date);
-                        endDateStep = initDate + step;
-                        numpositions = 1;
-                    } else {
-                        newDate = parseInt(jsondocs[item].pos_date);
-                        if (newDate > endDateStep) {
-                            json_graphs.dataset.xData.push(initDate);
-                            json_graphs.dataset.data.push(numpositions);
-                            numpositions = 1;                    
-                            initDate = newDate;
-                            endDateStep = initDate + step;
-                        }
-                        else {
-                            numpositions += 1;
-                        }
+                    newDate = parseInt(jsondocs[item].pos_date);
+                    if (newDate > initDateSlot + step) {
+                        log.info("---STEP---"+newDate);
+                        json_graphs.dataset.xData.push(initDateSlot);
+                        json_graphs.dataset.data.push(nPositions);
+                        nPositions = 0;                    
+                        initDateSlot = newDate;
                     }
-                    indexElement += 1;
+                    else {
+                        nPositions += 1;
+                    }
                 }
             }
             //console.log(json_graphs);
@@ -97,8 +92,6 @@ numpositionsModel.getNumpositionsGroupByHeading = function(requestData,callback)
     }
     else {
         var collection = db.collection('tracking');
-        console.log(requestData.endDate);
-        log.info(requestData.endDate);
         collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
