@@ -16,6 +16,8 @@ var api_odometer = require('./app/server/routes/odometer');
 var api_activity = require('./app/server/routes/activity');
 var api_poi = require('./app/server/routes/poi');
 var api_monitor = require('./app/server/routes/monitor');
+var api_numpositions = require('./app/server/routes/numpositions');
+var api_image = require('./app/server/routes/image');
 
 var i18n = require("i18n");
 
@@ -129,6 +131,8 @@ app.use('/api', api_odometer);
 app.use('/api', api_activity);
 app.use('/api', api_poi);
 app.use('/api', api_monitor);
+app.use('/api', api_numpositions);
+app.use('/api', api_image);
 require('./app/server/routes/routes')(app);
 
 

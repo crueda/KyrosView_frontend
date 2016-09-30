@@ -78,7 +78,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  max-width: 400px;
+  max-width: 600px;
   height: auto;
 }
 
@@ -735,6 +735,9 @@ function isMobile(){
     document.getElementById('formSpeed').value = speedDict[deviceId];
     
 
+    //document.getElementById('deviceIdImage').value = deviceId;
+     $("#uploadForm").attr("action", "/api/image/upload/" + deviceId);
+    
     document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[deviceId] + "'/>";
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
 
@@ -803,7 +806,8 @@ var fileJson = "/api/odometer/"+deviceId;
     // Cargar la imagen del dispositivo
     var urlPostImageDevice = "/api/image/device/"+deviceId;
     $.getJSON( urlPostImageDevice, function( data ) {
-      document.getElementById('imageDevice').setAttribute( 'src', 'data:image/png;base64,'+data);
+      if (data!='')
+        document.getElementById('imageDevice').setAttribute( 'src', 'data:image/png;base64,'+data);
     });
   }
 
@@ -1169,6 +1173,17 @@ function openTooltipMapPoint(latitude, longitude) {
 </div>
 
     <img id="imageDevice" src=""/>
+
+<form id        =  "uploadForm"
+     enctype   =  "multipart/form-data"
+     action    =  "/api/image/upload"
+     method    =  "POST"
+>
+<input type="file" name="userPhoto" />
+<input type="submit" value="Upload Image" name="submit">
+<!--input type="hidden" value="" id="deviceIdImage" name="deviceId"-->
+</form>
+
 
 
       </div> <!-- /.modal-body -->
