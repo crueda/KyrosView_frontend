@@ -808,6 +808,9 @@ var fileJson = "/api/odometer/"+deviceId;
     $.getJSON( urlPostImageDevice, function( data ) {
       if (data!='')
         document.getElementById('imageDevice').setAttribute( 'src', 'data:image/png;base64,'+data);
+      else
+        document.getElementById('imageDevice').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
+
     });
   }
 
@@ -1598,7 +1601,7 @@ var tree = [
     text: "Parent 1",
     tags: [3],
     state: {
-    checked: false,
+    checked: "true",
     disabled: false,
     expanded: true,
     selected: true
@@ -1629,7 +1632,7 @@ var tree = [
     selectedIcon: "glyphicon glyphicon-stop",
     selectable: true,
     state: {
-    checked: false,
+    checked: "false",
     disabled: false,
     expanded: true,
     selected: false
@@ -1641,6 +1644,7 @@ var tree = [
           {
             text: "Grandchild 1",
             tags: ['available'],
+                checked: true
           },
           {
             text: "Grandchild 2"
@@ -1663,6 +1667,8 @@ var tree = [
     jsonString = jsonString.split("name").join("text");
     jsonString = jsonString.split("childs").join("nodes");
     jsonString = jsonString.split("ndevices").join("tags");
+    jsonString = jsonString.split('"false"').join('false');
+    jsonString = jsonString.split('"true"').join('true');
 
     jsonObject = JSON.parse(jsonString);
     //console.log(jsonObject);

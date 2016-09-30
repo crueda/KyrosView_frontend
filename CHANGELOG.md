@@ -1,6 +1,15 @@
 # KyrosView - Registro de cambios
 Todos los cambios importantes realizados en este proyecto será documentado en este fichero
 
+## [1.0.2] - 2016-09-30
+### Funcionalidades añadidas
+- Gráficas sobre los datos de historico:
+	- Cuando se realiza una consulta de historico, aparece un boton de graficas abajo a la derecha.
+	- Se ha experimentado con 2 gráficas más: distribución de los puntos de tracking y distribución de heading.
+- Ficheros en mongodb
+	- En el tooltip del dispositivo se muestra su imagen asociada.
+	- Se permite subir una nueva imagen para el dispositivo.
+
 ## [1.0.1] - 2016-09-21
 ### Funcionalidades añadidas
 - Todas las opciones en menú principal con acceso único.
@@ -31,4 +40,5 @@ Todos los cambios importantes realizados en este proyecto será documentado en e
 - Configuración de la cuenta del usuario.
 - Heatmaps y clustering de posiciones.
 
+[1.0.2]: http://viewpre.kyroslbs.com/
 [1.0.1]: http://view.kyroslbs.com/
