@@ -28,7 +28,7 @@
 	"consult": "Consultar",
 	"init_date": "Fecha inicial",
 	"end_date": "Fecha final",
-	"date": "Fecha GMT",	
+	"date": "Fecha GMT",
 	"id": "Identificador",
 	"license": "Matrícula",
 	"main_menu": "Menú principal",
@@ -38,7 +38,7 @@
 	"position_map": "Posición sobre el mapa",
 	"actual_position": "Posición actual",
 	"tracking_point": "Punto de tracking",
-	"init_tracking_point": "Punto de tracking inicial",						
+	"init_tracking_point": "Punto de tracking inicial",
 	"end_tracking_point": "Punto de tracking final",
 	"tracking_line": "Línea de tracking",
 	"show_over_map": "Mostrar en mapa",
@@ -47,7 +47,20 @@
 	"check_zoom_level": "Amplie el nivel de zoom e intentelo de nuevo",
 	"zoom_low": "Nivel de zoom demasiado bajo para mostrar los POIs",
 	"positions": "Posiciones",
-	"num_positions": "Número de posiciones"																						
-
-
+	"num_positions": "Número de posiciones",
+	"heatmap": "Mapas de calor",
+	"clusters": "Agrupaciones",
+	"heatmap3": "Mapa de calor de los últimos 15 días",
+	"heatmap2": "Mapa de calor de los últimos 7 días",
+	"heatmap1": "Mapa de calor del último día",
+	"clusters3": "Agrupaciones de los últimos 15 días",
+	"clusters2": "Agrupaciones de los últimos 7 días",
+	"clusters1": "Agrupaciones del último día",
+	"layers": "Capas",
+	"base_maps": "Mapas base",
+	"kyros_devices": "Dispositivos de Kyros",
+	"tracking": "Posiciones",
+	"clusters3": "clusters3",
+	"clusters2": "clusters2",
+	"clusters1": "clusters1"
 }

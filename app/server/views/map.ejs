@@ -2110,65 +2110,61 @@ function processDeviceTree(ident,alias,lon,lat,speed,heading,vehicleState, iconR
   }));
  }
 
- var fileJsonMonth = "./json/users/lastMonth/crueda.json?";
- var fileJsonWeek = "./json/users/lastWeek/crueda.json?";
- var fileJsonDay = "./json/users/lastDay/crueda.json?";
- if (username != null) {
-  fileJsonMonth = "./json/users/lastMonth/" + username + ".json?";
-  fileJsonWeek = "./json/users/lastWeek/" + username + ".json?";
-  fileJsonDay = "./json/users/lastDay/" + username + ".json?";
-}
-
-var sourceHeatmapMonth = new ol.source.Vector({
-  url: fileJsonMonth,
+ function getInitDateLastDays(days) {
+        var milliseconds = (new Date).getTime();
+        return (milliseconds - days * 86400000);
+  }
+ 
+var sourceHeatmap3 = new ol.source.Vector({
+  url: '/api/heatmap?initDate='+getInitDateLastDays(15),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
-var sourceHeatmapWeek = new ol.source.Vector({
-  url: fileJsonWeek,
+var sourceHeatmap2 = new ol.source.Vector({
+  url: '/api/heatmap?initDate='+getInitDateLastDays(7),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
-var sourceHeatmapDay = new ol.source.Vector({
-  url: fileJsonDay,
+var sourceHeatmap1 = new ol.source.Vector({
+  url: '/api/heatmap?initDate='+getInitDateLastDays(1),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
 
-var heatmapMonth = new ol.layer.Heatmap({
-    title: 'Heatmap last month',
+var heatmap3 = new ol.layer.Heatmap({
+    title: '<%= __('heatmap3') %>',
     visible: false,
-    source: sourceHeatmapMonth,
+    source: sourceHeatmap3,
     opacity: .9
  });
-var heatmapWeek = new ol.layer.Heatmap({
-    title: 'Heatmap last week',
+var heatmap2 = new ol.layer.Heatmap({
+    title: '<%= __('heatmap2') %>',
     visible: false,
-    source: sourceHeatmapWeek,
+    source: sourceHeatmap2,
     opacity: .9
  });
-var heatmapDay = new ol.layer.Heatmap({
-    title: 'Heatmap last day',
+var heatmap1 = new ol.layer.Heatmap({
+    title: '<%= __('heatmap1') %>',
     visible: false,
-    source: sourceHeatmapDay,
+    source: sourceHeatmap1,
     opacity: .9
  });
 
 
-var sourceClusterMonth = new ol.source.Vector({
-  url: './json/users/lastMonth/crueda.json',
+var sourceCluster3 = new ol.source.Vector({
+  url: '/api/heatmap?initDate='+getInitDateLastDays(15),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
-var clusterSourceMonth = new ol.source.Cluster({
+var clusterSource3 = new ol.source.Cluster({
   distance: 40,
-  source: sourceClusterMonth
+  source: sourceCluster3
 });
 var styleCache = {};
-var clustersMonth = new ol.layer.Vector({
-  title: 'Cluster last month',
+var clusters3 = new ol.layer.Vector({
+  title: '<%= __('clusters3') %>',
   visible: false,
-  source: clusterSourceMonth,
+  source: clusterSource3,
   style: function(feature, resolution) {
     var size = feature.get('features').length;
     var style = styleCache[size];
@@ -2197,20 +2193,20 @@ var clustersMonth = new ol.layer.Vector({
   }
 });
 
-var sourceClusterWeek = new ol.source.Vector({
-  url: './json/users/lastWeek/crueda.json',
+var sourceCluster2 = new ol.source.Vector({
+  url: '/api/heatmap?initDate='+getInitDateLastDays(7),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
-var clusterSourceWeek = new ol.source.Cluster({
+var clusterSource2 = new ol.source.Cluster({
   distance: 40,
-  source: sourceClusterWeek
+  source: sourceCluster2
 });
 var styleCache = {};
-var clustersWeek = new ol.layer.Vector({
-  title: 'Cluster last week',
+var clusters2 = new ol.layer.Vector({
+  title: '<%= __('clusters2') %>',
   visible: false,
-  source: clusterSourceWeek,
+  source: clusterSource2,
   style: function(feature, resolution) {
     var size = feature.get('features').length;
     var style = styleCache[size];
@@ -2239,20 +2235,20 @@ var clustersWeek = new ol.layer.Vector({
   }
 });
 
-var sourceClusterDay = new ol.source.Vector({
-  url: './json/users/lastDay/crueda.json',
+var sourceCluster1 = new ol.source.Vector({
+  url: '/api/heatmap?initDate='+getInitDateLastDays(1),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
-var clusterSourceDay = new ol.source.Cluster({
+var clusterSource1 = new ol.source.Cluster({
   distance: 40,
-  source: sourceClusterDay
+  source: sourceCluster1
 });
 var styleCache = {};
-var clustersDay = new ol.layer.Vector({
-  title: 'Cluster last day',
+var clusters1 = new ol.layer.Vector({
+  title: '<%= __('clusters1') %>',
   visible: false,
-  source: clusterSourceDay,
+  source: clusterSource1,
   style: function(feature, resolution) {
     var size = feature.get('features').length;
     var style = styleCache[size];
@@ -2300,9 +2296,6 @@ var roads = new ol.layer.Tile({
 });
 
 
-
-
-
 var osm = new ol.layer.Tile({
  title: 'OpenStreetMap',
  type: 'base',
@@ -2311,20 +2304,20 @@ var osm = new ol.layer.Tile({
 });
  
 var kyrosDevicesGroup = new ol.layer.Group({
-    'title': 'Kyros devices',
+    'title': '<%= __('kyros_devices') %>',
     //layers: [vectorLayer]
     layers: []
   });
 
 var kyrosGroup = new ol.layer.Group({
-    'title': 'Tracking',
+    'title': '<%= __('tracking') %>',
     layers: [vectorKyrosLinesHistLayer,vectorKyrosTrackingHistLayer, vectorTrackingMapPointLayer, vectorKyrosLinesLayer, vectorKyrosTrackingLayer, vectorKyrosPoiLayer]
   });
 
 var map = new ol.Map({
   layers: [
   new ol.layer.Group({
-   'title': 'Base maps',
+   'title': '<%= __('base_maps') %>',
    layers: [toner, roads, osm]
  }),
 
@@ -2332,12 +2325,12 @@ kyrosDevicesGroup,
 kyrosGroup,
 
   new ol.layer.Group({
-   'title': 'Heatmaps',
-   layers: [heatmapMonth, heatmapWeek, heatmapDay]
+   'title': '<%= __('heatmap') %>',
+   layers: [heatmap3, heatmap2, heatmap1]
  }),
   new ol.layer.Group({
-   'title': 'Clustering',
-   layers: [clustersMonth, clustersWeek, clustersDay]
+   'title': '<%= __('clusters') %>',
+   layers: [clusters3, clusters2, clusters1]
  }),
 
 
@@ -2352,7 +2345,7 @@ kyrosGroup,
 
 if (!isMobile()) {
 var layerSwitcher = new ol.control.LayerSwitcher({
-    tipLabel: 'Capas' // Optional label for button
+    tipLabel: '<%= __('layers') %>' // Optional label for button
   });
   map.addControl(layerSwitcher);
 }

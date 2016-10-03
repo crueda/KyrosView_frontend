@@ -48,6 +48,18 @@
 	"check_zoom_level": "Increases the zoom level and try again",
 	"zoom_low": "Zoom level too low to display POIs",
 	"positions": "Positions",
-	"num_positions": "Number of Positions"
+	"num_positions": "Number of Positions",
+	"heatmap": "Heatmaps",
+	"clusters": "Clusters",
+	"heatmap3": "Heatmap last 15 days",
+	"heatmap2": "Heatmap last 7 days",
+	"heatmap1": "Heatmap last 1 day",
+	"cluster3": "Clusters last 15 days",
+	"cluster2": "Clusters last 7 days",
+	"cluster1": "Clusters last 1 day",
+	"layers": "Layers",
+	"base_maps": "Base maps",
+	"kyros_devices": "Kyros devices",
+	"tracking": "Tracking"
 
 }

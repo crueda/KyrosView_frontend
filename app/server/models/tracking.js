@@ -130,6 +130,21 @@ trackingModel.getTracking = function(id,callback)
   });
 }
 
+trackingModel.getHeatmap = function(requestData,callback)
+{   
+  db.open(function(err, db) {
+    if(err) {
+        callback(err, null);
+    }
+    else {
+        var collection = db.collection('tracking');
+        collection.find({'_id': parseInt(id)}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    }
+  });
+}
+
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = trackingModel;
 
