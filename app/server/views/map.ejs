@@ -96,6 +96,7 @@
  var aliasDict = {};
  var latitudeDict = {};
  var longitudeDict = {};
+ var locationDict = {};
  var speedDict = {};
  var headingDict = {};
  var daySpeedDict = {};
@@ -356,7 +357,7 @@ function isMobile(){
             }
             
           //pintar dispositivo
-          processDeviceTree (val.license,val.alias,val.longitude,val.latitude,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+          processDeviceTree (val.license,val.alias,val.longitude,val.latitude,val.location,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
 
           lon_anterior=lon;
           lat_anterior=lat;          
@@ -756,6 +757,7 @@ function isMobile(){
     document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
     document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId];
     document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId];
+    document.getElementById('tooltipLocation').innerHTML = locationDict[deviceId];
     document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId];
     document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId];
 
@@ -1145,6 +1147,10 @@ function openTooltipMapPoint(latitude, longitude) {
             <tr>
               <td><b><%= __('coordinates') %></b></td>
               <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('location') %></b></td>
+              <td><font color="black" id="tooltipLocation">---</font></td>
             </tr>
             <tr>
               <td><b><%= __('speed') %> (Km/h)</b></td>
@@ -1808,16 +1814,14 @@ function loadLayer() {
     addActualPosition(location.coords.latitude,location.coords.longitude,location.coords.accuracy);
   });*/
 
- var fileJson = "/api/tracking1/user/<%=user%>";
-
- $.getJSON( fileJson, function( data ) {
+ $.getJSON( '/api/tracking1/user/<%=user%>', function( data ) {
   
   var strDevices = '[';
  
    var ndata = data.length;
    var index = 0;
    $.each( data, function( key, val ) {
-     processDevice (val.license,val.alias,val.longitude,val.latitude,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+     processDevice (val.license,val.alias,val.longitude,val.latitude,val.location,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
 
      monitorDevices[val.license] = val.deviceId;
 
@@ -1870,13 +1874,13 @@ function reloadLayer() {
 
        var items = [];
        $.each( data, function( key, val ) {
-        processDevice (val.license,val.alias,val.longitude,val.latitude,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+        processDevice (val.license,val.alias,val.longitude,val.latitude,val.location,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
       });               
      });
   //}
 }
 
-function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+function processDevice(ident,alias,lon,lat,location,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
    //TODO: lo quito para que siempre salgan los coches ordenados ?
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
   iconDict[deviceId] = iconReal;
@@ -1885,6 +1889,11 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
   aliasDict[deviceId] = alias;
   latitudeDict[deviceId] = lat;
   longitudeDict[deviceId] = lon;
+  if (location!=null && location!=undefined)
+    locationDict[deviceId] = location;
+  else
+    locationDict[deviceId] = "<%= __('location_unknown') %>";
+
   speedDict[deviceId] = speed;
   headingDict[deviceId] = heading;
 
@@ -1904,7 +1913,7 @@ function processDevice(ident,alias,lon,lat,speed,heading,vehicleState, iconReal,
  }
 }
 
-function processDeviceTree(ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+function processDeviceTree(ident,alias,lon,lat,location,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
    //TODO: lo quito para que siempre salgan los coches ordenados ?
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
   iconDict[deviceId] = iconReal;
@@ -1913,6 +1922,10 @@ function processDeviceTree(ident,alias,lon,lat,speed,heading,vehicleState, iconR
   aliasDict[deviceId] = alias;
   latitudeDict[deviceId] = lat;
   longitudeDict[deviceId] = lon;
+  if (location!=null && location!=undefined)
+    locationDict[deviceId] = location;
+  else
+    locationDict[deviceId] = "<%= __('location_unknown') %>";
   speedDict[deviceId] = speed;
   headingDict[deviceId] = heading;
 

@@ -35,7 +35,7 @@ router.get('/heatmap', function(req, res)
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /heatmap/"+deviceId);
+      log.info("GET: /heatmap/");
 
       if (endDate==null) {
         endDate = (new Date).getTime()

@@ -60,7 +60,6 @@
 	"base_maps": "Mapas base",
 	"kyros_devices": "Dispositivos de Kyros",
 	"tracking": "Posiciones",
-	"clusters3": "clusters3",
-	"clusters2": "clusters2",
-	"clusters1": "clusters1"
+	"location": "Localización",
+	"location_unknown": "Desconocida"
 }

@@ -54,12 +54,14 @@
 	"heatmap3": "Heatmap last 15 days",
 	"heatmap2": "Heatmap last 7 days",
 	"heatmap1": "Heatmap last 1 day",
-	"cluster3": "Clusters last 15 days",
-	"cluster2": "Clusters last 7 days",
-	"cluster1": "Clusters last 1 day",
+	"clusters3": "Clusters last 15 days",
+	"clusters2": "Clusters last 7 days",
+	"clusters1": "Clusters last 1 day",
 	"layers": "Layers",
 	"base_maps": "Base maps",
 	"kyros_devices": "Kyros devices",
-	"tracking": "Tracking"
+	"tracking": "Tracking",
+	"location": "Location"
+
 
 }
