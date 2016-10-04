@@ -36,7 +36,13 @@
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
   <!--link rel="stylesheet" href="http://viglino.github.io/ol3-ext/examples/style.css" /-->
-<script type="text/javascript" src="js/bootstrap-filestyle.min.js"> </script>
+
+<!--script type="text/javascript" src="js/bootstrap-filestyle.min.js"> </script-->
+
+<link rel="stylesheet" href="./css/fileinput.min.css?1" type="text/css">
+
+<script type="text/javascript" src="js/fileinput.min.js"> </script>
+
 
 <style>
 
@@ -127,8 +133,8 @@
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
   
-  $(":file").filestyle('buttonText', 'Imagen');
-  $(":file").filestyle('size', 'sm');
+  //$(":file").filestyle('buttonText', 'Imagen');
+  //$(":file").filestyle('size', 'sm');
 
   document.getElementById('attr-graph-hist').style.display = 'none';
 
@@ -357,7 +363,7 @@ function isMobile(){
             }
             
           //pintar dispositivo
-          processDeviceTree (val.license,val.alias,val.longitude,val.latitude,val.location,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+          processDeviceTree (val.license,val.alias,val.longitude,val.latitude,val.geocoding,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
 
           lon_anterior=lon;
           lat_anterior=lat;          
@@ -1222,25 +1228,12 @@ function openTooltipMapPoint(latitude, longitude) {
 
 <br>
 
-<input type="file" class="filestyle" data-placeholder="No file" name="userPhoto" data-buttonName="btn-primary">
+<!--input type="file" class="filestyle" data-placeholder="No file" name="userPhoto" data-buttonName="btn-primary">
+<input type="submit" value="Actualizar" name="submit"-->
+
+<input name="userPhoto" multiple type="file" class="file file-loading" data-allowed-file-extensions='["png", "jpg", "gif", "bmp"]'>
 
 
-
-<!--label class="btn btn-primary" for="my-file-selector">
-    <input id="my-file-selector" type="file" name="userPhoto" style="display:none;" onchange="$('#upload-file-info').html($(this).val());">
-    Seleccionar imagen
-</label>
-<br>
-<span class='label label-info' id="upload-file-info"></span>
-<br--!>
-
-<!--label class="btn btn-default btn-file">
-    Browse <input type="file" name="userPhoto"style="display: none;">
-</label-->
-
-<!--input type="file" name="userPhoto" /-->
-<input type="submit" value="Actualizar" name="submit">
-<!--input type="hidden" value="" id="deviceIdImage" name="deviceId"-->
 </form>
 
 
@@ -1821,7 +1814,7 @@ function loadLayer() {
    var ndata = data.length;
    var index = 0;
    $.each( data, function( key, val ) {
-     processDevice (val.license,val.alias,val.longitude,val.latitude,val.location,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+     processDevice (val.license,val.alias,val.longitude,val.latitude,val.geocoding,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
 
      monitorDevices[val.license] = val.deviceId;
 
@@ -1874,7 +1867,7 @@ function reloadLayer() {
 
        var items = [];
        $.each( data, function( key, val ) {
-        processDevice (val.license,val.alias,val.longitude,val.latitude,val.location,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+        processDevice (val.license,val.alias,val.longitude,val.latitude,val.geocoding,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
       });               
      });
   //}
