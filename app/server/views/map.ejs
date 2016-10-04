@@ -91,18 +91,17 @@
 </style>
 
 <script type="text/javascript">    
- var dict = {};
- var dict_date = {};
  var car = null;
  var username = null;
- var deviceId = null;
+ var dict = {};
+ var deviceIdDict = {};
  var iconDict = {};
  var vehicleLicenseDict = {};
  var dateDict = {};
  var aliasDict = {};
  var latitudeDict = {};
  var longitudeDict = {};
- var locationDict = {};
+ var geocodingDict = {};
  var speedDict = {};
  var headingDict = {};
  var daySpeedDict = {};
@@ -128,7 +127,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); loadLayer(); setInterval(reloadLayer,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=<%=deviceId%>; loadLayer(); loadMonitor(); /*selectMonitor();*/}//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); loadLayer(); loadMonitor(); /*selectMonitor();*/}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -268,9 +267,9 @@ function isMobile(){
       document.getElementById('attr-logo').style.display = 'block';    
   }
 
-  function showTracking5(deviceId) {
-    var fileJson = "/api/tracking5/device/"+deviceId;
-      $.getJSON( fileJson, function( data ) {
+  function showTracking5(vehicleLicense) {
+    var urlJson = "/api/tracking5/device/"+deviceIdDict[vehicleLicense];
+      $.getJSON( urlJson, function( data ) {
         var lat1, lat2, lat3, lat4, lat5 = 0;
         var lon1, lon2, lon3, lon4, lon5 = 0;
         var trackingId1, trackingId2, trackingId3, trackingId4, trackingId5 = 0;
@@ -331,9 +330,9 @@ function isMobile(){
     var maxLat=0;
     var initPos=true;
     var index = 0;
-    var fileJson = "/api/tracking1/devices?deviceIdList="+selectedDevicesStr;
     document.getElementById('attr-loading').style.display = 'block';
-      $.getJSON( fileJson, function( data ) {
+    var urlJson = "/api/tracking1/devices?deviceIdList="+selectedDevicesStr;
+      $.getJSON( urlJson, function( data ) {
         if (data.length == 0) {
           $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
           $('#myModalMsgLabel').css({ "color" : 'red' });
@@ -720,7 +719,7 @@ function isMobile(){
       
       // centrar el mapa
       var new_view = new ol.View({
-          center: ol.proj.transform([longitudeDict[deviceId], latitudeDict[deviceId]], 'EPSG:4326', 'EPSG:3857'),
+          center: ol.proj.transform([longitudeDict[<%=vehicleLicense%>], latitudeDict[<%=vehicleLicense%>]], 'EPSG:4326', 'EPSG:3857'),
           zoom: 14
         });
 
@@ -734,23 +733,13 @@ function isMobile(){
     openTooltip(deviceId);
   }
 
-  function openTooltip(deviceId) {
-    document.getElementById('formDeviceId').value = deviceId;
-    document.getElementById('formIcon').value = iconDict[deviceId];
-    document.getElementById('formAlias').value = aliasDict[deviceId];
-    document.getElementById('formVehicleLicense').value = vehicleLicenseDict[deviceId];
-    document.getElementById('formLatitude').value = latitudeDict[deviceId];
-    document.getElementById('formLongitude').value = longitudeDict[deviceId];
-    document.getElementById('formSpeed').value = speedDict[deviceId];
+  function openTooltip(vehicleLicense) {
+     $("#uploadForm").attr("action", "/api/image/upload/" + vehicleLicense);
     
+    document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicense] + "'/>";
+    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicense;
 
-    //document.getElementById('deviceIdImage').value = deviceId;
-     $("#uploadForm").attr("action", "/api/image/upload/" + deviceId);
-    
-    document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[deviceId] + "'/>";
-    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
-
-    var date = new Date(dateDict[deviceId]);
+    var date = new Date(dateDict[vehicleLicense]);
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
     var day = date.getDate();
@@ -760,12 +749,12 @@ function isMobile(){
 
       document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
-    document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
-    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId];
-    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId];
-    document.getElementById('tooltipLocation').innerHTML = locationDict[deviceId];
-    document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId];
-    document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId];
+    document.getElementById('tooltipAlias').innerHTML = aliasDict[vehicleLicense];
+    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[vehicleLicense];
+    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[vehicleLicense];
+    document.getElementById('tooltipLocation').innerHTML = geocodingDict[vehicleLicense];
+    document.getElementById('tooltipSpeed').innerHTML = speedDict[vehicleLicense];
+    document.getElementById('tooltipHeading').innerHTML = headingDict[vehicleLicense];
 
     document.getElementById('tooltipDaySpeed').innerHTML = '---';
     document.getElementById('tooltipWeekSpeed').innerHTML = '---';
@@ -777,33 +766,23 @@ function isMobile(){
     document.getElementById('tooltipWeekConsume').innerHTML = '---';
     document.getElementById('tooltipMonthConsume').innerHTML = '---';
     
-var fileJson = "/api/odometer/"+deviceId;
-    $.getJSON( fileJson, function( data ) {
-
+    $.getJSON( '/api/odometer/'+deviceIdDict[vehicleLicense], function( data ) {
       $.each( data, function( key, val ) {
-
-    document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed;
-    document.getElementById('tooltipWeekSpeed').innerHTML = val.weekSpeed;
-    document.getElementById('tooltipMonthSpeed').innerHTML = val.monthSpeed;
-    document.getElementById('tooltipDayDistance').innerHTML = val.dayDistance;
-    document.getElementById('tooltipWeekDistance').innerHTML = val.weekDistance;
-    document.getElementById('tooltipMonthDistance').innerHTML = val.monthDistance;
-    document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume;
-    document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume;
-    document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume;
-
+        document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed;
+        document.getElementById('tooltipWeekSpeed').innerHTML = val.weekSpeed;
+        document.getElementById('tooltipMonthSpeed').innerHTML = val.monthSpeed;
+        document.getElementById('tooltipDayDistance').innerHTML = val.dayDistance;
+        document.getElementById('tooltipWeekDistance').innerHTML = val.weekDistance;
+        document.getElementById('tooltipMonthDistance').innerHTML = val.monthDistance;
+        document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume;
+        document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume;
+        document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume;
       });
 
       $('#myModal').modal('show');
     });
-    /*
-    document.getElementById('tooltipDayHours').innerHTML = dayHoursDict[deviceId];
-    document.getElementById('tooltipWeekHours').innerHTML = weekHoursDict[deviceId];
-    document.getElementById('tooltipMonthHours').innerHTML = monthHoursDict[deviceId];
-    */
-    
 
-    if (this.deviceId == deviceId) {
+    if (vehicleLicense == '<%=vehicleLicense%>') {
        $('#tooltipHeader').css('background-color', '#F7BE81');
        document.getElementById('selectButton').style.display = 'none';
     } else {
@@ -814,7 +793,7 @@ var fileJson = "/api/odometer/"+deviceId;
     }
 
     // Cargar la imagen del dispositivo
-    var urlPostImageDevice = "/api/image/device/"+deviceId;
+    var urlPostImageDevice = "/api/image/device/"+vehicleLicense;
     $.getJSON( urlPostImageDevice, function( data ) {
       if (data!='')
         document.getElementById('imageDevice').setAttribute( 'src', 'data:image/png;base64,'+data);
@@ -881,14 +860,7 @@ function openTooltipMapPoint(latitude, longitude) {
  </form>
 
  <form id="myform" action="/map" method="POST">
-  <input type="hidden" id="formDeviceId" name="deviceId" value="0" />
-  <input type="hidden" id="formAlias" name="alias" value="0" />
-  <input type="hidden" id="formIcon" name="icon" value="0" />
-  <input type="hidden" id="formVehicleLicense" name="vehicleLicense" value="0" />
-  <input type="hidden" id="formLatitude" name="latitude" value="0" />
-  <input type="hidden" id="formLongitude" name="longitude" value="0" />
-  <input type="hidden" id="formSpeed" name="speed" value="0" />
-</form>
+ </form>
 
  <form id="myformGraphHist" action="/graphs-hist" method="POST">
   <input type="hidden" id="formGraphDeviceId" name="deviceId" value="0" />
@@ -1155,7 +1127,7 @@ function openTooltipMapPoint(latitude, longitude) {
               <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('location') %></b></td>
+              <td><b><%= __('geocoding') %></b></td>
               <td><font color="black" id="tooltipLocation">---</font></td>
             </tr>
             <tr>
@@ -1622,9 +1594,9 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
       }
     }
 
-    function moveMap(deviceId) {
+    function moveMap(vehicleLicense) {
         var new_view = new ol.View({
-          center: ol.proj.transform([longitudeDict[deviceId], latitudeDict[deviceId]], 'EPSG:4326', 'EPSG:3857'),
+          center: ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'),
           zoom: map.getView().getZoom()
         });
         /*
@@ -1818,11 +1790,9 @@ function loadLayer() {
 
      monitorDevices[val.license] = val.deviceId;
 
-    if (val.deviceId == deviceId) {
+    if (val.license == '<%=vehicleLicense%>') {
       centerMap(val.longitude,val.latitude);
-      //$('#licenseHist').attr("placeholder", val.license);
       $('#licenseHist').val(val.license);
-      //document.getElementById('attr-loading').style.display = 'none';
     }
     index ++;
     if (index == ndata) {
@@ -1838,32 +1808,19 @@ function loadLayer() {
 
       var $input = $('#licenseHist');
       $input.typeahead({source:jsonDevices, 
-                autoSelect: true,
-              /*updater: function(selection){
+        autoSelect: true,
+        /*updater: function(selection){
                 //console.log("You selected: " + selection.id);
-              }*/
-            }); 
+        }*/
+      }); 
 
      });
-
-
-
-//$('#licenseHist').value = "aa";
-
-    //$('#licenseHist').typeahead('val','FLAA-RUNKEEPER').blur();
-
-    //$input.typeahead('val', 'some value').blur()
-
-  //document.getElementById('attr-loading').style.display = 'none';
-
 }
 
 
 function reloadLayer() {
   //if (!isMobile()) {  
-    var fileJson = "./json/users/realTime/<%=user%>.json?";
-
-     $.getJSON( fileJson, function( data ) {
+     $.getJSON( '/api/tracking1/user/<%=user%>', function( data ) {
 
        var items = [];
        $.each( data, function( key, val ) {
@@ -1873,74 +1830,75 @@ function reloadLayer() {
   //}
 }
 
-function processDevice(ident,alias,lon,lat,location,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
    //TODO: lo quito para que siempre salgan los coches ordenados ?
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
-  iconDict[deviceId] = iconReal;
-  vehicleLicenseDict[deviceId] = ident;
-  dateDict[deviceId] = posDate;
-  aliasDict[deviceId] = alias;
-  latitudeDict[deviceId] = lat;
-  longitudeDict[deviceId] = lon;
-  if (location!=null && location!=undefined)
-    locationDict[deviceId] = location;
+  iconDict[vehicleLicense] = iconReal;
+  deviceIdDict[vehicleLicense] = deviceId;
+  aliasDict[vehicleLicense] = alias;
+  latitudeDict[vehicleLicense] = lat;
+  longitudeDict[vehicleLicense] = lon;
+  if (geocoding!=null && geocoding!=undefined)
+    geocodingDict[vehicleLicense] = geocoding;
   else
-    locationDict[deviceId] = "<%= __('location_unknown') %>";
+    geocodingDict[vehicleLicense] = "<%= __('geocoding_unknown') %>";
 
-  speedDict[deviceId] = speed;
-  headingDict[deviceId] = heading;
+  speedDict[vehicleLicense] = speed;
+  headingDict[vehicleLicense] = heading;
 
-   if ( (dict_date[ident]==null) || (dict_date[ident]<posDate) )
+   if ( (dateDict[vehicleLicense]==null) || (dateDict[vehicleLicense]<posDate) )
    {
-    dict_date[ident]=posDate;
+    dateDict[vehicleLicense]=posDate;
 
     // Eliminar el icono de todas las capas
-    iFeature = vectorTrackingSource.getFeatureById(ident);
+    iFeature = vectorTrackingSource.getFeatureById(vehicleLicense);
     if (iFeature!=null) {
      vectorTrackingSource.removeFeature(iFeature);
    }
 
    // añadir el icono
-   add (ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
+   add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
 
  }
+
+   dateDict[vehicleLicense] = posDate;
+
 }
 
-function processDeviceTree(ident,alias,lon,lat,location,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
-   //TODO: lo quito para que siempre salgan los coches ordenados ?
-   //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
-  iconDict[deviceId] = iconReal;
-  vehicleLicenseDict[deviceId] = ident;
-  dateDict[deviceId] = posDate;
-  aliasDict[deviceId] = alias;
-  latitudeDict[deviceId] = lat;
-  longitudeDict[deviceId] = lon;
-  if (location!=null && location!=undefined)
-    locationDict[deviceId] = location;
+function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+  iconDict[vehicleLicense] = iconReal;
+  deviceIdDict[vehicleLicense]=deviceId;
+  vehicleLicenseDict[vehicleLicense] = ident;
+  dateDict[vehicleLicense] = posDate;
+  aliasDict[vehicleLicense] = alias;
+  latitudeDict[vehicleLicense] = lat;
+  longitudeDict[vehicleLicense] = lon;
+  if (geocoding!=null && geocoding!=undefined)
+    geocodingDict[vehicleLicense] = geocoding;
   else
-    locationDict[deviceId] = "<%= __('location_unknown') %>";
-  speedDict[deviceId] = speed;
-  headingDict[deviceId] = heading;
+    geocodingDict[vehicleLicense] = "<%= __('geocoding_unknown') %>";
+  speedDict[vehicleLicense] = speed;
+  headingDict[vehicleLicense] = heading;
 
 
     // Eliminar el icono de todas las capas
-    iFeature = vectorTrackingSource.getFeatureById(ident);
+    iFeature = vectorTrackingSource.getFeatureById(vehicleLicense);
     if (iFeature!=null) {
      vectorTrackingSource.removeFeature(iFeature);
    }
 
    // añadir el icono
-   add (ident,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
+   add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
 
 }
 
 
-    function add(ident, alias, lon, lat, speed, heading, vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate) {
+    function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: deviceId,
+        id: vehicleLicense,
         elementId: 'device',
         name: alias
       });
@@ -1954,15 +1912,13 @@ function processDeviceTree(ident,alias,lon,lat,location,speed,heading,vehicleSta
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
          scale: 0.8,
-         rotation: heading,
+         //rotation: heading,
          src: image_src
        }))
       })
 
       ];
-
       iconFeature.setStyle(iconStyle);
-      iconFeature.setId(ident);
 
       vectorTrackingSource.addFeature(iconFeature); 
 
@@ -2498,18 +2454,11 @@ var displayFeatureInfo = function(pixel) {
    return feature;
  });
  if (feature) {
-    //if (isMobile()) {
-             //openTooltip(feature.get('id'));
-    //} else {
              info.tooltip('hide')
              .attr('data-original-title', feature.get('name'))
              .tooltip('fixTitle')
              .tooltip('show');
 
-             //openTooltip(feature.get('id')); 
-             //moveMap(feature.get('id'));     
-    //}
-             
            } else {
              info.tooltip('hide');
              //closeTooltip();
@@ -2558,7 +2507,7 @@ var displayTooltipInfo = function(evt) {
            displayFeatureInfo(map.getEventPixel(evt.originalEvent));
          });
          
-         map.on('click', function(evt) {
+         map.on('singleclick', function(evt) {
            displayTooltipInfo(evt);
            //if (!isMobile()) {
            //   closeTooltip();

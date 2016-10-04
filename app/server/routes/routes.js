@@ -7,11 +7,7 @@ var colors = require('colors');
 
 module.exports = function(app) {
 
-    // set the view engine to ejs
-    //app.set('view engine', 'ejs');
-    
-    //app.engine('jade', require('jade').__express);
-    //app.engine('html', require('ejs').renderFile);
+    // set the view engine to ejs and jade
     app.set('view engine', 'ejs');
     app.set('view engine', 'jade');
     
@@ -21,11 +17,11 @@ module.exports = function(app) {
 		if (req.cookies.user == undefined || req.cookies.pass == undefined){
 			res.render('login.ejs', { msg: '', 	msg_color: 'black'});
 		}	else{
-	// attempt automatic login //
+			// attempt automatic login //
 			AM.autoLogin(req.cookies.user, req.cookies.pass, function(o){
 				if (o != null){
 				    req.session.user = o;
-					//console.log("FIJAS COOKIE -1 ");
+					//console.log("FIJAR COOKIE -1 ");
 				    //res.cookie('kyrosview_lang', 'en', { maxAge: 900000, httpOnly: true });
 					//res.redirect('/home');
 					res.redirect('/map');
@@ -70,7 +66,7 @@ module.exports = function(app) {
 		else{
         	res.render('globe.ejs', {
             	user : req.session.user.username,
-            	deviceId : req.session.user.deviceId
+            	vehicleLicense : req.session.user.vehicleLicense
 			});            
 		}
 	});
@@ -84,7 +80,7 @@ module.exports = function(app) {
             res.render('map.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                deviceId : req.session.user.deviceId
+                vehicleLicense : req.session.user.vehicleLicense
 			});
             
 		}
@@ -99,7 +95,7 @@ module.exports = function(app) {
             res.render('map.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                deviceId : req.session.user.deviceId
+                vehicleLicense : req.session.user.vehicleLicense
 			});
             
 		}
@@ -113,7 +109,7 @@ module.exports = function(app) {
             res.render('gmap.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                deviceId : req.session.user.deviceId
+                vehicleLicense : req.session.user.vehicleLicense
 			});            
 		}
 	});
@@ -125,7 +121,7 @@ module.exports = function(app) {
 		}	else{
             res.render('graphs.ejs', {
                 user : req.session.user.username,
-                deviceId : req.session.user.deviceId
+                vehicleLicense : req.session.user.vehicleLicense
 			});
             
 		}
@@ -138,7 +134,7 @@ module.exports = function(app) {
 		}	else{
             res.render('graphs-hist.ejs', {
                 user : req.session.user.username,
-                deviceId : req.body['deviceId'],
+                vehicleLicense : req.body['vehicleLicense'],
                 initDate : req.body['initDate'],
                 endDate : req.body['endDate']
 			});
@@ -152,16 +148,16 @@ module.exports = function(app) {
 		}	else{
 			AM.updateUserDevice({
 				username : req.session.user.username,
-				deviceId : req.body['deviceId']
+				vehicleLicense : req.body['vehicleLicense']
 			}, function(e, o){
 				if (e!='ok'){
 					res.status(400).send('error-updating-device');
 				}	else{
-					req.session.user.deviceId = req.body['deviceId']; 
+					req.session.user.vehicleLicense = req.body['vehicleLicense']; 
 					res.render('map.ejs', {
 						msg: res.__('device_selected'),
                 		user : req.session.user.username,
-                		deviceId : req.body['deviceId']
+                		vehicleLicense : req.body['vehicleLicense']
 					});					
 				}
 			});

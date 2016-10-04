@@ -37,7 +37,7 @@ exports.autoLogin = function(user, pass, callback)
 {
     pool.getConnection(function(err, connection) {
         if (connection) {        
-            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, DEFAULT_DEVICE_ID as deviceId, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
+            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, DEFAULT_VEHICLE_LICENSE as vehicleLicense, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
@@ -67,9 +67,8 @@ exports.manualLogin = function(user, pass, callback)
 {
     pool.getConnection(function(err, connection) {
         if (connection) {        
-            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, DEFAULT_DEVICE_ID as deviceId, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
+            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, DEFAULT_VEHICLE_LICENSE as vehicleLicense, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
             console.log(colors.green('Query: %s'), sql);
-             //debugger;
             connection.query(sql, function(error, rows)
             {
               connection.release();
@@ -77,7 +76,6 @@ exports.manualLogin = function(user, pass, callback)
               {
                   console.log(colors.red('Query error: %s'), error);
                   callback(null);
-                  //callback('user-not-found');
               }
               else
               {
@@ -180,7 +178,7 @@ exports.updateUserDevice = function(newData, callback)
 {
     pool.getConnection(function(err, connection) {
         if (connection) {        
-            var sql = "UPDATE USER_GUI set DEFAULT_DEVICE_ID=" + newData.deviceId + " WHERE USERNAME= '" + newData.username + "'";
+            var sql = "UPDATE USER_GUI set DEFAULT_VEHILCE_LICENSE=" + newData.vehicleLicense + " WHERE USERNAME= '" + newData.username + "'";
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, result)
             {

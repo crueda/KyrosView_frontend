@@ -61,7 +61,6 @@
 	"base_maps": "Base maps",
 	"kyros_devices": "Kyros devices",
 	"tracking": "Tracking",
-	"location": "Location"
-
-
+	"geocoging": "Location",
+	"geocoding_unknown": "Unknown"
 }

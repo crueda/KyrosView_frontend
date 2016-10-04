@@ -60,6 +60,6 @@
 	"base_maps": "Mapas base",
 	"kyros_devices": "Dispositivos de Kyros",
 	"tracking": "Posiciones",
-	"location": "Localización",
-	"location_unknown": "Desconocida"
+	"geocoding": "Localización",
+	"geocoding_unknown": "Dirección desconocida"
 }
