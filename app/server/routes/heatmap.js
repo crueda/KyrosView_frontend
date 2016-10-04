@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var jsonfy = require('jsonfy');
-var moment = require('moment');
 
 var status = require("../utils/statusCodes.js");
 var messages = require("../utils/statusMessages.js");
