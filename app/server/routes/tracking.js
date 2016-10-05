@@ -93,47 +93,49 @@ router.get('/tracking1/user/:username', function(req, res)
 });
 
 /**
- * @api {get} /api/tracking1/device/:deviceId Última posición de un dispositivo
- * @apiName GetTracking1DeviceId Obtener información de último tracking de un dispositivo
+ * @api {get} /api/tracking1/vehicle/:vehicleLicense Última posición de un vehiculo
+ * @apiName GetTracking1Vehicle Obtener información de último tracking de un vehiculo
  * @apiGroup Tracking
- * @apiDescription Datos del último tracking de un dispositivo
- * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/tracking1/653/deviceId
+ * @apiDescription Datos del último tracking de un vehiculo
+ * @apiVersion 1.0.2
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking1/vehicle/1615-FDW
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del vehiculo en Kyros
  *
  * @apiSuccess {json} trackingData Datos de último tracking
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *      [{"_id":399,
- *        "deviceId":399,
- *        "longitude":-4.72811,
- *        "latitude":41.6283,
- *        "speed":21.1,
- *        "heading":0,
- *        "pos_date":1346336184000,
- *        "iconReal":"truck.png",
- *        "iconCover":"truck_cover.png",
- *        "iconAlarm":"truck_alarm.png",
- *        "monitor":["flaa","crueda"],
- *        "license":"Bici_Rohm",
- *        "alias":"Bici rohm",
- *        "vehicle_state":"0"
- *        }]
- *     }
+ *      "_id" : ObjectId("57f3fd5efbb7137a40b5fa60"),
+ *      "pos_date" : NumberLong(1475600701000),
+ *      "battery" : 88,
+ *      "altitude" : 726,
+ *      "heading" : 306,
+ *      "location" : {
+ *        "type" : "Point",
+ *        "coordinates" : [ 
+ *           -4.713148, 
+ *           41.655135
+ *        ]
+ *      },
+ *      "tracking_id" : 35815375,
+ *      "vehicle_license" : "1615-FDW",
+ *      "geocoding" : "",
+ *      "events" : [],
+ *      "device_id" : 13
+ *    }
  */
-router.get('/tracking1/device/:deviceId', function(req, res)
+router.get('/tracking1/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
-      log.info("GET: /tracking1/device/"+deviceId);
+      var vehicleLicense = req.params.vehicleLicense;
+      log.info("GET: /tracking1/vehicle/"+vehicleLicense);
 
-      TrackingModel.getTracking1FromDeviceId(deviceId,function(error, data)
+      TrackingModel.getTracking1FromVehicle(vehicleLicense,function(error, data)
       {
         if (data == null)
         {
@@ -161,50 +163,54 @@ router.get('/tracking1/device/:deviceId', function(req, res)
 });
 
 /**
- * @api {get} /api/tracking1/devices Últimas posiciones de los dispositivos que se indican por parámetro
- * @apiName GetTracking1Devices Obtener información de último tracking de todos los dispositivos indicados
+ * @api {get} /api/tracking1/vehicles Últimas posiciones de los vehiculos que se indican por parámetro
+ * @apiName GetTracking1Vehicles Obtener información de último tracking de todos los vehiculos indicados
  * @apiGroup Tracking
- * @apiDescription Datos del último tracking para todos los dispositivos indicados
- * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/tracking1/devices?deviceIdList=651,652,655
+ * @apiDescription Datos del último tracking para todos los vehiculos indicados
+ * @apiVersion 1.0.2
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking1/vehicles?vehicleLicenseList=651,652,655
  *
- * @apiParam {String} deviceIsList Lista de deviceId separados por coma
+ * @apiParam {String} vehicleLicenseList Lista de matriculas separadas por comas
  *
  * @apiSuccess {json} trackingData Datos de último tracking
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *      [{"_id":399,
- *        "deviceId":399,
- *        "longitude":-4.72811,
- *        "latitude":41.6283,
- *        "speed":21.1,
- *        "heading":0,
- *        "pos_date":1346336184000,
- *        "iconReal":"truck.png",
- *        "iconCover":"truck_cover.png",
- *        "iconAlarm":"truck_alarm.png",
- *        "monitor":["flaa","crueda"],
- *        "license":"Bici_Rohm",
- *        "alias":"Bici rohm",
- *        "vehicle_state":"0"
- *        }]
+ *     [{
+ *      "_id" : ObjectId("57f3fd5efbb7137a40b5fa60"),
+ *      "pos_date" : NumberLong(1475600701000),
+ *      "battery" : 88,
+ *      "altitude" : 726,
+ *      "heading" : 306,
+ *      "location" : {
+ *        "type" : "Point",
+ *        "coordinates" : [ 
+ *           -4.713148, 
+ *           41.655135
+ *        ]
+ *      },
+ *      "tracking_id" : 35815375,
+ *      "vehicle_license" : "1615-FDW",
+ *      "geocoding" : "",
+ *      "events" : [],
+ *      "device_id" : 13
+ *     }]
  *     }
  */
-router.get('/tracking1/devices', function(req, res)
+router.get('/tracking1/vehicles', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceIdList = req.query.deviceIdList;
-      log.info("GET: /tracking1/devices?deviceIdList="+deviceIdList);
-      if (deviceIdList==null) {
+      var vehicleLicenseList = req.query.vehicleLicenseList;
+      log.info("GET: /tracking1/vehicles?vehicleLicenseList="+vehicleLicenseList);
+      if (vehicleLicenseList==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
-        TrackingModel.getTracking1FromDevices(deviceIdList,function(error, data)
+        TrackingModel.getTracking1FromVehicles(vehicleLicenseList,function(error, data)
         {
           if (data == null)
           {
@@ -234,43 +240,51 @@ router.get('/tracking1/devices', function(req, res)
 
 
 /**
- * @api {get} /api/tracking5/device/:deviceId Últimas 5 posiciones de un dispositivo
- * @apiName GetTracking5DeviceId Obtener información los últimos 5 tracking de un dispositivo
+ * @api {get} /api/tracking5/vehicle/:vehicleLicense Últimas 5 posiciones de un vehiculo
+ * @apiName GetTracking5Vehicle Obtener información los últimos 5 tracking de un vehiculo
  * @apiGroup Tracking
- * @apiDescription Datos de los últimos 5 puntos de tracking de un dispositivo
- * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/tracking5/device/653
+ * @apiDescription Datos de los últimos 5 puntos de tracking de un vehiculo
+ * @apiVersion 1.0.2
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking5/vehicle/1615-FDW
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del vehiculo en Kyros
  *
  * @apiSuccess {json} trackingData Datos de los últimos puntos de tracking
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *      [{"_id":399,
- *        "deviceId":399,
- *        "longitude":-4.72811,
- *        "latitude":41.6283,
- *        "speed":21.1,
- *        "heading":0,
- *        "pos_date":1346336184000,
- *        "license":"Bici_Rohm",
- *        "alias":"Bici rohm",
- *        "vehicle_state":"0"
- *        }......]
+ *     [{
+ *      "_id" : ObjectId("57f3fd5efbb7137a40b5fa60"),
+ *      "pos_date" : NumberLong(1475600701000),
+ *      "battery" : 88,
+ *      "altitude" : 726,
+ *      "heading" : 306,
+ *      "location" : {
+ *        "type" : "Point",
+ *        "coordinates" : [ 
+ *           -4.713148, 
+ *           41.655135
+ *        ]
+ *      },
+ *      "tracking_id" : 35815375,
+ *      "vehicle_license" : "1615-FDW",
+ *      "geocoding" : "",
+ *      "events" : [],
+ *      "device_id" : 13
+ *     }, {......}, .... ]
  *     }
  */
-router.get('/tracking5/device/:deviceId', function(req, res)
+router.get('/tracking5/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
-      log.info("GET: /tracking5/device/"+deviceId);
+      var vehicleLicense = req.params.vehicleLicense;
+      log.info("GET: /tracking5/vehicle/"+vehicleLicense);
 
-      TrackingModel.getTracking5FromDeviceId(deviceId,function(error, data)
+      TrackingModel.getTracking5FromVehicle(vehicleLicense,function(error, data)
       {
         if (data == null)
         {
@@ -298,14 +312,14 @@ router.get('/tracking5/device/:deviceId', function(req, res)
 });
 
 /**
- * @api {get} /api/tracking/device/:deviceId Posiciones de un dispositivo
- * @apiName GetTrackingDeviceId Obtener información de último tracking de un dispositivo
+ * @api {get} /api/tracking/vehicle/:vehicleLicense Posiciones de un vehiculo
+ * @apiName GetTrackingVehicle Obtener información de tracking de un vehiculo
  * @apiGroup Tracking
- * @apiDescription Datos del último tracking de un dispositivo
- * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/tracking/device/655?initDate=1473829136000&endDate=1473915536000
+ * @apiDescription Datos de tracking de un vehiculo entre 2 fechas
+ * @apiVersion 1.0.2
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking/vehicle/1615-FDW?initDate=1473829136000&endDate=1473915536000
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del vehiculo en Kyros
  * @apiParam {Number} initDate Fecha inicial (epoch)
  * @apiParam {Number} endDate Fecha final (epoch)
  *
@@ -314,45 +328,49 @@ router.get('/tracking5/device/:deviceId', function(req, res)
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *      [{"_id":399,
- *        "deviceId":399,
- *        "longitude":-4.72811,
- *        "latitude":41.6283,
- *        "speed":21.1,
- *        "heading":0,
- *        "pos_date":1346336184000,
- *        "iconReal":"truck.png",
- *        "iconCover":"truck_cover.png",
- *        "iconAlarm":"truck_alarm.png",
- *        "monitor":["flaa","crueda"],
- *        "license":"Bici_Rohm",
- *        "alias":"Bici rohm",
- *        "vehicle_state":"0"
- *        }]
+ *     [{
+ *      "_id" : ObjectId("57f3fd5efbb7137a40b5fa60"),
+ *      "pos_date" : NumberLong(1475600701000),
+ *      "battery" : 88,
+ *      "altitude" : 726,
+ *      "heading" : 306,
+ *      "location" : {
+ *        "type" : "Point",
+ *        "coordinates" : [ 
+ *           -4.713148, 
+ *           41.655135
+ *        ]
+ *      },
+ *      "tracking_id" : 35815375,
+ *      "vehicle_license" : "1615-FDW",
+ *      "geocoding" : "",
+ *      "events" : [],
+ *      "device_id" : 13
+ *     }, {......}, .... ]
  *     }
  */
-router.get('/tracking/device/:deviceId', function(req, res)
+router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
+      var vehicleLicense = req.params.vehicleLicense;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /tracking/device/"+deviceId);
+      log.info("GET: /tracking/vehicle/"+vehicleLicense);
 
       if (initDate==null || endDate==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
         var requestData = {
-          deviceId : deviceId,
+          vehicleLicense : vehicleLicense,
           initDate : initDate,
           endDate : endDate
         };
-        TrackingModel.getTrackingFromDeviceId(requestData, function(error, data)
+        TrackingModel.getTrackingFromVehicleAndDate(requestData, function(error, data)
         {
           if (data == null)
           {
@@ -381,13 +399,14 @@ router.get('/tracking/device/:deviceId', function(req, res)
 });
 
 /**
- * @api {get} /api/tracking/:id Información de una posición
+ * @api {get} /api/tracking Información de una posición de un vehiculo
  * @apiName GetTracking Obtener información de una posición
  * @apiGroup Tracking
- * @apiDescription Datos de la posición de un dispositivo
+ * @apiDescription Datos de la posición de un vehiculo
  * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/tracking/35635027
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking?vehicleLicense&trackingId=35635027
  *
+ * @apiParam {String} vehicleLicense Identificador del vehiculo en Kyros
  * @apiParam {Number} trackingId Identificador de la posición
  *
  * @apiSuccess {json} trackingData Datos del punto de tracking
@@ -395,33 +414,45 @@ router.get('/tracking/device/:deviceId', function(req, res)
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *      [{"_id":399,
- *        "deviceId":399,
- *        "longitude":-4.72811,
- *        "latitude":41.6283,
- *        "speed":21.1,
- *        "heading":0,
- *        "pos_date":1346336184000,
- *        "license":"Bici_Rohm",
- *        "vehicle_state":"0"
- *        }]
+ *      "_id" : ObjectId("57f3fd5efbb7137a40b5fa60"),
+ *      "pos_date" : NumberLong(1475600701000),
+ *      "battery" : 88,
+ *      "altitude" : 726,
+ *      "heading" : 306,
+ *      "location" : {
+ *        "type" : "Point",
+ *        "coordinates" : [ 
+ *           -4.713148, 
+ *           41.655135
+ *        ]
+ *      },
+ *      "tracking_id" : 35815375,
+ *      "vehicle_license" : "1615-FDW",
+ *      "geocoding" : "",
+ *      "events" : [],
+ *      "device_id" : 13
  *     }
  */
-router.get('/tracking/:id', function(req, res)
+router.get('/tracking', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var id = req.params.id;
+      var vehicleLicense = req.query.vehicleLicense;
+      var trackingId = req.query.trackingId;
 
       log.info("GET: /tracking/"+id);
 
-      if (id==null) {
+      if (vehicleLicense==null || trackingId==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
-        TrackingModel.getTracking(id, function(error, data)
+        var requestData = {
+          vehicleLicense : vehicleLicense,
+          trackingId : trackingId
+        };
+        TrackingModel.getTracking(requestData, function(error, data)
         {
           if (data == null)
           {

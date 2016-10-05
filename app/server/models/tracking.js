@@ -29,6 +29,7 @@ var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
 // Crear un objeto para ir almacenando todo lo necesario
 var trackingModel = {};
 
+//TODO. MODIFICAR!
 trackingModel.getTracking1FromUser = function(username,callback)
 {
   db.open(function(err, db) {
@@ -37,33 +38,30 @@ trackingModel.getTracking1FromUser = function(username,callback)
     }
     else {
         var collection = db.collection('tracking1');
-        //var current_time = new moment ().format("HH:mm:ss.S");
-        //console.log("--> " + current_time);
         collection.find({'monitor': username}).toArray(function(err, docs) {
-            //var current_time = new moment ().format("HH:mm:ss.S");
-            //console.log("--> " + current_time);
             callback(null, docs);
         });
     }
   });
 }
 
-trackingModel.getTracking1FromDeviceId = function(deviceId,callback)
+trackingModel.getTracking1FromVehicle = function(vehicleLicense,callback)
 {
   db.open(function(err, db) {
     if(err) {
         callback(err, null);
     }
     else {
-        var collection = db.collection('tracking1').sort({"pos_date": -1});
-        collection.find({'deviceId': parseInt(deviceId)}).toArray(function(err, docs) {
+        var collection = db.collection('TRACKING_'+vehicleLicense);
+        collection.find().sort({"pos_date": -1}).limit(1).toArray(function(err, docs) {
             callback(null, docs);
         });
     }
   });
 }
 
-trackingModel.getTracking1FromDevices = function(deviceIdList,callback)
+//TODO. MODIFICAR!
+trackingModel.getTracking1FromVehicles = function(vehicleLicenseList,callback)
 {
   db.open(function(err, db) {
     if(err) {
@@ -71,59 +69,59 @@ trackingModel.getTracking1FromDevices = function(deviceIdList,callback)
     }
     else {
 
-        log.info(deviceIdList);
-        deviceIdList_array = deviceIdList.split(",");
-        for (i=0; i<deviceIdList_array.length; i++)
-            deviceIdList_array[i] = parseInt(deviceIdList_array[i]);
-        log.info(deviceIdList_array);
-        var collection = db.collection('tracking1');
-        collection.find({'deviceId': {$in: deviceIdList_array}}).toArray(function(err, docs) {
+        log.info(vehicleLicenseList);
+        vehicleLicenseList_array = vehicleLicenseList.split(",");
+        /*
+        for (i=0; i<vehicleLicenseList_array.length; i++) {
+            var collection = db.collection('TRACKING_'+vehicleLicenseList_array[i]);
+            collection.find().toArray(function(err, docs) {
+                callback(null, docs);
+            });
+        }*/
+    }
+  });
+}
+
+
+trackingModel.getTracking5FromVehicle = function(vehicleLicense,callback)
+{
+  db.open(function(err, db) {
+    if(err) {
+        callback(err, null);
+    }
+    else {
+        var collection = db.collection('TRACKING_'+vehicleLicense);
+        collection.find().sort({"pos_date": -1}).limit(5).toArray(function(err, docs) {
             callback(null, docs);
         });
     }
   });
 }
 
-
-trackingModel.getTracking5FromDeviceId = function(deviceId,callback)
+trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
 {
   db.open(function(err, db) {
     if(err) {
         callback(err, null);
     }
     else {
-        var collection = db.collection('tracking5');
-        collection.find({'deviceId': parseInt(deviceId)}).sort({"pos_date": -1}).toArray(function(err, docs) {
+        var collection = db.collection('TRACKING'+requestData.vehicleLicense);
+        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             callback(null, docs);
         });
     }
   });
 }
 
-trackingModel.getTrackingFromDeviceId = function(requestData,callback)
+trackingModel.getTrackingFromVehicle = function(requestData,callback)
 {
   db.open(function(err, db) {
     if(err) {
         callback(err, null);
     }
     else {
-        var collection = db.collection('tracking');
-        collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
-            callback(null, docs);
-        });
-    }
-  });
-}
-
-trackingModel.getTracking = function(id,callback)
-{
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('tracking');
-        collection.find({'_id': parseInt(id)}).toArray(function(err, docs) {
+        var collection = db.collection('TRACKING_'+requestData.vehicleLicense);
+        collection.find({'trackingId': parseInt(requestData.trackingId)}).toArray(function(err, docs) {
             callback(null, docs);
         });
     }

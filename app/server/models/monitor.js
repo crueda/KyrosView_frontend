@@ -35,9 +35,7 @@ monitorModel.getMonitorFromUser = function(username,callback)
         callback(err, null);
     }
     else {
-        var collection = db.collection('monitor');
-        //callback(null, tempdoc);
-        //collection.find({'monitor': username}).toArray(function(err, docs) {
+        var collection = db.collection('MONITOR');
         collection.find({'username': username}).toArray(function(err, docs) {
             callback(null, docs);
         });

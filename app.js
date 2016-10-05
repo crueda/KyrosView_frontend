@@ -19,6 +19,7 @@ var api_monitor = require('./app/server/routes/monitor');
 var api_numpositions = require('./app/server/routes/numpositions');
 var api_image = require('./app/server/routes/image');
 var api_heatmap = require('./app/server/routes/heatmap');
+var api_vehicle = require('./app/server/routes/vehicle');
 
 var i18n = require("i18n");
 
@@ -135,6 +136,7 @@ app.use('/api', api_monitor);
 app.use('/api', api_numpositions);
 app.use('/api', api_image);
 app.use('/api', api_heatmap);
+app.use('/api', api_vehicle);
 require('./app/server/routes/routes')(app);
 
 

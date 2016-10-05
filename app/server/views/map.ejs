@@ -97,6 +97,9 @@
  var deviceIdDict = {};
  var iconDict = {};
  var vehicleLicenseDict = {};
+ var iconRealTimeDict = {};
+ var iconCoverDict = {};
+ var iconAlarmDict = {};
  var dateDict = {};
  var aliasDict = {};
  var latitudeDict = {};
@@ -126,8 +129,8 @@
 
 
 <script>
-//window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); loadLayer(); setInterval(reloadLayer,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); loadLayer(); loadMonitor(); /*selectMonitor();*/}//;
+//window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); initMapData(); setInterval(reloadMapData,5000); };
+ window.onload = function() { car=getGETcar(); username=getGETusername(); loadVehiclesData(); loadMonitor(); initMapData(); /*selectMonitor();*/}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -1563,17 +1566,19 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
   var projection = ol.proj.get('EPSG:3857');
 
 
-    function getDeviceImage(vehicleState, posDate, iconReal, iconCover, iconAlarm) 
+    function getVehicleIcon(vehicleLicense, vehicleState, posDate) 
     {
       var now = new Date();
       //console.log("-->" + now.getTime());
       if (vehicleState==0)
-        if (posDate < now.getTime() - 600000)  // posicion antigua: 10 minutos
-          return './images/' + iconCover;
+        if (posDate < now.getTime() - 600000) 
+          iconDict[vehicleLicense] = iconCoverDict[vehicleLicense]; // posicion antigua: 10 minutos
         else
-          return './images/' + iconReal;
+            iconDict[vehicleLicense] = iconRealTimeDict[vehicleLicense];  
       else
-        return './images/' + iconAlarm;
+       iconDict[vehicleLicense] = iconAlarmDict[vehicleLicense];
+
+      return './images/' + iconDict[vehicleLicense]
     }
 
 
@@ -1609,82 +1614,25 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
     }
 
 
+function loadVehiclesData() {
+  // Leer los datos de los vehiculos
+  $.getJSON( "/api/vehicles", function( data ) {
+    $.each( data, function( key, val ) {
+      iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+      iconCoverDict[val.vehicle_license] = val.icon_cover;
+      iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+      aliasDict[val.vehicleLicense] = val.alias;
+      deviceIdDict[val.vehicleLicense] = val.device_id;
+   });
+  });
+
+}
+
 function loadMonitor() {
-  var fileJson = "/api/monitor/<%=user%>";
-  $.getJSON( fileJson, function( data ) {
-    //console.log(data);
-    //var treeData = data.split("name").join("text");
+  $.getJSON( "/api/monitor/<%=user%>", function( data ) {
+
+    // construir el arbol 
     jsonString = JSON.stringify(data[0].monitor)
-   // console.log(jsonString);
-
-var tree = [
-  {
-    text: "Parent 1",
-    tags: [3],
-    state: {
-    checked: "true",
-    disabled: false,
-    expanded: true,
-    selected: true
-    },
-    nodes: [
-      {
-        text: "Child 1",
-        tags: [1],
-        nodes: [
-          {
-            text: "Grandchild 1"
-          },
-          {
-            text: "Grandchild 2"
-          }
-        ]
-      },
-      {
-        text: "Child 2"
-      }
-    ]
-  },
-  {
-    text: "Parent 2"
-  },
-  {
-    text: "Parent 3",
-    selectedIcon: "glyphicon glyphicon-stop",
-    selectable: true,
-    state: {
-    checked: "false",
-    disabled: false,
-    expanded: true,
-    selected: false
-    },
-    nodes: [
-      {
-        text: "Child 1",
-        nodes: [
-          {
-            text: "Grandchild 1",
-            tags: ['available'],
-                checked: true
-          },
-          {
-            text: "Grandchild 2"
-          }
-        ]
-      },
-      {
-        text: "Child 2"
-      }
-    ]
-  },
-  {
-    text: "Parent 4"
-  },
-  {
-    text: "Parent 5"
-  }
-];
-
     jsonString = jsonString.split("name").join("text");
     jsonString = jsonString.split("childs").join("nodes");
     jsonString = jsonString.split("ndevices").join("tags");
@@ -1692,7 +1640,6 @@ var tree = [
     jsonString = jsonString.split('"true"').join('true');
 
     jsonObject = JSON.parse(jsonString);
-    //console.log(jsonObject);
 
     $('#monitorDiv').height($(window).height()-200);
 
@@ -1704,9 +1651,8 @@ var tree = [
           highlightSelected: false,
           showTags: true,
           onNodeChecked: function(event, node) {
-            console.log(node.element_id + ' was checked');
-
-//$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: true } ]);
+            //console.log(node.element_id + ' was checked');
+            //$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: true } ]);
 
             if (node.type == "fleet") {
               if (node.nodes !== undefined) {
@@ -1719,11 +1665,10 @@ var tree = [
             }
             else if (node.type == "device")
               selectedDevices.push(node.element_id);
-
-            //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
+              //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
           },
           onNodeUnchecked: function (event, node) {
-            console.log(node.element_id + ' was unchecked');
+            //console.log(node.element_id + ' was unchecked');
             if (node.type == "device") {
               var index = selectedDevices.indexOf(node.element_id);
               if (index > -1) {
@@ -1734,11 +1679,9 @@ var tree = [
           }
         });
 
-   $('#treeview-checkable').treeview('collapseAll', { silent: true });
+      $('#treeview-checkable').treeview('collapseAll', { silent: true });
 
-//$('#treeview-checkable').treeview('selectNode', [ 655, { silent: false } ]);
-
-
+    //$('#treeview-checkable').treeview('selectNode', [ 655, { silent: false } ]);
    /*
    $.each( data, function( key, val ) {
       console.log(val.name);
@@ -1751,15 +1694,6 @@ var tree = [
     */
  });
 
-/*
-  var fileJson2 = "/api/selectdevices/<%=user%>";
-  $.getJSON( fileJson, function( data ) {
- $.each( data, function( key, val ) {
-  });
-*/
-
-
-
 
 }
 
@@ -1769,7 +1703,7 @@ function selectMonitor() {
   $('#treeview-checkable').treeview('checkNode', [ 655, { silent: true } ]);
 }
 
-function loadLayer() {
+function initMapData() {
   // posicion actual
   /*
   navigator.geolocation.getCurrentPosition(function(location) {
@@ -1779,27 +1713,27 @@ function loadLayer() {
     addActualPosition(location.coords.latitude,location.coords.longitude,location.coords.accuracy);
   });*/
 
- $.getJSON( '/api/tracking1/user/<%=user%>', function( data ) {
+ $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
   
   var strDevices = '[';
  
    var ndata = data.length;
    var index = 0;
    $.each( data, function( key, val ) {
-     processDevice (val.license,val.alias,val.longitude,val.latitude,val.geocoding,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+     processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
-     monitorDevices[val.license] = val.deviceId;
+     monitorDevices[val.vehicle_license] = val.device_id;
 
-    if (val.license == '<%=vehicleLicense%>') {
-      centerMap(val.longitude,val.latitude);
-      $('#licenseHist').val(val.license);
+    if (val.vehicle_license == '<%=vehicleLicense%>') {
+      centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+      $('#licenseHist').val(val.vehicle_license);
     }
     index ++;
     if (index == ndata) {
-      strDevices = strDevices + '{"id": ' + val.deviceId + ', "name": "' + val.license + '"}' ;
+      strDevices = strDevices + '{"id": ' + val.device_id + ', "name": "' + val.vehicle_license + '"}' ;
       document.getElementById('attr-loading').style.display = 'none';
     } else {
-      strDevices = strDevices + '{"id": ' + val.deviceId + ', "name": "' + val.license + '"},' ;
+      strDevices = strDevices + '{"id": ' + val.device_id + ', "name": "' + val.vehicle_license + '"},' ;
     }
   });               
 
@@ -1818,24 +1752,25 @@ function loadLayer() {
 }
 
 
-function reloadLayer() {
+function reloadMapData() {
   //if (!isMobile()) {  
      $.getJSON( '/api/tracking1/user/<%=user%>', function( data ) {
 
        var items = [];
        $.each( data, function( key, val ) {
-        processDevice (val.license,val.alias,val.longitude,val.latitude,val.geocoding,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+        processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
       });               
      });
   //}
 }
 
-function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
+function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {             
    //TODO: lo quito para que siempre salgan los coches ordenados ?
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
-  iconDict[vehicleLicense] = iconReal;
-  deviceIdDict[vehicleLicense] = deviceId;
-  aliasDict[vehicleLicense] = alias;
+  //deviceIdDict[vehicleLicense] = deviceId;
+  if (vehicleState==undefined)
+    vehicleState = 0;
+
   latitudeDict[vehicleLicense] = lat;
   longitudeDict[vehicleLicense] = lon;
   if (geocoding!=null && geocoding!=undefined)
@@ -1857,7 +1792,7 @@ function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehi
    }
 
    // añadir el icono
-   add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
+   add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
 
  }
 
@@ -1893,7 +1828,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
 }
 
 
-    function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate) {
+    function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
@@ -1903,7 +1838,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         name: alias
       });
 
-      var image_src = getDeviceImage(vehicleState, posDate, iconReal, iconCover, iconAlarm); 
+      var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
       
       var iconStyle;
       var iconScale = 1;
