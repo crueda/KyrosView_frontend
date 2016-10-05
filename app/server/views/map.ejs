@@ -130,7 +130,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); initMapData(); setInterval(reloadMapData,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); loadVehiclesData(); loadMonitor(); initMapData(); /*selectMonitor();*/}//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); loadVehiclesDataSync(); loadMonitor(); initMapData(); /*selectMonitor();*/}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -1569,7 +1569,6 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
     function getVehicleIcon(vehicleLicense, vehicleState, posDate) 
     {
       var now = new Date();
-      //console.log("-->" + now.getTime());
       if (vehicleState==0)
         if (posDate < now.getTime() - 600000) 
           iconDict[vehicleLicense] = iconCoverDict[vehicleLicense]; // posicion antigua: 10 minutos
@@ -1614,6 +1613,25 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
     }
 
 
+function loadVehiclesDataSync() {
+  // Leer los datos de los vehiculos en modo sincrono
+  $.ajax({ 
+    url: "/api/vehicles", 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ 
+        //Proceso de los datos recibidos
+      $.each( data, function( key, val ) {
+        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+        iconCoverDict[val.vehicle_license] = val.icon_cover;
+        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+        aliasDict[val.vehicleLicense] = val.alias;
+        deviceIdDict[val.vehicleLicense] = val.device_id;
+      });
+    } 
+  });
+}
+
 function loadVehiclesData() {
   // Leer los datos de los vehiculos
   $.getJSON( "/api/vehicles", function( data ) {
@@ -1625,7 +1643,6 @@ function loadVehiclesData() {
       deviceIdDict[val.vehicleLicense] = val.device_id;
    });
   });
-
 }
 
 function loadMonitor() {

@@ -20,6 +20,7 @@ var log = require('tracer').console({
 
 var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
+var dbMongoHost = "192.168.28.251";
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
 var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
@@ -35,8 +36,7 @@ vehicleModel.getVehicles = function(callback)
     }
     else {
         var collection = db.collection('VEHICLE');
-        //collection.find().limit(100).toArray(function(err, docs) {
-        collection.find({"vehicle_license": "1615-FDW"}).toArray(function(err, docs) {
+        collection.find().toArray(function(err, docs) {
             callback(null, docs);
         });
     }
@@ -51,7 +51,7 @@ vehicleModel.getVehicle = function(vehicleLicense, callback)
     }
     else {
         var collection = db.collection('VEHICLE');
-        collection.find({"vehicleLicense" : vehicleLicense}).toArray(function(err, docs) {
+        collection.find({"vehicle_license" : vehicleLicense}).toArray(function(err, docs) {
             callback(null, docs);
         });
     }

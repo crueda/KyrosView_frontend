@@ -36,8 +36,8 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/app/server/views');
 app.set('view engine', 'jade');
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('stylus').middleware({ src: __dirname + '/app/public' }));
 app.use(express.static(__dirname + '/app/public'));
 
@@ -127,6 +127,8 @@ app.use(i18n.init);
 //var greeting = i18n.__('Hello')
 //console.log("-->"+ greeting);
 //var greeting = res.__('Hello');
+
+
 
 app.use('/api', api_tracking);
 app.use('/api', api_odometer);
