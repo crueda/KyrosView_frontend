@@ -36,6 +36,7 @@ vehicleModel.getVehicles = function(callback)
     }
     else {
         var collection = db.collection('VEHICLE');
+        //collection.find().limit(100).toArray(function(err, docs) {
         collection.find().toArray(function(err, docs) {
             callback(null, docs);
         });

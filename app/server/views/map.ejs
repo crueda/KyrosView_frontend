@@ -120,6 +120,7 @@
  var weekHoursDict = {};
  var monthHoursDict = {};
  var monitorDevices = {};
+ var monitorVehicleLicense = [];
  var greenFlagOverlay = null;
  var redFlagOverlay = null;
  var actualPosOverlay = null;
@@ -130,7 +131,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); initMapData(); setInterval(reloadMapData,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); loadVehiclesDataSync(); loadMonitor(); initMapData(); /*selectMonitor();*/}//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); loadDefaultVehicleDataSync(); initMapData(); loadVehiclesDataSync(); loadMonitor();}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -172,7 +173,7 @@
         selectedDevicesStr = selectedDevicesStr + selectedDevices[i]
     }
     //console.log(selectedDevicesStr);
-    showSelectedDevices();
+    showSelectedVehicles();
   });
   
 
@@ -271,8 +272,7 @@ function isMobile(){
   }
 
   function showTracking5(vehicleLicense) {
-    var urlJson = "/api/tracking5/device/"+deviceIdDict[vehicleLicense];
-      $.getJSON( urlJson, function( data ) {
+      $.getJSON( 'api/tracking5/vehicle/'+vehicleLicense, function( data ) {
         var lat1, lat2, lat3, lat4, lat5 = 0;
         var lon1, lon2, lon3, lon4, lon5 = 0;
         var trackingId1, trackingId2, trackingId3, trackingId4, trackingId5 = 0;
@@ -281,29 +281,29 @@ function isMobile(){
 
           switch(index) {
             case 1:
-              lat1 = val.latitude;
-              lon1 = val.longitude;
-              trackingId1 = val.trackingId;
+              lat1 = val.location.coordinates[1];
+              lon1 = val.location.coordinates[0];
+              trackingId1 = val.tracking_id;
               break;
             case 2:
-              lat2 = val.latitude;
-              lon2 = val.longitude;
-              trackingId2 = val.trackingId;
+              lat2 = val.location.coordinates[1];
+              lon2 = val.location.coordinates[0];
+              trackingId2 = val.tracking_id;
               break;
             case 3:
-              lat3 = val.latitude;
-              lon3 = val.longitude;
-              trackingId3 = val.trackingId;
+              lat3 = val.location.coordinates[1];
+              lon3 = val.location.coordinates[0];
+              trackingId3 = val.tracking_id;
               break;
             case 4:
-              lat4 = val.latitude;
-              lon4 = val.longitude;
-              trackingId4 = val.trackingId;
+              lat4 = val.location.coordinates[1];
+              lon4 = val.location.coordinates[0];
+              trackingId4 = val.tracking_id;
               break;
             case 5:
-              lat5 = val.latitude;
-              lon5 = val.longitude;
-              trackingId5 = val.trackingId;
+              lat5 = val.location.coordinates[1];
+              lon5 = val.location.coordinates[0];
+              trackingId5 = val.tracking_id;
               break;
             }
           index ++;
@@ -314,7 +314,7 @@ function isMobile(){
     });
   }
 
-  function showSelectedDevices() {
+  function showSelectedVehicles() {
     //alert("go");
     vectorLinesSource.clear();
     if (this.greenFlagOverlay!=null)
@@ -334,7 +334,7 @@ function isMobile(){
     var initPos=true;
     var index = 0;
     document.getElementById('attr-loading').style.display = 'block';
-    var urlJson = "/api/tracking1/devices?deviceIdList="+selectedDevicesStr;
+    var urlJson = "/api/tracking1/vehicles?vehicleLicenseList="+selectedDevicesStr;
       $.getJSON( urlJson, function( data ) {
         if (data.length == 0) {
           $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
@@ -364,14 +364,12 @@ function isMobile(){
                 maxLon=lon;              
             }
             
-          //pintar dispositivo
-          processDeviceTree (val.license,val.alias,val.longitude,val.latitude,val.geocoding,val.speed,val.heading,val.vehicle_state, val.iconReal, val.iconCover, val.iconAlarm, val.pos_date, val.deviceId);
+          //pintar dispositivo          
+          processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
           lon_anterior=lon;
           lat_anterior=lat;          
           index++;
-
-
 
         });
         document.getElementById('attr-loading').style.display = 'none';
@@ -722,7 +720,7 @@ function isMobile(){
       
       // centrar el mapa
       var new_view = new ol.View({
-          center: ol.proj.transform([longitudeDict[<%=vehicleLicense%>], latitudeDict[<%=vehicleLicense%>]], 'EPSG:4326', 'EPSG:3857'),
+          center: ol.proj.transform([longitudeDict['<%=vehicleLicense%>'], latitudeDict['<%=vehicleLicense%>']], 'EPSG:4326', 'EPSG:3857'),
           zoom: 14
         });
 
@@ -733,7 +731,7 @@ function isMobile(){
         map.beforeRender(pan);
         map.setView(new_view);
 
-    openTooltip(deviceId);
+    openTooltip(<%=vehicleLicense%>);
   }
 
   function openTooltip(vehicleLicense) {
@@ -1613,6 +1611,25 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
     }
 
 
+function loadDefaultVehicleDataSync() {
+  // Leer los datos de los vehiculos en modo sincrono
+  $.ajax({ 
+    url: "/api/vehicle/<%=vehicleLicense%>", 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ 
+        //Proceso de los datos recibidos
+      $.each( data, function( key, val ) {
+        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+        iconCoverDict[val.vehicle_license] = val.icon_cover;
+        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+        aliasDict[val.vehicle_license] = val.alias;
+        deviceIdDict[val.vehicle_license] = val.device_id;
+      });
+    } 
+  });
+}
+
 function loadVehiclesDataSync() {
   // Leer los datos de los vehiculos en modo sincrono
   $.ajax({ 
@@ -1625,8 +1642,8 @@ function loadVehiclesDataSync() {
         iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
         iconCoverDict[val.vehicle_license] = val.icon_cover;
         iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicleLicense] = val.alias;
-        deviceIdDict[val.vehicleLicense] = val.device_id;
+        aliasDict[val.vehicle_license] = val.alias;
+        deviceIdDict[val.vehicle_license] = val.device_id;
       });
     } 
   });
@@ -1639,30 +1656,66 @@ function loadVehiclesData() {
       iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
       iconCoverDict[val.vehicle_license] = val.icon_cover;
       iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-      aliasDict[val.vehicleLicense] = val.alias;
-      deviceIdDict[val.vehicleLicense] = val.device_id;
+      aliasDict[val.vehicle_license] = val.alias;
+      deviceIdDict[val.vehicle_license] = val.device_id;
    });
   });
+}
+
+// This function handles arrays and objects
+function eachRecursive(obj)
+{
+    for (var k in obj)
+    {
+        if (typeof obj[k] == "object" && obj[k] !== null)
+            eachRecursive(obj[k]);
+        else
+            if (k=='vehicle_license') {
+              //console.log("k:" + k + " - obj[k]:" + obj[k]);
+              monitorVehicleLicense.push(obj[k]);
+              addVehicleToMap(obj[k]);              
+            }
+    }
 }
 
 function loadMonitor() {
   $.getJSON( "/api/monitor/<%=user%>", function( data ) {
 
-    // construir el arbol 
     jsonString = JSON.stringify(data[0].monitor)
-    jsonString = jsonString.split("name").join("text");
+
+    jsonObject = JSON.parse(jsonString);
+    // Recorrer el json para quedarnos con los datos de los vehiculos que monitoriza el usuario
+    eachRecursive(jsonObject);
+
+    // Rellenar el control de la ventana de historico
+    $('#licenseHist').val('<%=vehicleLicense%>');
+    var strDevices = '[';
+    var ndata = monitorVehicleLicense.length;
+    for (i=0; i<ndata; i++) {
+      monitorDevices[monitorVehicleLicense[i]] = deviceIdDict[monitorVehicleLicense[i]];
+      if (i == ndata-1) {
+        strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i] + '"}' ;
+      } else {
+        strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i]+ '"},' ;
+      }
+    }    
+    strDevices = strDevices + ']';
+    var jsonDevices = JSON.parse(strDevices);
+    $('#licenseHist').typeahead({source:jsonDevices, 
+        autoSelect: true
+    }); 
+
+    // construir el arbol     
+    jsonString = jsonString.split("fleet_name").join("text");
+    jsonString = jsonString.split("vehicle_license").join("text");
     jsonString = jsonString.split("childs").join("nodes");
     jsonString = jsonString.split("ndevices").join("tags");
     jsonString = jsonString.split('"false"').join('false');
     jsonString = jsonString.split('"true"').join('true');
-
     jsonObject = JSON.parse(jsonString);
-
     $('#monitorDiv').height($(window).height()-200);
-
     var $checkableTree = $('#treeview-checkable').treeview({
           data: jsonObject,
-          //data: tree,
           showIcon: true,
           showCheckbox: true,
           highlightSelected: false,
@@ -1731,41 +1784,12 @@ function initMapData() {
   });*/
 
  $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
-  
-  var strDevices = '[';
- 
-   var ndata = data.length;
-   var index = 0;
    $.each( data, function( key, val ) {
      processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
-     monitorDevices[val.vehicle_license] = val.device_id;
-
-    if (val.vehicle_license == '<%=vehicleLicense%>') {
-      centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-      $('#licenseHist').val(val.vehicle_license);
-    }
-    index ++;
-    if (index == ndata) {
-      strDevices = strDevices + '{"id": ' + val.device_id + ', "name": "' + val.vehicle_license + '"}' ;
-      document.getElementById('attr-loading').style.display = 'none';
-    } else {
-      strDevices = strDevices + '{"id": ' + val.device_id + ', "name": "' + val.vehicle_license + '"},' ;
-    }
-  });               
-
-    strDevices = strDevices + ']';
-    var jsonDevices = JSON.parse(strDevices);
-
-      var $input = $('#licenseHist');
-      $input.typeahead({source:jsonDevices, 
-        autoSelect: true,
-        /*updater: function(selection){
-                //console.log("You selected: " + selection.id);
-        }*/
-      }); 
-
-     });
+     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+    });
+ });
 }
 
 
@@ -1812,11 +1836,18 @@ function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehi
    add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
 
  }
-
    dateDict[vehicleLicense] = posDate;
-
 }
 
+function addVehicleToMap(vehicleLicense) {
+  $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+    $.each( data, function( key, val ) {
+        processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+      });                           
+  });
+}
+
+/*
 function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
   iconDict[vehicleLicense] = iconReal;
   deviceIdDict[vehicleLicense]=deviceId;
@@ -1841,8 +1872,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
 
    // añadir el icono
    add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
-
-}
+}*/
 
 
     function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
@@ -2418,55 +2448,53 @@ var displayFeatureInfo = function(pixel) {
          };
 
 var displayTooltipInfo = function(evt) {
- info.css({
+  info.css({
    left: evt.pixel[0] + 'px',
    top: (evt.pixel[1] - 15) + 'px'
- });
- var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-   return feature;
- });
- if (feature) {
+  });
+  var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+    return feature;
+  });
+  if (feature) {
     if (feature.get('elementId')=='trackingPoint') {
       openTooltipTrackingPoint(feature.get('id'));
     }
     else if (feature.get('elementId')=='device') {
-            //if (isMobile()) {
-             openTooltip(feature.get('id'));
-             showTracking5(feature.get('id'));
-            //} else {
-             info.tooltip('hide');
-            }
+    //if (isMobile()) {
+      openTooltip(feature.get('id'));
+      showTracking5(feature.get('id'));
+    //} else {
+      info.tooltip('hide');
+    }
     else if (feature.get('elementId')=='positionPoint') {
-            openTooltipMapPoint(feature.get('lat'), feature.get('lon'));
-          }
+      openTooltipMapPoint(feature.get('lat'), feature.get('lon'));
+    }
+  }
+  else {
+    var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+    var lon = lonlat[0];
+    var lat = lonlat[1];
+    addFeaturePointAt (lonlat);
+  }
+};
 
-          }
-
-          else {
-        var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-      var lon = lonlat[0];
-      var lat = lonlat[1];
-        addFeaturePointAt (lonlat);
- 
-          }
-         };
-
-         map.on('pointermove', function(evt) {
-           if (evt.dragging) {
-             info.tooltip('hide');
-             return;
-           }
-           displayFeatureInfo(map.getEventPixel(evt.originalEvent));
-         });
+  map.on('pointermove', function(evt) {
+    if (evt.dragging) {
+      info.tooltip('hide');
+      return;
+    }
+    displayFeatureInfo(map.getEventPixel(evt.originalEvent));
+  });        
          
-         map.on('singleclick', function(evt) {
-           displayTooltipInfo(evt);
-           //if (!isMobile()) {
-           //   closeTooltip();
-            //}
-
-         });
+  map.on('singleclick', function(evt) {
+    displayTooltipInfo(evt);
+    //if (!isMobile()) {
+    //   closeTooltip();
+    //}
+  });
          
+
+
        </script>
      </body>
      </html>

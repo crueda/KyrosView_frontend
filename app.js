@@ -28,8 +28,8 @@ var methodOverride = require('method-override');
 
 var app = express();
 
-app.use(bodyParser.json({limit: '10mb'}));
-app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.locals.pretty = true;
 app.set('port', process.env.PORT || 3000);
@@ -139,6 +139,7 @@ app.use('/api', api_numpositions);
 app.use('/api', api_image);
 app.use('/api', api_heatmap);
 app.use('/api', api_vehicle);
+
 require('./app/server/routes/routes')(app);
 
 
