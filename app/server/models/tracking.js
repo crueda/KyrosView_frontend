@@ -105,7 +105,7 @@ trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
         callback(err, null);
     }
     else {
-        var collection = db.collection('TRACKING'+requestData.vehicleLicense);
+        var collection = db.collection('TRACKING_'+requestData.vehicleLicense);
         collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             callback(null, docs);
         });
@@ -121,7 +121,7 @@ trackingModel.getTrackingFromVehicle = function(requestData,callback)
     }
     else {
         var collection = db.collection('TRACKING_'+requestData.vehicleLicense);
-        collection.find({'trackingId': parseInt(requestData.trackingId)}).toArray(function(err, docs) {
+        collection.find({'tracking_id': parseInt(requestData.trackingId)}).toArray(function(err, docs) {
             callback(null, docs);
         });
     }

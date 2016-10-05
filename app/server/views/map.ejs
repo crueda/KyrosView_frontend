@@ -186,12 +186,13 @@
     var fend_epoch = fend_date.getTime();
 
     var deviceIdHist = monitorDevices[$('#licenseHist').val()];
+    var vehicleLicenseHist = $('#licenseHist').val();
 
     document.getElementById('formGraphDeviceId').value = deviceIdHist;
     document.getElementById('formGraphInitDate').value = finit_epoch;
     document.getElementById('formGraphEndDate').value = fend_epoch;
 
-    showTrackingHist(deviceIdHist, finit_epoch, fend_epoch);
+    showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch);
 
     document.getElementById('attr-graph-hist').style.display = 'block';
   });
@@ -309,7 +310,7 @@ function isMobile(){
           index ++;
           
       }); 
-      addLinesTracking5(trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5)
+      addLinesTracking5(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5)
 
     });
   }
@@ -390,7 +391,7 @@ function isMobile(){
   }
 
 
-  function showTrackingHist(deviceIdHist, finit_epoch, fend_epoch) {
+  function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
 
     var latHist = [];
     var lonHist = [];
@@ -413,9 +414,10 @@ function isMobile(){
     var lat_anterior=0;
     var initPos=true;
     var index = 0;
-    var fileJson = "/api/tracking/device/"+deviceIdHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
+    var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
+    alert(urlJson);
     document.getElementById('attr-loading').style.display = 'block';
-      $.getJSON( fileJson, function( data ) {
+      $.getJSON( urlJson, function( data ) {
         if (data.length == 0) {
           $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
           $('#myModalMsgLabel').css({ "color" : 'red' });
@@ -424,9 +426,10 @@ function isMobile(){
         }
 
         $.each( data, function( key, val ) {
-            var lat = val.latitude;
-            var lon = val.longitude;
-            var trackingId = val._id;
+            var lat = val.location.coordinates[1];
+            var lon = val.location.coordinates[0];
+            var trackingId = val.tracking_id;
+            var vehicleLicense = val.vehicle_license;
             if (initPos==true) {
               minLon=lon;
               minLat=lat;
@@ -485,12 +488,12 @@ function isMobile(){
         {
           //setTimeout(function() {
           if (i == 0) {
-            addTrackingHistPointStart(trackingIdHist[i], latHist[i], lonHist[i]);            
+            addTrackingHistPointStart(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);            
           } else if (i == latHist.length -1 ) {
-            addTrackingHistPointEnd(trackingIdHist[i], latHist[i], lonHist[i]);            
+            addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);            
           } else {
-            //addTrackingHistPoint(trackingId, lat, lon);    
-            addFeatureAt(trackingIdHist[i], [lonHist[i],latHist[i]]);                    
+            //addTrackingHistPoint(vehicleLicenseHist[i], trackingId, lat, lon);    
+            addFeatureAt(vehicleLicenseHist, trackingIdHist[i], [lonHist[i],latHist[i]]);                    
           }
           //}, 100*i);
         }
@@ -505,7 +508,7 @@ function isMobile(){
       var iconFeature = new ol.Feature({
         geometry: geo_point,
         id: 0,
-        elementId: 'trackingPoint',
+        elementId: 'actualPosition',
         name: "<%= __('actual_position') %>"
       });
 
@@ -534,13 +537,14 @@ function isMobile(){
 
   }
 
-  function addTrackingHistPoint(trackingId, lat, lon) {
+  function addTrackingHistPoint(vehicleLicense, trackingId, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"
       });
 
@@ -557,13 +561,14 @@ function isMobile(){
       vectorTrackingHistSource.addFeature(iconFeature); 
   }
 
-    function addTrackingHistPointStart(trackingId, lat, lon) {
+    function addTrackingHistPointStart(vehicleLicense, trackingId, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('init_tracking_point') %>"
       });
 
@@ -591,13 +596,14 @@ function isMobile(){
       map.addOverlay(greenFlagOverlay);
   }
 
-    function addTrackingHistPointEnd(trackingId, lat, lon) {
+    function addTrackingHistPointEnd(vehicleLicense, trackingId, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('end_tracking_point') %>"
       });
 
@@ -812,10 +818,11 @@ function pad(value) {
     }
 }
 
-function openTooltipTrackingPoint(trackingId) {
+function openTooltipTrackingPoint(vehicleLicense, trackingId) {
     
-    var fileJson = "/api/tracking/"+trackingId;
-      $.getJSON( fileJson, function( data ) {
+    var urlJson = "/api/tracking?vehicleLicense="+vehicleLicense+"&trackingId="+trackingId;
+    //alert(urlJson);
+      $.getJSON( urlJson, function( data ) {
       $.each( data, function( key, val ) {
 
       document.getElementById('tooltipTrackingTrackingId').innerHTML = trackingId;
@@ -829,9 +836,10 @@ function openTooltipTrackingPoint(trackingId) {
 
 
       document.getElementById('tooltipTrackingDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
-      document.getElementById('tooltipTrackingLatitude').innerHTML = val.latitude;
-      document.getElementById('tooltipTrackingLongitude').innerHTML = val.longitude;
+      document.getElementById('tooltipTrackingLatitude').innerHTML = val.location.coordinates[1];
+      document.getElementById('tooltipTrackingLongitude').innerHTML = val.location.coordinates[0];
       document.getElementById('tooltipTrackingSpeed').innerHTML = val.speed;
+      document.getElementById('tooltipTrackingAltitude').innerHTML = val.altitude;
       document.getElementById('tooltipTrackingHeading').innerHTML = val.heading;
 
       });
@@ -1252,6 +1260,10 @@ function openTooltipMapPoint(latitude, longitude) {
             <tr>
               <td><b><%= __('speed') %> (Km/h)</b></td>
               <td><font color="black" id="tooltipTrackingSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('altitude') %> (m)</b></td>
+              <td><font color="black" id="tooltipTrackingAltitude">---</font></td>
             </tr>
             <tr>
               <td><b><%= __('heading') %> (º)</b></td>
@@ -1920,7 +1932,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
     }
 
   
-  function addLinesTracking5(trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5) {
+  function addLinesTracking5(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5) {
 
     vectorTrackingHistSource.clear();
     vectorLinesHistSource.clear();
@@ -1937,6 +1949,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         geometry: new ol.geom.Point(ol.proj.transform([lon1, lat1], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId1,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"
 
       });
@@ -1955,6 +1968,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         geometry: new ol.geom.Point(ol.proj.transform([lon2, lat2], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId2,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"
       });
       iconFeature2.setStyle(new ol.style.Style({
@@ -1972,6 +1986,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         geometry: new ol.geom.Point(ol.proj.transform([lon3, lat3], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId3,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"
       });
       iconFeature3.setStyle(new ol.style.Style({
@@ -1989,6 +2004,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         geometry: new ol.geom.Point(ol.proj.transform([lon4, lat4], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId4,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"
       });
       iconFeature4.setStyle(new ol.style.Style({
@@ -2006,6 +2022,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         geometry: new ol.geom.Point(ol.proj.transform([lon5, lat5], 'EPSG:4326', 'EPSG:3857')),
         id: trackingId5,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"
       });
       iconFeature5.setStyle(new ol.style.Style({
@@ -2345,6 +2362,7 @@ map.addControl(new ol.control.MousePosition({
         geometry: geo_point,
         id: trackingId,
         elementId: 'trackingPoint',
+        vehicleLicense: vehicleLicense,
         name: "<%= __('tracking_point') %>"      
       });
 
@@ -2457,7 +2475,7 @@ var displayTooltipInfo = function(evt) {
   });
   if (feature) {
     if (feature.get('elementId')=='trackingPoint') {
-      openTooltipTrackingPoint(feature.get('id'));
+      openTooltipTrackingPoint(feature.get('vehicleLicense'), feature.get('id'));
     }
     else if (feature.get('elementId')=='device') {
     //if (isMobile()) {

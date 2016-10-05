@@ -442,17 +442,16 @@ router.get('/tracking', function(req, res)
       var vehicleLicense = req.query.vehicleLicense;
       var trackingId = req.query.trackingId;
 
-      log.info("GET: /tracking/"+id);
-
       if (vehicleLicense==null || trackingId==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
+        log.info("GET: /tracking?vehicleLicense="+vehicleLicense+"&trackingId="+trackingId);
         var requestData = {
           vehicleLicense : vehicleLicense,
           trackingId : trackingId
         };
-        TrackingModel.getTracking(requestData, function(error, data)
+        TrackingModel.getTrackingFromVehicle(requestData, function(error, data)
         {
           if (data == null)
           {

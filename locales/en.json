@@ -62,5 +62,6 @@
 	"kyros_devices": "Kyros devices",
 	"tracking": "Tracking",
 	"geocoging": "Location",
-	"geocoding_unknown": "Unknown"
+	"geocoding_unknown": "Unknown",
+	"altitude": "Altitude"
 }

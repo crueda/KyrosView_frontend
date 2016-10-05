@@ -61,5 +61,6 @@
 	"kyros_devices": "Dispositivos de Kyros",
 	"tracking": "Posiciones",
 	"geocoding": "Localización",
-	"geocoding_unknown": "Dirección desconocida"
+	"geocoding_unknown": "Dirección desconocida",
+	"altitude": "Altitud"
 }
