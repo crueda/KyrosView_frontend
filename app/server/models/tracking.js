@@ -20,7 +20,8 @@ var log = require('tracer').console({
 });
 
 var dbMongoName = properties.get('bbdd.mongo.name');
-var dbMongoHost = properties.get('bbdd.mongo.ip');
+//var dbMongoHost = properties.get('bbdd.mongo.ip');
+var dbMongoHost = "192.168.28.251";
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
 var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
