@@ -18,7 +18,10 @@
 
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="http://openlayers.org/en/master/build/ol.js"></script>
+  
+  <!--script type="text/javascript" src="http://openlayers.org/en/master/build/ol.js"></script-->
+    <script src="http://openlayers.org/en/v3.18.2/build/ol.js"></script>
+
   <script src="./js/bootstrap-treeview.js"></script>
   <script src="./js/ol3-layerswitcher.js" type="text/javascript"></script>
   <script src="./js/bootstrap3-typeahead.min.js" type="text/javascript"></script>
@@ -36,6 +39,7 @@
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
   <!--link rel="stylesheet" href="http://viglino.github.io/ol3-ext/examples/style.css" /-->
+
 
 <!--script type="text/javascript" src="js/bootstrap-filestyle.min.js"> </script-->
 
@@ -137,6 +141,9 @@
  var actualPosOverlay = null;
  var selectedDevices = [];
  var selectedDevicesStr = "";
+ var defaultVehicleLastLat = 0;
+ var defaultVehicleLastLon = 0;
+ var defaultVehicleLastTrackingId = 0;
  function isMobile(){
   //return true;
     return (
@@ -159,13 +166,6 @@
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
   
-    /*var finit = "10-03-2016 00:00:00";
-    var finit_date = Date.parse(finit); 
-    console.log(finit);
-    console.log(finit_date);*/
-
- 
-
   //$(":file").filestyle('buttonText', 'Imagen');
   //$(":file").filestyle('size', 'sm');
 
@@ -397,7 +397,7 @@ function clearMap() {
             }
             
           //pintar dispositivo          
-          processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+          processDevice (val.tracking_id,val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
           lon_anterior=lon;
           lat_anterior=lat;          
@@ -424,19 +424,11 @@ function clearMap() {
 
   function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
 
+    clearMap();
+
     var latHist = [];
     var lonHist = [];
     var trackingIdHist = [];
-
-    //alert("go");
-    vehiclesLineSource.clear();
-    if (this.greenFlagOverlay!=null)
-      map.removeOverlay(this.greenFlagOverlay);
-    if (this.redFlagOverlay!=null)
-      map.removeOverlay(this.redFlagOverlay);
-
-    vehiclesHistSource.clear();
-    vehiclesHistLineSource.clear();
     var minLon=0;
     var minLat=0;
     var maxLon=0;
@@ -1490,7 +1482,7 @@ function openTooltipMapPoint(latitude, longitude) {
   });
   var vehiclesLineLayer = new ol.layer.Vector({
     title: '',
-    visible: false,
+    visible: true,
     style: lineStyle,
     source: vehiclesLineSource
   });
@@ -1632,7 +1624,7 @@ var mapPointSource = new ol.source.Vector({
       }
     }
 
-    function moveMap(vehicleLicense) {
+    function moveMap2Vehicle(vehicleLicense) {
         var new_view = new ol.View({
           center: ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'),
           zoom: map.getView().getZoom(),
@@ -1644,6 +1636,11 @@ var mapPointSource = new ol.source.Vector({
           duration: 3000,
           source:  (map.getView().getCenter()),
         });
+
+        //pan = ol.animation.pan({duration: 500, source: map.getView().getCenter()})
+        //zoom = ol.animation.zoom({duration: 500, resolution: map.getView().getResolution()})
+        //map.beforeRender(pan, zoom)
+
         map.beforeRender(pan);
         map.setView(new_view);
     }
@@ -1823,7 +1820,7 @@ function initMapData() {
  $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
    $.each( data, function( key, val ) {
 
-     processDevice (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
      centerMap(val.location.coordinates[0],val.location.coordinates[1]);
 
@@ -1836,16 +1833,16 @@ function reloadMapData() {
   $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
    $.each( data, function( key, val ) {
 
-     processDevice (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
-     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-     //moveMap(val.vehicle_license);
-
+     //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+     //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
+      moveMap2Vehicle(val.vehicle_license);
     });
   });
 }
 
-function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {             
+function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {             
   if (vehicleState==undefined)
     vehicleState = 0;
 
@@ -1872,6 +1869,12 @@ function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehi
 
     // añadir el icono
     add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
+
+    addLineTracking(vehicleLicense, defaultVehicleLastTrackingId, defaultVehicleLastLat, defaultVehicleLastLon, trackingId, lat, lon);
+    defaultVehicleLastLat = lat;
+    defaultVehicleLastLon = lon;
+    defaultVehicleLastTrackingId = trackingId;
+
   }
   dateDict[vehicleLicense] = posDate;
 }
@@ -1879,7 +1882,7 @@ function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehi
 function addVehicleToMap(vehicleLicense) {
   $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
     $.each( data, function( key, val ) {
-        processDevice (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+        processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
       });                           
   });
 }
@@ -1944,7 +1947,60 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
       //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
     }
 
-  
+    function addLineTracking(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2)
+    {
+      var coords = [];
+      if (lat1!=0) {
+        coords.push([lon1, lat1]);
+
+        var iconFeature1 = new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.transform([lon1, lat1], 'EPSG:4326', 'EPSG:3857')),
+          id: trackingId1,
+          elementId: 'trackingPoint',
+          vehicleLicense: vehicleLicense,
+          name: "<%= __('tracking_point') %>"
+
+        });
+        iconFeature1.setStyle(new ol.style.Style({
+          image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+           scale: 0.8,
+           src: './img/points/beacon_ball_blue.gif'
+         }))
+        }));
+        vehiclesLineSource.addFeature(iconFeature1); 
+
+        
+
+     }
+     if (lat2!=0) {
+      coords.push([lon2, lat2]);
+
+      var lineString = new ol.geom.LineString(coords);
+      // transform to EPSG:3857
+      lineString.transform('EPSG:4326', 'EPSG:3857');
+
+      var lineStyle = new ol.style.Style({
+      stroke: new ol.style.Stroke({
+          //color: '#'+Math.floor(Math.random()*16777215).toString(16),
+          //color: '#0000ff',
+          color: '#66c2ff',        
+          width: 4
+        })
+      });
+
+  }
+
+  // create the feature
+  var featureLine = new ol.Feature({
+    geometry: lineString,
+    style: lineStyle,
+    name: "<%= __('tracking_line') %>"
+  });
+  vehiclesLineSource.addFeature(featureLine);
+
+  }
+
+
   function addLinesTracking5(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5) {
 
     clearMap();
@@ -2105,6 +2161,10 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
         map.beforeRender(pan);
         map.setView(new_view);
     */
+ }
+
+ function moveMap(lon, lat) {
+    map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));   
  }
 
  function getInitDateLastDays(days) {
