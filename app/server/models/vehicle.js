@@ -1,5 +1,6 @@
 var Db = require('mongodb').Db;
 var server = require('mongodb').Server;
+var mongoose = require('mongoose');
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
@@ -20,15 +21,21 @@ var log = require('tracer').console({
 
 var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
-var dbMongoHost = "192.168.28.251";
+//var dbMongoHost = "192.168.28.251";
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
 var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
 
+mongoose.connect('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+    if (error) {
+        log.info(error);
+    }
+});
+
 // Crear un objeto para ir almacenando todo lo necesario
 var vehicleModel = {};
 
-vehicleModel.getVehicles = function(callback)
+vehicleModel.getVehicles_old = function(callback)
 {
   db.open(function(err, db) {
     if(err) {
@@ -42,6 +49,16 @@ vehicleModel.getVehicles = function(callback)
         });
     }
   });
+}
+
+vehicleModel.getVehicles = function(callback)
+{
+    mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+        collection.find().toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });
+
 }
 
 vehicleModel.getVehicle = function(vehicleLicense, callback)

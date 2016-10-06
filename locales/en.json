@@ -12,7 +12,7 @@
 	"operation_error": "Operation error, try it again",
 	"send_email_error": "Send email error",
 	"email_sent": "Email sent to: ",
-	"select_button": "Select",
+	"select_button": "Follow",
 	"day": "Day",
 	"week": "Week",
 	"month": "Month",
@@ -63,5 +63,9 @@
 	"tracking": "Tracking",
 	"geocoging": "Location",
 	"geocoding_unknown": "Unknown",
-	"altitude": "Altitude"
+	"altitude": "Altitude",
+	"select_vehicle_error": "Select device error",
+	"layer_vehicles_real_time": "My devices",
+	"pois": "POIs"
+
 }

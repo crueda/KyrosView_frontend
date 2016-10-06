@@ -151,7 +151,15 @@ module.exports = function(app) {
 				vehicleLicense : req.body['vehicleLicense']
 			}, function(e, o){
 				if (e!='ok'){
-					res.status(400).send('error-updating-device');
+					//res.status(400).send('error-updating-device');
+					res.render('map.ejs', {
+						msg: res.__('select_vehicle_error'),
+						msg_color: 'red',
+						user : req.session.user.username,
+						vehicleLicense : req.session.user.vehicleLicense
+                		//vehicleLicense : req.body['vehicleLicense']
+					});
+
 				}	else{
 					req.session.user.vehicleLicense = req.body['vehicleLicense']; 
 					res.render('map.ejs', {

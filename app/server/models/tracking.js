@@ -1,6 +1,7 @@
 var Db = require('mongodb').Db;
 var server = require('mongodb').Server;
 var moment = require('moment');
+var mongoose = require('mongoose');
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
@@ -20,11 +21,17 @@ var log = require('tracer').console({
 });
 
 var dbMongoName = properties.get('bbdd.mongo.name');
-//var dbMongoHost = properties.get('bbdd.mongo.ip');
-var dbMongoHost = "192.168.28.251";
+var dbMongoHost = properties.get('bbdd.mongo.ip');
+//var dbMongoHost = "192.168.28.251";
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
 var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
+
+mongoose.connect('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+    if (error) {
+        log.info(error);
+    }
+});
 
 
 // Crear un objeto para ir almacenando todo lo necesario
@@ -99,7 +106,7 @@ trackingModel.getTracking5FromVehicle = function(vehicleLicense,callback)
   });
 }
 
-trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
+trackingModel.getTrackingFromVehicleAndDate_old = function(requestData,callback)
 {
   db.open(function(err, db) {
     if(err) {
@@ -113,6 +120,17 @@ trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
     }
   });
 }
+
+trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
+{
+    mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
+        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });
+}
+
+
 
 trackingModel.getTrackingFromVehicle = function(requestData,callback)
 {

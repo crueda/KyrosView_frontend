@@ -154,7 +154,7 @@
 
 <script>
 //window.onload = function() { car=getGETcar(); username=getGETusername(); deviceId=getGETdeviceId(); initMapData(); setInterval(reloadMapData,5000); };
- window.onload = function() { car=getGETcar(); username=getGETusername(); /*loadDefaultVehicleDataSync();*/ /*initMapData();*/ /*loadVehiclesData();*//*loadVehiclesDataSync(); loadMonitor();*/}//;
+ window.onload = function() { car=getGETcar(); username=getGETusername(); setInterval(reloadMapData,5000);/*loadDefaultVehicleDataSync();*/ /*initMapData();*/ /*loadVehiclesData();*//*loadVehiclesDataSync(); loadMonitor();*/}//;
  
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -281,6 +281,17 @@
 function clearMap() {
     document.getElementById('attr-graph-hist').style.display = 'none';
 
+    vehiclesRealTimeSource.clear();
+    vehiclesRealTimeLineSource.clear();
+    vehiclesHistSource.clear();
+    vehiclesHistLineSource.clear();
+    vehiclesLineSource.clear();
+    mapPointSource.clear();
+
+    if (this.greenFlagOverlay!=null)
+      map.removeOverlay(this.greenFlagOverlay);
+    if (this.redFlagOverlay!=null)
+      map.removeOverlay(this.redFlagOverlay);
 
 }
 
@@ -346,17 +357,8 @@ function clearMap() {
 
   function showSelectedVehicles() {
     //alert("go");
-    vectorLinesSource.clear();
-    if (this.greenFlagOverlay!=null)
-      map.removeOverlay(this.greenFlagOverlay);
-    if (this.redFlagOverlay!=null)
-      map.removeOverlay(this.redFlagOverlay);
-
-    vectorTrackingHistSource.clear();
-    vectorLinesHistSource.clear();
-
-    vectorTrackingSource.clear();
-
+    clearMap();
+    
     var minLon=0;
     var minLat=0;
     var maxLon=0;
@@ -427,14 +429,14 @@ function clearMap() {
     var trackingIdHist = [];
 
     //alert("go");
-    vectorLinesSource.clear();
+    vehiclesLineSource.clear();
     if (this.greenFlagOverlay!=null)
       map.removeOverlay(this.greenFlagOverlay);
     if (this.redFlagOverlay!=null)
       map.removeOverlay(this.redFlagOverlay);
 
-    vectorTrackingHistSource.clear();
-    vectorLinesHistSource.clear();
+    vehiclesHistSource.clear();
+    vehiclesHistLineSource.clear();
     var minLon=0;
     var minLat=0;
     var maxLon=0;
@@ -553,7 +555,7 @@ function clearMap() {
 
       iconFeature.setStyle(iconStyle);
       
-      vectorTrackingSource.addFeature(iconFeature); 
+      vehiclesRealTime.addFeature(iconFeature); 
 
       // circulo animado
       var coordinate = iconFeature.getGeometry().getCoordinates();
@@ -588,7 +590,7 @@ function clearMap() {
 
       iconFeature.setStyle(iconStyle);
       
-      vectorTrackingHistSource.addFeature(iconFeature); 
+      vehiclesHistSource.addFeature(iconFeature); 
   }
 
     function addTrackingHistPointStart(vehicleLicense, trackingId, lat, lon) {
@@ -612,7 +614,7 @@ function clearMap() {
 
       iconFeature.setStyle(iconStyle);
       
-      vectorTrackingHistSource.addFeature(iconFeature); 
+      vehiclesHistSource.addFeature(iconFeature); 
 
       // circulo animado
       var coordinate = iconFeature.getGeometry().getCoordinates();
@@ -649,7 +651,7 @@ function clearMap() {
 
       iconFeature.setStyle(iconStyle);
       
-      vectorTrackingHistSource.addFeature(iconFeature); 
+      vehiclesHistSource.addFeature(iconFeature); 
 
       // circulo animado
       var coordinate = iconFeature.getGeometry().getCoordinates();
@@ -676,7 +678,7 @@ function clearMap() {
         geometry: lineString,
         name: "<%= __('tracking_line') %>"
       });
-      vectorLinesHistSource.addFeature(featureLine);
+      vehiclesHistLineSource.addFeature(featureLine);
   }
 
   function getPois() {
@@ -1460,22 +1462,22 @@ function openTooltipMapPoint(latitude, longitude) {
   var vectorPoiSource = new ol.source.Vector({
    features: []
   });
-  var vectorKyrosPoiLayer = new ol.layer.Vector({
-   title: 'POIs',
+  var poisLayer = new ol.layer.Vector({
+   title: '<%= __('pois') %>',
    visible: true,
    source: vectorPoiSource
   });
 
-  var vectorTrackingSource = new ol.source.Vector({
+  var vehiclesRealTimeSource = new ol.source.Vector({
    features: []
   });
-  var vectorKyrosTrackingLayer = new ol.layer.Vector({
-   title: 'All last position',
+  var vehiclesRealTimeLayer = new ol.layer.Vector({
+   title: '<%= __('layer_vehicles_real_time') %>',   
    visible: true,
-   source: vectorTrackingSource
+   source: vehiclesRealTimeSource
   });
 
-  var vectorLinesSource = new ol.source.Vector({
+  var vehiclesLineSource = new ol.source.Vector({
    features: []
   });
   var lineStyle = new ol.style.Style({
@@ -1486,11 +1488,11 @@ function openTooltipMapPoint(latitude, longitude) {
         width: 4
     })
   });
-  var vectorKyrosLinesLayer = new ol.layer.Vector({
-    title: 'Last 5 positions line',
-    visible: true,
+  var vehiclesLineLayer = new ol.layer.Vector({
+    title: '',
+    visible: false,
     style: lineStyle,
-    source: vectorLinesSource
+    source: vehiclesLineSource
   });
 
 var style = 
@@ -1557,26 +1559,26 @@ var style2 =
   ];
   style2[1].getImage().getAnchor()[1] += 10;
 
-var vectorTrackingMapPointSource = new ol.source.Vector({
+var mapPointSource = new ol.source.Vector({
    features: []
   });
-  var vectorTrackingMapPointLayer = new ol.layer.Vector({
+  var mapPointLayer = new ol.layer.Vector({
    visible: true,
     style: style2,
-   source: vectorTrackingMapPointSource
+   source: mapPointSource
   });
 
-  var vectorTrackingHistSource = new ol.source.Vector({
+  var vehiclesHistSource = new ol.source.Vector({
    features: []
   });
-  var vectorKyrosTrackingHistLayer = new ol.layer.Vector({
+  var vehiclesHistLayer = new ol.layer.Vector({
    title: 'Historical positions',
    visible: true,
     style: style,
-   source: vectorTrackingHistSource
+   source: vehiclesHistSource
   });
 
-  var vectorLinesHistSource = new ol.source.Vector({
+  var vehiclesHistLineSource = new ol.source.Vector({
    features: []
   });
   var lineStyleHist = new ol.style.Style({
@@ -1586,27 +1588,13 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
         width: 3
     })
   });
-  var vectorKyrosLinesHistLayer = new ol.layer.Vector({
+  var vehiclesHistLineLayer = new ol.layer.Vector({
     title: 'Historical line',
     visible: true,
     style: lineStyleHist,
-    source: vectorLinesHistSource
+    source: vehiclesHistLineSource
   });
  
- /*
- vectorLinesHistSource.once('change', function(evt){
-  if (vectorLinesHistSource.getState() === 'ready') {
-    // now the source is fully loaded
-    if (vectorLinesHistSource.getSource().getFeatures().length > 0) {
-      map.getView().fitExtent(vectorLinesHistSource.getExtent(), map.getSize());
-
-      console.info(map.getView().getCenter());
-      console.info(map.getView().getZoom());
-    }
-  }
-});
- */
-
   var projection = ol.proj.get('EPSG:3857');
 
 
@@ -1651,15 +1639,14 @@ var vectorTrackingMapPointSource = new ol.source.Vector({
           maxZoom:22,
           minZoom:3
         });
-        /*
+        
         var pan = ol.animation.pan({
-          duration: 500,
+          duration: 3000,
           source:  (map.getView().getCenter()),
         });
-        map.beforeRender(pan);*/
+        map.beforeRender(pan);
         map.setView(new_view);
     }
-
 
 function loadDefaultVehicleDataSync() {
   // Leer los datos de los vehiculos en modo sincrono
@@ -1723,7 +1710,7 @@ function eachRecursive(obj)
             if (k=='vehicle_license') {
               //console.log("k:" + k + " - obj[k]:" + obj[k]);
               monitorVehicleLicense.push(obj[k]);
-              addVehicleToMap(obj[k]);              
+              //addVehicleToMap(obj[k]);              
             }
     }
 }
@@ -1838,7 +1825,7 @@ function initMapData() {
 
      processDevice (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
-     //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
 
     });
  });
@@ -1846,21 +1833,19 @@ function initMapData() {
 
 
 function reloadMapData() {
-  //if (!isMobile()) {  
-     $.getJSON( '/api/tracking1/user/<%=user%>', function( data ) {
+  $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
+   $.each( data, function( key, val ) {
 
-       var items = [];
-       $.each( data, function( key, val ) {
-        processDevice (val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
-      });               
-     });
-  //}
+     processDevice (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+
+     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+     //moveMap(val.vehicle_license);
+
+    });
+  });
 }
 
 function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {             
-   //TODO: lo quito para que siempre salgan los coches ordenados ?
-   //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
-  //deviceIdDict[vehicleLicense] = deviceId;
   if (vehicleState==undefined)
     vehicleState = 0;
 
@@ -1874,21 +1859,21 @@ function processDevice(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehi
   speedDict[vehicleLicense] = speed;
   headingDict[vehicleLicense] = heading;
 
-   if ( (dateDict[vehicleLicense]==null) || (dateDict[vehicleLicense]<posDate) )
-   {
-    dateDict[vehicleLicense]=posDate;
-
-    // Eliminar el icono de todas las capas
-    iFeature = vectorTrackingSource.getFeatureById(vehicleLicense);
+  if ( (dateDict[vehicleLicense]==null) || (dateDict[vehicleLicense]<posDate) )
+  {  
+    // Eliminar el icono 
+    var features = vehiclesRealTimeSource.getFeatures();
+    iFeature = vehiclesRealTimeSource.getFeatureById(vehicleLicense);
     if (iFeature!=null) {
-     vectorTrackingSource.removeFeature(iFeature);
-   }
+     vehiclesRealTimeSource.removeFeature(iFeature);
+    }
+    //tempoarl pq no funciona lo anterior
+    vehiclesRealTimeSource.clear();
 
-   // añadir el icono
-   add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
-
- }
-   dateDict[vehicleLicense] = posDate;
+    // añadir el icono
+    add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
+  }
+  dateDict[vehicleLicense] = posDate;
 }
 
 function addVehicleToMap(vehicleLicense) {
@@ -1917,7 +1902,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
 
 
     // Eliminar el icono de todas las capas
-    iFeature = vectorTrackingSource.getFeatureById(vehicleLicense);
+    iFeature = vehiclesRealTimeSource.getFeatureById(vehicleLicense);
     if (iFeature!=null) {
      vectorTrackingSource.removeFeature(iFeature);
    }
@@ -1954,32 +1939,15 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
       ];
       iconFeature.setStyle(iconStyle);
 
-      vectorTrackingSource.addFeature(iconFeature); 
+      vehiclesRealTimeSource.addFeature(iconFeature); 
 
-
-      /*
-      var deviceVectorSource = new ol.source.Vector({
-        features: []
-      });
-      deviceVectorSource.addFeature(iconFeature); 
-      var deviceVectorLayer = new ol.layer.Vector({
-        title: alias,
-        visible: false,
-        source: deviceVectorSource
-      });*/
-      //map.addLayer(deviceVectorLayer);
-      //if (!isMobile()) {
-        //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
-      //}
+      //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
     }
 
   
   function addLinesTracking5(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2, trackingId3, lat3, lon3, trackingId4, lat4, lon4, trackingId5, lat5, lon5) {
 
-    vectorTrackingHistSource.clear();
-    vectorLinesHistSource.clear();
-
-    vectorLinesSource.clear();
+    clearMap();
 
     //var coords = [[lon1, lat1],[lon2, lat2],[lon3, lat3],[lon4, lat4],[lon5, lat5] ]; 
     
@@ -2001,7 +1969,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
          src: './img/points/beacon_ball_blue.gif'
        }))
       }));
-      vectorLinesSource.addFeature(iconFeature1); 
+      vehiclesLineSource.addFeature(iconFeature1); 
     }
     if (lat2!=0) {
       coords.push([lon2, lat2]);
@@ -2019,7 +1987,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
          src: './img/points/beacon_ball_blue.gif'
        }))
       }));
-      vectorLinesSource.addFeature(iconFeature2); 
+      vehiclesLineSource.addFeature(iconFeature2); 
     }
     if (lat3!=0) {
       coords.push([lon3, lat3]);
@@ -2037,7 +2005,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
          src: './img/points/beacon_ball_blue.gif'
        }))
       }));
-      vectorLinesSource.addFeature(iconFeature3);       
+      vehiclesLineSource.addFeature(iconFeature3);       
     }
     if (lat4!=0) {
       coords.push([lon4, lat4]);
@@ -2055,7 +2023,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
          src: './img/points/beacon_ball_blue.gif'
        }))
       }));
-      vectorLinesSource.addFeature(iconFeature4);       
+      vehiclesLineSource.addFeature(iconFeature4);       
     }
     if (lat5!=0) {
       coords.push([lon5, lat5]);
@@ -2073,7 +2041,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
          src: './img/points/beacon_ball_blue.gif'
        }))
       }));
-      vectorLinesSource.addFeature(iconFeature5); 
+      vehiclesLineSource.addFeature(iconFeature5); 
 
     }
 
@@ -2096,10 +2064,10 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
     style: lineStyle,
     name: "<%= __('tracking_line') %>"
   });
-  vectorLinesSource.addFeature(featureLine);
+  vehiclesLineSource.addFeature(featureLine);
 
     // centrar el mapa
-    map.getView().fit(vectorLinesSource.getExtent(), map.getSize());
+    map.getView().fit(vehiclesLineSource.getExtent(), map.getSize());
     if(map.getView().getZoom()>20){
       map.getView().setZoom(20);
     }
@@ -2113,7 +2081,7 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
       minZoom:3
     }));*/
    // otra forma de centrar
-    /*map.getView().fit(vectorTrackingSource.getExtent(), map.getSize());
+    /*map.getView().fit(vehiclesRealTimeSource.getExtent(), map.getSize());
     if(map.getView().getZoom()>20){
       map.getView().setZoom(20);
     }*/
@@ -2340,7 +2308,7 @@ var kyrosDevicesGroup = new ol.layer.Group({
 
 var kyrosGroup = new ol.layer.Group({
     'title': '<%= __('tracking') %>',
-    layers: [vectorKyrosLinesHistLayer,vectorKyrosTrackingHistLayer, vectorTrackingMapPointLayer, vectorKyrosLinesLayer, vectorKyrosTrackingLayer, vectorKyrosPoiLayer]
+    layers: [vehiclesHistLineLayer,vehiclesHistLayer, mapPointLayer, vehiclesLineLayer, vehiclesRealTimeLayer, poisLayer]
   });
 
 var map = new ol.Map({
@@ -2436,8 +2404,8 @@ map.addControl(new ol.control.MousePosition({
       });
 
  
-    vectorTrackingHistSource.addFeature(f);
-    vectorKyrosTrackingHistLayer.animateFeature (f, 
+    vehiclesHistSource.addFeature(f);
+    vehiclesHistLayer.animateFeature (f, 
       [ new ol.featureAnimation["Drop"](
         { speed: Number(0.8), 
           duration: Number(760),
@@ -2453,7 +2421,7 @@ map.addControl(new ol.control.MousePosition({
   }
 
 function addFeaturePointAt(p) { 
-  vectorTrackingMapPointSource.clear();
+  mapPointSource.clear();
 
   var f, r = map.getView().getResolution() *10;
        
@@ -2468,9 +2436,9 @@ function addFeaturePointAt(p) {
   });
 
 
-  vectorTrackingMapPointSource.addFeature(f);
+  mapPointSource.addFeature(f);
 
-  vectorTrackingMapPointLayer.animateFeature (f, 
+  mapPointLayer.animateFeature (f, 
       [ new ol.featureAnimation["Drop"](
         { speed: Number(1.4), 
           duration: Number(260),

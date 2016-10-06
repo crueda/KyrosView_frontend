@@ -178,7 +178,7 @@ exports.updateUserDevice = function(newData, callback)
 {
     pool.getConnection(function(err, connection) {
         if (connection) {        
-            var sql = "UPDATE USER_GUI set DEFAULT_VEHILCE_LICENSE=" + newData.vehicleLicense + " WHERE USERNAME= '" + newData.username + "'";
+            var sql = "UPDATE USER_GUI set DEFAULT_VEHICLE_LICENSE=" + newData.vehicleLicense + " WHERE USERNAME= '" + newData.username + "'";
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, result)
             {

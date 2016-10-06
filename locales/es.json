@@ -12,7 +12,7 @@
 	"operation_error": "Error al realizar la operación, intentelo de nuevo",
 	"send_email_error": "Error al enviar el email",
 	"email_sent": "Email enviado a: ",
-	"select_button": "Seleccionar",
+	"select_button": "Seguir",
 	"day": "Día",
 	"week": "Semana",
 	"month": "Mes",
@@ -62,5 +62,8 @@
 	"tracking": "Posiciones",
 	"geocoding": "Localización",
 	"geocoding_unknown": "Dirección desconocida",
-	"altitude": "Altitud"
+	"altitude": "Altitud",
+	"select_vehicle_error": "Error al seleccionar el dispositivo",
+	"layer_vehicles_real_time": "Mis dispositivos",
+	"pois": "PDIs"
 }
