@@ -60,15 +60,39 @@ monitorModel.setMonitorCheckedFromUser = function(requestData,callback)
         collection.find({'username': requestData.username}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
             delete jsondocs[0]['_id']; 
-            log.info (jsondocs);
             flat_monitor = flatten(jsondocs);
 
+            var vehicleLicenseChecked = requestData.vehicleLicenseList.split(',');
+
             var keys = Object.keys( flat_monitor );
+            var indice = 0;
+            var encontrado = false;
             for( var i = 0,length = keys.length; i < length; i++ ) {
-                log.info (keys[i] + " - " + flat_monitor[ keys[ i ] ]);
+                //log.info (keys[i] + " - " + flat_monitor[ keys[ i ] ]);
                 if (keys[i].indexOf("checked")!=-1) {
-                    flat_monitor[ keys[ i ]] = "true";
+                    flat_monitor[ keys[ i ]] = "false";
+                    indice = i;
+                    if (encontrado) {
+                        flat_monitor[ keys[ indice ]] = "true";
+                        indice = 0;
+                        encontrado = false;
+                    }
+                    
                 }
+
+                if (keys[i].indexOf("vehicle_license")!=-1) {
+                    var license = flat_monitor[ keys[ i ] ];
+                    if (vehicleLicenseChecked.indexOf(license)!=-1) {
+                        encontrado = true;
+                        if (indice != 0) {
+                            flat_monitor[ keys[ indice ]] = "true";
+                            indice = 0;
+                            encontrado = false;
+                        }
+                    }
+                }
+                
+                
 
             }
 

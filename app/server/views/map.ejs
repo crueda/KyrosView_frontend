@@ -145,6 +145,11 @@
  var defaultVehicleLastLon = 0;
  var defaultVehicleLastTrackingId = 0;
  var mapmode = 0;
+
+ var vehicleLicenseToSelect = '';
+ var encontradoChecked = false;
+ var encontradoVehiculo = false;
+
  function isMobile(){
   //return true;
     return (
@@ -264,6 +269,8 @@
   loadVehiclesDataSync(); 
   loadMonitor();
   
+  //loadSelectedVehicles();
+
 });  //ready
 
 </script>
@@ -360,7 +367,6 @@ function clearMap() {
 
     // guardar en bbdd
     var urlJson = "/api/monitor/checked/<%=user%>?vehicleLicenseList="+selectedVehiclesStr;
-    alert(urlJson);
     $.getJSON( urlJson, function( data ) {
     });
   }
@@ -376,6 +382,15 @@ function clearMap() {
       addVehicleSelectedToMap(selectedVehicles[i]);
     }    
 
+  }
+
+  function loadSelectedVehicles() {
+    // añadir el vehiculo por defecto en la capa de seleccion (para que salga en el centrado)
+    addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
+
+    for (var i=0; i<selectedVehicles.length; i++) {
+      addVehicleSelectedToMap(selectedVehicles[i]);
+    }    
   }
 
 
@@ -1683,16 +1698,46 @@ function eachRecursive(obj)
         if (typeof obj[k] == "object" && obj[k] !== null)
             eachRecursive(obj[k]);
         else
+            if ( (k=='checked') && (obj[k]=="true") ){
+              //console.log(obj[k]);
+              encontradoChecked = true;
+              if (encontradoVehiculo) {
+                if (selectedVehicles.indexOf(vehicleLicenseToSelect)==-1) {
+                  selectedVehicles.push(vehicleLicenseToSelect);
+                  addVehicleSelectedToMap(vehicleLicenseToSelect);                  
+                }
+                encontradoVehiculo = false;
+                encontradoChecked = false;
+              }
+
+            }
+
             if (k=='vehicle_license') {
               //console.log("k:" + k + " - obj[k]:" + obj[k]);
               monitorVehicleLicense.push(obj[k]);
+              vehicleLicenseToSelect = obj[k];
+              if (encontradoChecked) {
+                if (selectedVehicles.indexOf(vehicleLicenseToSelect)==-1) {
+                  selectedVehicles.push(vehicleLicenseToSelect);
+                  addVehicleSelectedToMap(vehicleLicenseToSelect);
+                }
+                encontradoVehiculo = false;
+                encontradoChecked = false;
+              }
               //addVehicleToMap(obj[k]);              
             }
     }
 }
 
 function loadMonitor() {
+//function loadMonitorSync() {
   $.getJSON( "/api/monitor/<%=user%>", function( data ) {
+  /*$.ajax({ 
+    url: "/api/monitor/<%=user%>", 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ */
+
 
     jsonString = JSON.stringify(data[0].monitor)
 
@@ -1734,8 +1779,8 @@ function loadMonitor() {
           highlightSelected: false,
           showTags: true,
           onNodeChecked: function(event, node) {
-            //console.log(node.text + ' was checked');
-            //$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: true } ]);
+            console.log(node.text + ' was checked');
+            //$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: false } ]);
 
             if (node.type == 0) {
               if (node.nodes !== undefined) {
@@ -1751,7 +1796,7 @@ function loadMonitor() {
               //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
           },
           onNodeUnchecked: function (event, node) {
-            //console.log(node.text + ' was unchecked');
+            console.log(node.text + ' was unchecked');
             if (node.type == 1) {
               var index = selectedVehicles.indexOf(node.text);
               if (index > -1) {
@@ -1777,6 +1822,7 @@ function loadMonitor() {
     */
 
     document.getElementById('attr-loading').style.display = 'none';
+  //} //del ajax async
  });
 
 
@@ -1895,14 +1941,19 @@ function addVehicleToMap(vehicleLicense) {
 }
 
 function addVehicleSelectedToMap(vehicleLicense) {
-  $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
-    $.each( data, function( key, val ) {
-        processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
-      });                           
-  });
+  if (vehicleLicense!='<%=vehicleLicense%>') {
+    $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+      $.each( data, function( key, val ) {
+          processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+        });                           
+    });    
+  }
 }
 
-function processDeviceSelected(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {             
+function processDeviceSelected(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {    
+  if (vehicleState==undefined)
+    vehicleState = 0;
+
   deviceIdDict[vehicleLicense]=deviceId;
   vehicleLicenseDict[vehicleLicense] = vehicleLicense;
   dateDict[vehicleLicense] = posDate;
@@ -1944,9 +1995,11 @@ function addSelected(vehicleLicense, alias, lon, lat, speed, heading, vehicleSta
     vehiclesSelectedSource.addFeature(iconFeature); 
 
     // centrar el mapa en la capa de vehiculos seleccionados
-    map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
-    if(map.getView().getZoom()>20){
-        map.getView().setZoom(20);
+    if (mapmode>0) {
+      map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
+      if(map.getView().getZoom()>20){
+          map.getView().setZoom(20);
+      }      
     }
   }
 
