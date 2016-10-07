@@ -66,6 +66,16 @@
 	"altitude": "Altitude",
 	"select_vehicle_error": "Select device error",
 	"layer_vehicles_real_time": "My devices",
-	"pois": "POIs"
+	"pois": "POIs",
+	"test": "Probar",
+	"map_ol": "Map OL",
+	"real_time": "Real time",
+	"map_g": "Map G.",
+	"historic": "Historic",
+	"globe": "Globe",
+	"all": "Positions",
+	"graphs": "Graphs",
+	"config": "Config.",
+	"logout": "Logout"
 
 }

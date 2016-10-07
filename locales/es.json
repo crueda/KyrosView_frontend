@@ -65,5 +65,18 @@
 	"altitude": "Altitud",
 	"select_vehicle_error": "Error al seleccionar el dispositivo",
 	"layer_vehicles_real_time": "Mis dispositivos",
-	"pois": "PDIs"
+	"pois": "PDIs",
+	"test": "Probar",
+	"map_ol": "Mapa OL",
+	"real_time": "Tiempo real",
+	"map_g": "Mapa G.",
+	"historic": "Historico",
+	"globe": "Globo",
+	"all": "Posiciones",
+	"graphs": "Graficos",
+	"config": "Config.",
+	"logout": "Salir"
+
+
+	
 }

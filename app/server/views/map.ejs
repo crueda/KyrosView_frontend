@@ -144,7 +144,7 @@
  var defaultVehicleLastLat = 0;
  var defaultVehicleLastLon = 0;
  var defaultVehicleLastTrackingId = 0;
- var statusCenterMap = true;
+ var mapmode = 0;
  function isMobile(){
   //return true;
     return (
@@ -426,7 +426,7 @@ function clearMap() {
   function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
 
     clearMap();
-    statusCenterMap = false;
+    mapmode = 1;
 
     var latHist = [];
     var lonHist = [];
@@ -769,6 +769,13 @@ function clearMap() {
     openTooltip('<%=vehicleLicense%>');
   }
 
+  function goRealtime() {
+    $('#myModalMenuKyros').modal('hide');
+    clearMap();
+    mapmode = 1;
+
+  }
+
   function openTooltip(vehicleLicense) {
      $("#uploadForm").attr("action", "/api/image/upload/" + vehicleLicense);
     
@@ -951,46 +958,45 @@ function openTooltipMapPoint(latitude, longitude) {
     <table border="0" bgcolor="#bfbeb5">
     <tr>
       <td align="center">
-        <button type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br>Mapa OL</button>
+        <button type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br>Gráficos</button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/gmap'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_gmap.png"/><br>Mapa G.</button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:openDefaultDevice();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_device.png"/><br>Dispos.</button>
+        <button onclick="javascript:goRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_realtime.png"/><br><%= __('real_time') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/globe'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br>Globo</button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/gmap'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_gmap.png"/><br><%= __('map_g') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:openMonitor();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br>Todos</button>
+        <button onclick="javascript:openCalendar();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-
-        <button onclick="javascript:openCalendar();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br>Histórico</button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/globe'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br><%= __('globe') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:getPois();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br>PDI</button>
+        <button onclick="javascript:openMonitor();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br><%= __('all') %></button>
+      </td>
+    </tr>
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr>
+      <td align="center">
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
+      </td>
+      <td align="center">
+        <button onclick="javascript:getPois();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
       </td>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br>Config.</button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
       </td>
       <td align="center">
-        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br>Salir</button>
+        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br><%= __('logout') %></button>
       </td>
     </tr>
     </table>
@@ -1473,19 +1479,18 @@ var style =
 
 
       image: new ol.style.RegularShape(
-        { radius: 5,
-          radius2: 5,
+        { radius: 7,
+          radius2: 7,
           points: 12,
-          fill: new ol.style.Fill({ color: '#0052cc' })
+          //fill: new ol.style.Fill({ color: '#0052cc' })
+          fill: new ol.style.Fill({ color: '#009900' })
         }),
       stroke: new ol.style.Stroke(
         { 
-          //color: '#0000ff',
-        color: '#66c2ff',        
+        //color: '#66c2ff',        
+        color: '#00cc00',        
         //color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        width: 4
-          //color: [0,0,0],
-          //width: 3
+        width: 6
         }),
       fill: new ol.style.Fill(
         { color: [0,0,255,0.3]
@@ -1848,7 +1853,7 @@ function reloadMapData() {
 
      //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
      //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
-      if (statusCenterMap) {
+      if (mapmode==0) {
         moveMap2Vehicle(val.vehicle_license);        
       }
     });
@@ -2585,6 +2590,7 @@ function addTrackingHistPointEffect(vehicleLicense, trackingId, lat, lon) {
         { speed: Number(0.8), 
           duration: Number(760),
           horizontal: /Slide/.test("Shake")
+          //horizontal: /Slide/.test("Drop")
         })
       ]);
   }

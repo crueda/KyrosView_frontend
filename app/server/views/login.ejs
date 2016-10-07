@@ -94,7 +94,18 @@ function goToEs() {
 
 
 					<div class="checkbox">
-					<a href="http://view.kyroslbs.com/lost-password"><%= __('forgot_password') %></a>
+					
+					<a href="http://view.kyroslbs.com/lost-password"><%= __('forgot_password') %></a>									
+					
+					<div class="row">
+					    <div class="col-xs-12">
+					        <div class="text-right">
+					        <a href="javascript:test();" class="btn btn-success btn-lg">
+					      		<span class="glyphicon glyphicon-signal"></span> <%= __('test') %>
+					    	</a>
+					        </div>
+					    </div>
+					</div>
 					</div> <!-- /.checkbox -->
 				</form>
 
@@ -111,6 +122,13 @@ function goToEs() {
 </div><!-- /.modal -->
 
 <script>
+
+function test() {
+	document.getElementById('uLogin').value='test';
+	document.getElementById('uPassword').value='test';
+	$('#loginForm').submit();
+}
+
 $(document).ready(function(){
 	
 	setTimeout(function(){
