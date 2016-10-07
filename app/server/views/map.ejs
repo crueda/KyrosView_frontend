@@ -197,6 +197,7 @@
   });
 
   $('#showDevicesMapButton').click(function(){
+    saveSelectedVehicles();
     showSelectedVehicles();      
   });
   
@@ -346,6 +347,24 @@ function clearMap() {
     });
   }
 
+  function saveSelectedVehicles() {
+    var selectedVehiclesStr = "";
+    for (var i=0; i<selectedVehicles.length; i++) {
+      if (i==0) {
+        selectedVehiclesStr = selectedVehicles[i];
+      }
+      else {
+        selectedVehiclesStr = selectedVehiclesStr + "," + selectedVehicles[i];
+      }
+    }
+
+    // guardar en bbdd
+    var urlJson = "/api/monitor/checked/<%=user%>?vehicleLicenseList="+selectedVehiclesStr;
+    alert(urlJson);
+    $.getJSON( urlJson, function( data ) {
+    });
+  }
+
   function showSelectedVehicles() {
     clearMap();
     mapmode=2;
@@ -356,6 +375,7 @@ function clearMap() {
     for (var i=0; i<selectedVehicles.length; i++) {
       addVehicleSelectedToMap(selectedVehicles[i]);
     }    
+
   }
 
 

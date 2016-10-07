@@ -1,6 +1,10 @@
 var Db = require('mongodb').Db;
 var server = require('mongodb').Server;
 
+var jsonfy = require('jsonfy');
+var flatten = require('flat');
+var unflatten = require('flat').unflatten;
+
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
 
@@ -42,6 +46,49 @@ monitorModel.getMonitorFromUser = function(username,callback)
     }
   });
 }
+
+
+
+monitorModel.setMonitorCheckedFromUser = function(requestData,callback)
+{
+  db.open(function(err, db) {
+    if(err) {
+        callback(err, null);
+    }
+    else {
+        var collection = db.collection('MONITOR');
+        collection.find({'username': requestData.username}).toArray(function(err, docs) {
+            var jsondocs = jsonfy(JSON.stringify(docs)); 
+            delete jsondocs[0]['_id']; 
+            log.info (jsondocs);
+            flat_monitor = flatten(jsondocs);
+
+            var keys = Object.keys( flat_monitor );
+            for( var i = 0,length = keys.length; i < length; i++ ) {
+                log.info (keys[i] + " - " + flat_monitor[ keys[ i ] ]);
+                if (keys[i].indexOf("checked")!=-1) {
+                    flat_monitor[ keys[ i ]] = "true";
+                }
+
+            }
+
+            var u = unflatten(flat_monitor);
+            collection.remove({"username": requestData.username}, function(err, result) {
+            if (err) {
+                callback(null, null);
+            } else {            
+                collection.save(u['0']);
+                db.close();
+                callback(null, docs);
+            }
+
+            });
+
+        });
+    }
+  });
+}
+
 
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = monitorModel;
