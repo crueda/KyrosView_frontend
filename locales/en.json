@@ -76,6 +76,7 @@
 	"all": "Positions",
 	"graphs": "Graphs",
 	"config": "Config.",
-	"logout": "Logout"
+	"logout": "Logout",
+	"layer_vehicles_selected": "Selected devices"
 
 }

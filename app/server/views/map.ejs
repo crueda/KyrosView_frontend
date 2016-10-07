@@ -139,8 +139,8 @@
  var greenFlagOverlay = null;
  var redFlagOverlay = null;
  var actualPosOverlay = null;
- var selectedDevices = [];
- var selectedDevicesStr = "";
+ //var selectedVehicles = [];
+ var selectedVehicles = new Array();
  var defaultVehicleLastLat = 0;
  var defaultVehicleLastLon = 0;
  var defaultVehicleLastTrackingId = 0;
@@ -197,14 +197,7 @@
   });
 
   $('#showDevicesMapButton').click(function(){
-    for(var i = 0; i < selectedDevices.length; i++) {
-      if (i<selectedDevices.length-1)
-        selectedDevicesStr = selectedDevicesStr + selectedDevices[i] + ','
-      else
-        selectedDevicesStr = selectedDevicesStr + selectedDevices[i]
-    }
-    //console.log(selectedDevicesStr);
-    showSelectedVehicles();
+    showSelectedVehicles();      
   });
   
 
@@ -215,10 +208,7 @@
     var fend = document.getElementById('endDate').value; 
     var fend_date = Date.parse(fend); 
     var fend_epoch = fend_date.getTime();
-    finit = "03/10/2016 00:00:00";
-    console.log(finit);
-    console.log(finit_date);
-
+    
     var deviceIdHist = monitorDevices[$('#licenseHist').val()];
     var vehicleLicenseHist = $('#licenseHist').val();
 
@@ -283,7 +273,7 @@ function clearMap() {
     document.getElementById('attr-graph-hist').style.display = 'none';
 
     vehiclesRealTimeSource.clear();
-    //vehiclesRealTimeLineSource.clear();
+    vehiclesSelectedSource.clear();
     vehiclesHistSource.clear();
     vehiclesHistLineSource.clear();
     vehiclesLineSource.clear();
@@ -357,69 +347,15 @@ function clearMap() {
   }
 
   function showSelectedVehicles() {
-    //alert("go");
     clearMap();
-    
-    var minLon=0;
-    var minLat=0;
-    var maxLon=0;
-    var maxLat=0;
-    var initPos=true;
-    var index = 0;
-    document.getElementById('attr-loading').style.display = 'block';
-    var urlJson = "/api/tracking1/vehicles?vehicleLicenseList="+selectedDevicesStr;
-      $.getJSON( urlJson, function( data ) {
-        if (data.length == 0) {
-          $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
-          $('#myModalMsgLabel').css({ "color" : 'red' });
-          $('#myModalMsgLabel2').text("<%= __('check_search') %>");
-          $('#myModalMsg').modal('show');
-        }
+    mapmode=2;
 
-        $.each( data, function( key, val ) {
-            var lat = val.latitude;
-            var lon = val.longitude;
-            var trackingId = val._id;
-            if (initPos==true) {
-              minLon=lon;
-              minLat=lat;
-              maxLon=lon;
-              maxLat=lat;
-              initPos=false;
-            } else {
-              if (lat<minLat) 
-                minLat=lat;
-              if (lat>maxLat) 
-                maxLat=lat;
-              if (lon<minLon) 
-                minLon=lon;
-              if (lon>maxLon) 
-                maxLon=lon;              
-            }
-            
-          //pintar dispositivo          
-          processDevice (val.tracking_id,val.vehicle_license,val.alias,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+    // añadir el vehiculo por defecto en la capa de seleccion (para que salga en el centrado)
+    addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
 
-          lon_anterior=lon;
-          lat_anterior=lat;          
-          index++;
-
-        });
-        document.getElementById('attr-loading').style.display = 'none';
-
-          // centrar el mapa
-          if (minLon != 0 && minLat != 0 && maxLon != 0 && maxLat != 0){
-           var bottomLeft = ol.proj.transform([minLon, minLat], 'EPSG:4326', 'EPSG:3857');
-           var topRight = ol.proj.transform([maxLon, maxLat], 'EPSG:4326', 'EPSG:3857');
-           extent = new ol.extent.boundingExtent([bottomLeft,topRight]);
-           map.getView().fit(extent, map.getSize());
-          }
-        if (index==1) {
-          map.getView().setZoom(12)
-        
-        }
-
-      });      
+    for (var i=0; i<selectedVehicles.length; i++) {
+      addVehicleSelectedToMap(selectedVehicles[i]);
+    }    
   }
 
 
@@ -1017,8 +953,6 @@ function openTooltipMapPoint(latitude, longitude) {
       </div> <!-- /.modal-header -->
 
       <div class="modal-body" id="treeBody">
-
-      
       
       <div class="col-sm-12" id="monitorDiv">
           <div id="treeview-checkable" class=""></div> 
@@ -1541,10 +1475,19 @@ var style2 =
    features: []
   });
   var vehiclesRealTimeLayer = new ol.layer.Vector({
-   title: '<%= __('layer_vehicles_real_time') %>',   
+   title: '<%=vehicleLicense%>',   
    //style: style,
    visible: true,
    source: vehiclesRealTimeSource
+  });
+
+  var vehiclesSelectedSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesSelectedLayer = new ol.layer.Vector({
+   title: '<%= __('layer_vehicles_selected') %>',   
+   visible: true,
+   source: vehiclesSelectedSource
   });
 
   var vehiclesLineSource = new ol.source.Vector({
@@ -1771,7 +1714,7 @@ function loadMonitor() {
           highlightSelected: false,
           showTags: true,
           onNodeChecked: function(event, node) {
-            //console.log(node.element_id + ' was checked');
+            //console.log(node.text + ' was checked');
             //$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: true } ]);
 
             if (node.type == 0) {
@@ -1784,15 +1727,15 @@ function loadMonitor() {
               }
             }
             else if (node.type == 1)
-              selectedDevices.push(node.element_id);
+              selectedVehicles.push(node.text);
               //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
           },
           onNodeUnchecked: function (event, node) {
-            //console.log(node.element_id + ' was unchecked');
+            //console.log(node.text + ' was unchecked');
             if (node.type == 1) {
-              var index = selectedDevices.indexOf(node.element_id);
+              var index = selectedVehicles.indexOf(node.text);
               if (index > -1) {
-                selectedDevices.splice(index, 1);
+                selectedVehicles.splice(index, 1);
               }
             }
             //$('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
@@ -1897,6 +1840,32 @@ function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,
   dateDict[vehicleLicense] = posDate;
 }
 
+function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
+  var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+  var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: vehicleLicense,
+        elementId: 'device',
+        name: alias
+  });
+
+  var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
+      
+  iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         //rotation: heading,
+         src: image_src
+       }))
+      })];
+  iconFeature.setStyle(iconStyle);
+
+  vehiclesRealTimeSource.addFeature(iconFeature); 
+
+  //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
+}
+
 function addVehicleToMap(vehicleLicense) {
   $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
     $.each( data, function( key, val ) {
@@ -1905,11 +1874,17 @@ function addVehicleToMap(vehicleLicense) {
   });
 }
 
-/*
-function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, posDate, deviceId) {             
-  iconDict[vehicleLicense] = iconReal;
+function addVehicleSelectedToMap(vehicleLicense) {
+  $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+    $.each( data, function( key, val ) {
+        processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+      });                           
+  });
+}
+
+function processDeviceSelected(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {             
   deviceIdDict[vehicleLicense]=deviceId;
-  vehicleLicenseDict[vehicleLicense] = ident;
+  vehicleLicenseDict[vehicleLicense] = vehicleLicense;
   dateDict[vehicleLicense] = posDate;
   aliasDict[vehicleLicense] = alias;
   latitudeDict[vehicleLicense] = lat;
@@ -1921,49 +1896,73 @@ function processDeviceTree(vehicleLicense,alias,lon,lat,geocoding,speed,heading,
   speedDict[vehicleLicense] = speed;
   headingDict[vehicleLicense] = heading;
 
-
-    // Eliminar el icono de todas las capas
-    iFeature = vehiclesRealTimeSource.getFeatureById(vehicleLicense);
-    if (iFeature!=null) {
-     vectorTrackingSource.removeFeature(iFeature);
-   }
-
    // añadir el icono
-   add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, iconReal, iconCover, iconAlarm, deviceId, posDate);
-}*/
+  addSelected (vehicleLicense,alias,lon,lat,speed,heading,vehicleState,deviceId,posDate);
+}
 
+function addSelected(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
+    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
-    function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
-      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
-
-      var iconFeature = new ol.Feature({
+    var iconFeature = new ol.Feature({
         geometry: geo_point,
         id: vehicleLicense,
         elementId: 'device',
         name: alias
-      });
+    });
 
-      var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
+    var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
       
-      var iconStyle;
-      var iconScale = 1;
-
-      //iconScale = 0.8;
-      iconStyle = [new ol.style.Style({
+    iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
          scale: 0.8,
          //rotation: heading,
          src: image_src
        }))
-      })
+    })];
+    iconFeature.setStyle(iconStyle);
 
-      ];
-      iconFeature.setStyle(iconStyle);
+    vehiclesSelectedSource.addFeature(iconFeature); 
 
-      vehiclesRealTimeSource.addFeature(iconFeature); 
-
-      //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
+    // centrar el mapa en la capa de vehiculos seleccionados
+    map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
+    if(map.getView().getZoom()>20){
+        map.getView().setZoom(20);
     }
+  }
+
+function addEmptyFeatureSelected(lon, lat) {
+    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+    var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: 0,
+        elementId: '',
+        name: ''
+    });
+
+    var normalStyle = new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 0,
+        fill: new ol.style.Fill({
+          color: 'rgba(20,150,200,0.3)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'rgba(20,130,150,0.8)',
+          width: 0
+        })
+      })
+    });
+    iconFeature.setStyle(normalStyle);
+
+    vehiclesSelectedSource.addFeature(iconFeature); 
+
+    // centrar el mapa en la capa de vehiculos seleccionados
+    map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
+    if(map.getView().getZoom()>20){
+        map.getView().setZoom(20);
+    }
+  }
+
 
     function addLineTracking(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2)
     {
@@ -2387,7 +2386,7 @@ var kyrosDevicesGroup = new ol.layer.Group({
 
 var kyrosGroup = new ol.layer.Group({
     'title': '<%= __('tracking') %>',
-    layers: [vehiclesHistLineLayer,vehiclesHistLayer, mapPointLayer, vehiclesLineLayer, vehiclesRealTimeLayer, poisLayer]
+    layers: [vehiclesHistLineLayer,vehiclesHistLayer, mapPointLayer, vehiclesLineLayer, vehiclesRealTimeLayer, vehiclesSelectedLayer, poisLayer]
   });
 
 var map = new ol.Map({
