@@ -27,14 +27,14 @@ var log = require('tracer').console({
 });
 
 /**
- * @api {get} /api/activity/:deviceId Actividad de un dispositivo
+ * @api {get} /api/activity/:vehicleLicense Actividad de un dispositivo
  * @apiName GetActivity Obtener información de actividad de un determinado dispositivo
  * @apiGroup Activity
  * @apiDescription Últimos datos de actividad de un determinado dispositivo
  * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/activity/655?initDate=1473915536000&endDate=1473915736000
+ * @apiSampleRequest http://view.kyroslbs.com/api/activity/1615-FDW?initDate=1473915536000&endDate=1473915736000
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del dispositivo en Kyros
  * @apiParam {Number} initDate Fecha inicial de consulta (epoch)
  * @apiParam {Number} [endDate] Fecha final de consulta (epoch)
  *
@@ -66,17 +66,17 @@ var log = require('tracer').console({
  *        "xData": [1472725489000, 1472726070000, 1472729044000]
  *     }
  */
-router.get('/activity/:deviceId', function(req, res)
+router.get('/activity/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
+      var vehicleLicense = req.params.vehicleLicense;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /activity/"+deviceId);
+      log.info("GET: /activity/"+vehicleLicense);
 
       if (endDate==null) {
         endDate = (new Date).getTime()
@@ -87,7 +87,7 @@ router.get('/activity/:deviceId', function(req, res)
       } 
       else {
         var requestData = {
-          deviceId : deviceId,
+          vehicleLicense : vehicleLicense,
           initDate : initDate,
           endDate : endDate
         };
