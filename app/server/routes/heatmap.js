@@ -25,28 +25,27 @@ var log = require('tracer').console({
   }
 });
 
-router.get('/heatmap', function(req, res)
+router.get('/heatmap/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceIdList = req.query.deviceIdList;
+      var vehicleLicense = req.params.vehicleLicense;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /heatmap/");
+      log.info("GET: /heatmap/"+ vehicleLicense);
 
       if (endDate==null) {
         endDate = (new Date).getTime()
       }
-
       if (initDate==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
         var requestData = {
-          deviceIdList : deviceIdList,
+          vehicleLicense: vehicleLicense,
           initDate : initDate,
           endDate : endDate
         };

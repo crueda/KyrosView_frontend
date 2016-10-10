@@ -35,7 +35,7 @@ poiModel.getPoisFromBox = function(boxData,callback)
         callback(err, null);
     }
     else {
-        var collection = db.collection('pois');
+        var collection = db.collection('POIS');
         collection.find( { 'monitor': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
             callback(null, docs);
         });

@@ -136,7 +136,7 @@
     }
 
     // Get the data. 
-    alert('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1));
+    //alert('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1));
     $.getJSON('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
@@ -221,6 +221,8 @@
                 });
         });
     });
+    
+    //alert('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7));    
     $.getJSON('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
@@ -229,11 +231,11 @@
                 return [activity.xData[j], val];
             });
 
-            $('<div id="aa" class="chart">')
+            $('<div class="chart">')
                 .appendTo('#containerWeek')
                 .highcharts({
                     global : {
-                    useUTC : true
+                    //useUTC : true
                 }   ,chart: {
                         marginLeft: 40, // Keep all charts left aligned
                         spacingTop: 20,
@@ -299,6 +301,7 @@
                 });
         });
     });
+    
     $.getJSON('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(15), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
@@ -379,6 +382,7 @@
 
 
 });
+
     </script>
 </head>
 <body>

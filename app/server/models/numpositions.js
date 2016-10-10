@@ -1,4 +1,4 @@
-var Db = require('mongodb').Db;
+var mongoose = require('mongoose');
 var server = require('mongodb').Server;
 var moment = require('moment');
 var jsonfy = require('jsonfy');
@@ -24,21 +24,19 @@ var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
-var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
-
+mongoose.connect('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+    if (error) {
+        log.info(error);
+    }
+});
 
 // Crear un objeto para ir almacenando todo lo necesario
 var numpositionsModel = {};
 
 numpositionsModel.getNumpositions = function(requestData,callback)
 {
-    db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('tracking');
-        collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
+        mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
+        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"dataset": 
@@ -66,7 +64,7 @@ numpositionsModel.getNumpositions = function(requestData,callback)
                 for (item in jsondocs) {                    
                     newDate = parseInt(jsondocs[item].pos_date);
                     if (newDate > initDateSlot + step) {
-                        log.info("---STEP---"+newDate);
+                        //log.info("---STEP---"+newDate);
                         json_graphs.dataset.xData.push(initDateSlot);
                         json_graphs.dataset.data.push(nPositions);
                         nPositions = 0;                    
@@ -80,19 +78,13 @@ numpositionsModel.getNumpositions = function(requestData,callback)
             //console.log(json_graphs);
             callback(null, JSON.stringify(json_graphs));
         });
-    }
-  });
+        });
 }
 
 numpositionsModel.getNumpositionsGroupByHeading = function(requestData,callback)
 {
-    db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('tracking');
-        collection.find({'deviceId': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
+        mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
+        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"dataset": 
@@ -158,8 +150,7 @@ numpositionsModel.getNumpositionsGroupByHeading = function(requestData,callback)
 
             callback(null, JSON.stringify(json_graphs));
         });
-    }
-  });
+        });
 }
 
 

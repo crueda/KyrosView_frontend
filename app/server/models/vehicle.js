@@ -1,4 +1,3 @@
-var Db = require('mongodb').Db;
 var server = require('mongodb').Server;
 var mongoose = require('mongoose');
 
@@ -21,10 +20,7 @@ var log = require('tracer').console({
 
 var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
-//var dbMongoHost = "192.168.28.251";
 var dbMongoPort = properties.get('bbdd.mongo.port');
-
-var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
 
 mongoose.connect('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
     if (error) {
@@ -34,22 +30,6 @@ mongoose.connect('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoN
 
 // Crear un objeto para ir almacenando todo lo necesario
 var vehicleModel = {};
-
-vehicleModel.getVehicles_old = function(callback)
-{
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('VEHICLE');
-        //collection.find().limit(100).toArray(function(err, docs) {
-        collection.find().toArray(function(err, docs) {
-            callback(null, docs);
-        });
-    }
-  });
-}
 
 vehicleModel.getVehicles = function(callback)
 {
@@ -63,16 +43,10 @@ vehicleModel.getVehicles = function(callback)
 
 vehicleModel.getVehicle = function(vehicleLicense, callback)
 {
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('VEHICLE');
+    mongoose.connection.db.collection('VEHICLE', function (err, collection) {
         collection.find({"vehicle_license" : vehicleLicense}).toArray(function(err, docs) {
             callback(null, docs);
         });
-    }
   });
 }
 

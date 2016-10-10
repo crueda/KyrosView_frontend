@@ -134,7 +134,7 @@ module.exports = function(app) {
 		}	else{
             res.render('graphs-hist.ejs', {
                 user : req.session.user.username,
-                vehicleLicense : req.body['vehicleLicense'],
+                vehicleLicense : req.session.user.vehicleLicense,
                 initDate : req.body['initDate'],
                 endDate : req.body['endDate']
 			});

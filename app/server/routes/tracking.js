@@ -240,14 +240,15 @@ router.get('/tracking1/vehicles', function(req, res)
 
 
 /**
- * @api {get} /api/tracking5/vehicle/:vehicleLicense Últimas 5 posiciones de un vehiculo
- * @apiName GetTracking5Vehicle Obtener información los últimos 5 tracking de un vehiculo
+ * @api {get} /api/last-trackings/vehicle/:vehicleLicense Últimas posiciones de un vehiculo
+ * @apiName GetLastTrackingsVehicle Obtener información los últimos trackings de un vehiculo
  * @apiGroup Tracking
- * @apiDescription Datos de los últimos 5 puntos de tracking de un vehiculo
+ * @apiDescription Datos de los últimos puntos de tracking de un vehiculo
  * @apiVersion 1.0.2
- * @apiSampleRequest http://view.kyroslbs.com/api/tracking5/vehicle/1615-FDW
+ * @apiSampleRequest http://view.kyroslbs.com/api/trackings/vehicle/1615-FDW?ntrackings=5
  *
  * @apiParam {String} vehicleLicense Identificador del vehiculo en Kyros
+ * @apiParam {Number} ntrackings Número de posiciones d etracking
  *
  * @apiSuccess {json} trackingData Datos de los últimos puntos de tracking
  *
@@ -275,39 +276,51 @@ router.get('/tracking1/vehicles', function(req, res)
  *     }, {......}, .... ]
  *     }
  */
-router.get('/tracking5/vehicle/:vehicleLicense', function(req, res)
+router.get('/last-trackings/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
       var vehicleLicense = req.params.vehicleLicense;
-      log.info("GET: /tracking5/vehicle/"+vehicleLicense);
 
-      TrackingModel.getTracking5FromVehicle(vehicleLicense,function(error, data)
-      {
-        if (data == null)
+      var ntrackings = req.query.ntrackings;
+
+      if (ntrackings==null) {
+        res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+      } 
+      else {
+        log.info("GET: /last-trackings/vehicle/?ntrackings="+ntrackings);
+
+        var requestData = {
+          vehicleLicense : vehicleLicense,
+          ntrackings : ntrackings
+        };
+        TrackingModel.getLastTrackingsFromVehicle(requestData,function(error, data)
         {
-          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
-        }
-        else
-        {
-          //si existe enviamos el json
-          if (typeof data !== 'undefined' && data.length > 0)
+          if (data == null)
           {
-            res.status(200).json(data)
+            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
           }
-          else if (typeof data == 'undefined' || data.length == 0)
-          {
-            res.status(200).json([])
-          }
-          //en otro caso mostramos un error
           else
           {
-            res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            //si existe enviamos el json
+            if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json(data)
+            }
+            else if (typeof data == 'undefined' || data.length == 0)
+            {
+              res.status(200).json([])
+            }
+            //en otro caso mostramos un error
+            else
+            {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
           }
-        }
-      });    
+        });    
+      }
     }
 });
 

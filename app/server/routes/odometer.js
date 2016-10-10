@@ -25,14 +25,14 @@ var log = require('tracer').console({
 });
 
 /**
- * @api {get} /api/odometer/:deviceId Odometro de un dispositivo 
- * @apiName GetOdometerDeviceId Obtener información de odometro de un dispositivo
+ * @api {get} /api/odometer/:vehicleLicense Odometro de un dispositivo 
+ * @apiName GetOdometerVehicle Obtener información de odometro de un dispositivo
  * @apiGroup Odometer
  * @apiDescription Datos de odometro de un dispositivo
  * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/odometer/653
+ * @apiSampleRequest http://view.kyroslbs.com/api/odometer/1615-FDW
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del dispositivo en Kyros
  *
  * @apiSuccess {json} odometerData Datos de odometro
  *
@@ -40,7 +40,7 @@ var log = require('tracer').console({
  *     HTTP/1.1 200 OK
  *     {
  *      [{"_id":399,
- *        "deviceId":399,
+ *        "vehicleLicense":"1615-FDW",
  *        "dayConsume":0.1,
  *        "monthConsume":0.1,
  *        "monthDistance":5.8,
@@ -53,16 +53,16 @@ var log = require('tracer').console({
  *        }]
  *     }
  */
-router.get('/odometer/:deviceId', function(req, res)
+router.get('/odometer/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
-      log.info("GET: /odometer/"+deviceId);
+      var vehicleLicense = req.params.vehicleLicense;
+      log.info("GET: /odometer/"+vehicleLicense);
 
-      OdometerModel.getOdometerData(deviceId,function(error, data)
+      OdometerModel.getOdometerData(vehicleLicense,function(error, data)
       {
         if (data == null)
         {

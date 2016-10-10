@@ -26,14 +26,14 @@ var log = require('tracer').console({
 });
 
 /**
- * @api {get} /api/numpositions/:deviceId Nñumero de posiciones de un dispositivo
+ * @api {get} /api/numpositions/:vehicleLicense Número de posiciones de un dispositivo
  * @apiName GetNumPositions Obtener información del número de posiciones de un determinado dispositivo
  * @apiGroup Numpositions
  * @apiDescription Datos del número de posiciones de un determinado dispositivo
  * @apiVersion 1.0.1
  * @apiSampleRequest http://view.kyroslbs.com/api/numpositions/655?initDate=1473915536000&?endDate=1473915736000
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del dispositivo en Kyros
  * @apiParam {Number} initDate Fecha inicial de consulta (epoch)
  * @apiParam {Number} [endDate] Fecha final de consulta (epoch)
  * @apiParam {Number} [slots=10] Número de slots
@@ -49,18 +49,18 @@ var log = require('tracer').console({
  *      }
  *     }
  */
-router.get('/numpositions/:deviceId', function(req, res)
+router.get('/numpositions/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
+      var vehicleLicense = req.params.vehicleLicense;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
       var slots = req.query.slots;
 
-      log.info("GET: /numpositions/"+deviceId);
+      log.info("GET: /numpositions/"+vehicleLicense);
 
       if (endDate==null) {
         endDate = (new Date).getTime()
@@ -74,7 +74,7 @@ router.get('/numpositions/:deviceId', function(req, res)
       } 
       else {
         var requestData = {
-          deviceId : deviceId,
+          vehicleLicense : vehicleLicense,
           initDate : initDate,
           endDate : endDate,
           slots: slots
@@ -108,14 +108,14 @@ router.get('/numpositions/:deviceId', function(req, res)
 });
 
 /**
- * @api {get} /api/numpositionsGroupByHeading/:deviceId Nñumero de posiciones de un dispositivo agrupadas por rango de heading
+ * @api {get} /api/numpositionsGroupByHeading/:vehicleLicense Número de posiciones de un dispositivo agrupadas por rango de heading
  * @apiName GetNumPositionsHeading Obtener información del número de posiciones de un determinado dispositivo
  * @apiGroup Numpositions
  * @apiDescription Datos del número de posiciones de un determinado dispositivo, agrupadas por rango de heading cada 45º
  * @apiVersion 1.0.1
  * @apiSampleRequest http://view.kyroslbs.com/api/numpositionsGroupByHeading/655?initDate=1473915536000&?endDate=1473915736000
  *
- * @apiParam {Number} deviceId Identificador del dispositivo en Kyros
+ * @apiParam {String} vehicleLicense Identificador del dispositivo en Kyros
  * @apiParam {Number} initDate Fecha inicial de consulta (epoch)
  * @apiParam {Number} [endDate] Fecha final de consulta (epoch)
  *
@@ -129,17 +129,17 @@ router.get('/numpositions/:deviceId', function(req, res)
  *      }
  *     }
  */
-router.get('/numpositionsGroupByHeading/:deviceId', function(req, res)
+router.get('/numpositionsGroupByHeading/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
+      var vehicleLicense = req.params.vehicleLicense;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /numpositionsGroupByHeading/"+deviceId);
+      log.info("GET: /numpositionsGroupByHeading/"+vehicleLicense);
 
       if (endDate==null) {
         endDate = (new Date).getTime()
@@ -150,7 +150,7 @@ router.get('/numpositionsGroupByHeading/:deviceId', function(req, res)
       } 
       else {
         var requestData = {
-          deviceId : deviceId,
+          vehicleLicense : vehicleLicense,
           initDate : initDate,
           endDate : endDate
         };

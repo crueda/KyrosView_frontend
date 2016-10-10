@@ -64,12 +64,19 @@ activityModel.getActivity = function(requestData,callback)
 
             var total_distance = 0;
             for (item in jsondocs) {
-                json_graphs.datasets[0].data.push(jsondocs[item].speed);
-                json_graphs.datasets[1].data.push(jsondocs[item].altitude);
+                if (jsondocs[item].speed!=null)
+                    json_graphs.datasets[0].data.push(jsondocs[item].speed);
+                else 
+                    json_graphs.datasets[0].data.push(0);
+                if (jsondocs[item].altitude!=null)
+                    json_graphs.datasets[1].data.push(jsondocs[item].altitude);
+                else
+                    json_graphs.datasets[1].data.push(0);
                 json_graphs.datasets[2].data.push(total_distance);
                 json_graphs.xData.push(jsondocs[item].pos_date);
 
-                total_distance = total_distance + jsondocs[item].distance;
+                if (jsondocs[item].distance!=null)
+                    total_distance = total_distance + jsondocs[item].distance;
             }
             //console.log(json_graphs);
             callback(null, JSON.stringify(json_graphs));

@@ -30,22 +30,25 @@ var log = require('tracer').console({
   }
 });
 
+var dbMongoName = properties.get('bbdd.mongo.name');
+var dbMongoHost = properties.get('bbdd.mongo.ip');
+var dbMongoPort = properties.get('bbdd.mongo.port');
 
-router.get('/image/device/:deviceId', function(req, res)
+router.get('/image/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
+      var vehicleLicense = req.params.vehicleLicense;
 
-      log.info("GET: /image/device/"+deviceId);
+      log.info("GET: /image/vehicle/"+vehicleLicense);
 
-      if (deviceId==null) {
+      if (vehicleLicense==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
-        ImageModel.getImageDevice(deviceId, function(error, data)
+        ImageModel.getImageVehicle(vehicleLicense, function(error, data)
         {
           if (data == null)
           {
@@ -73,30 +76,72 @@ router.get('/image/device/:deviceId', function(req, res)
     }
 });
 
-var db = new mongo.Db('kyros', new mongo.Server('192.168.28.251', 27017));
+router.get('/icon/vehicle/:vehicleLicense', function(req, res)
+{
+    if (req.session.user == null){
+      res.redirect('/');
+    } 
+    else {
+      var vehicleLicense = req.params.vehicleLicense;
+
+      log.info("GET: /icon/vehicle/"+vehicleLicense);
+
+      if (vehicleLicense==null) {
+        res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+      } 
+      else {
+        ImageModel.getIconVehicle(vehicleLicense, function(error, data)
+        {
+          if (data == null)
+          {
+            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+          }
+          else
+          {
+            //si existe enviamos el json
+            if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json(jsonfy(data))
+            }
+            else if (typeof data == 'undefined' || data.length == 0)
+            {
+              res.status(200).json([])
+            }
+            //en otro caso mostramos un error
+            else
+            {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+          }
+        }); 
+      }   
+    }
+});
+
+var db = new mongo.Db(dbMongoName, new mongo.Server(dbMongoHost, dbMongoPort));
 var gfs;
 db.open(function(err, db) {
   if (err) throw err;
   gfs = Grid(db, mongo);
 });
 
-router.post('/image/upload/:deviceId', function(req, res)
+router.post('/image/upload/:vehicleLicense', function(req, res)
 {
   if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var deviceId = req.params.deviceId;
+      var vehicleLicense = req.params.vehicleLicense;
 
       log.info("POST: /image/upload");
 
-      if (deviceId==null) {
+      if (vehicleLicense==null) {
           res.redirect('/map');
           //res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       } 
       else {
         // Borrar los ficheros antiguos
-        gfs.files.remove({filename:deviceId} , function(err){
+        gfs.files.remove({filename:vehicleLicense} , function(err){
           if (err){
             log.error("error al borrar los ficheros antiguos");
           }else{
@@ -108,10 +153,10 @@ router.post('/image/upload/:deviceId', function(req, res)
         var fileId = new mongo.ObjectId();
 
         busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-          console.log('got file', deviceId, mimetype, encoding);
+          console.log('got file', vehicleLicense, mimetype, encoding);
           var writeStream = gfs.createWriteStream({
             _id: fileId,
-            filename: deviceId,
+            filename: vehicleLicense,
             mode: 'w',
             content_type: mimetype,
           });
@@ -125,6 +170,49 @@ router.post('/image/upload/:deviceId', function(req, res)
     }
 });
 
+router.post('/icon/upload/:vehicleLicense', function(req, res)
+{
+  if (req.session.user == null){
+      res.redirect('/');
+    } 
+    else {
+      var vehicleLicense = req.params.vehicleLicense;
 
+      log.info("POST: /icon/upload");
+
+      if (vehicleLicense==null) {
+          res.redirect('/map');
+          //res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+      } 
+      else {
+        // Borrar los ficheros antiguos
+        gfs.files.remove({filename:'icon_'+vehicleLicense} , function(err){
+          if (err){
+            log.error("error al borrar los ficheros antiguos");
+          }else{
+            log.debug("old file removed")
+          }           
+        }); 
+
+        var busboy = new Busboy({ headers : req.headers });
+        var fileId = new mongo.ObjectId();
+
+        busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+          console.log('got file', 'icon_'+vehicleLicense, mimetype, encoding);
+          var writeStream = gfs.createWriteStream({
+            _id: fileId,
+            filename: 'icon_'+vehicleLicense,
+            mode: 'w',
+            content_type: mimetype,
+          });
+          file.pipe(writeStream);
+        }).on('finish', function() {
+          res.redirect('/map');
+        });
+
+        req.pipe(busboy);
+      }
+    }
+});
 
 module.exports = router;

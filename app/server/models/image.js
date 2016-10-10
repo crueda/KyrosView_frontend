@@ -30,13 +30,13 @@ var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
 // Crear un objeto para ir almacenando todo lo necesario
 var imageModel = {};
 
-imageModel.getImageDevice = function(deviceId,callback)
+imageModel.getImageVehicle = function(vehicleLicense,callback)
 {
     db.open(function(err, db) {
         if (err)
              callback(null, '');
         else {
-            var gridStore = new GridStore(db, deviceId, "r").open(function(err, gridStore) {
+            var gridStore = new GridStore(db, vehicleLicense, "r").open(function(err, gridStore) {
                 if (err)
                     callback(null, '');
                 else {
@@ -52,8 +52,29 @@ imageModel.getImageDevice = function(deviceId,callback)
     });
 }
 
+imageModel.getIconVehicle = function(vehicleLicense,callback)
+{
+    db.open(function(err, db) {
+        if (err)
+             callback(null, '');
+        else {
+            var gridStore = new GridStore(db, 'icon_'+vehicleLicense, "r").open(function(err, gridStore) {
+                if (err)
+                    callback(null, '');
+                else {
+                    gridStore.read(function(err, data) {
+                        if (err)
+                            callback(null, '');
+                        else
+                            callback(null, data.toString('base64'));
+                    });            
+                }
+            });            
+        }
+    });
+}
 
-imageModel.uploadImageDevice = function(deviceId,req,callback)
+imageModel.uploadImageVehicle = function(vehicleLicense,req,callback)
 {
     var gfs;
     db.open(function(err, db) {
@@ -70,6 +91,34 @@ imageModel.uploadImageDevice = function(deviceId,req,callback)
     var writeStream = gfs.createWriteStream({
       _id: fileId,
       filename: filename,
+      mode: 'w',
+      content_type: mimetype,
+    });
+    file.pipe(writeStream);
+    }).on('finish', function() {
+        callback(null, "");
+    });
+
+  req.pipe(busboy);
+}
+
+imageModel.uploadIconVehicle = function(vehicleLicense,req,callback)
+{
+    var gfs;
+    db.open(function(err, db) {
+        if (err) 
+             callback(null, null);
+        gfs = Grid(db, mongo);
+    });
+
+    var busboy = new Busboy({ headers : req.headers });
+    var fileId = new mongo.ObjectId();
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    log.debug('got file', 'icon_'+filename, mimetype, encoding);
+    var writeStream = gfs.createWriteStream({
+      _id: fileId,
+      filename: 'icon_'+filename,
       mode: 'w',
       content_type: mimetype,
     });

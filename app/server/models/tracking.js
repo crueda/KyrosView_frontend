@@ -91,15 +91,15 @@ trackingModel.getTracking1FromVehicles = function(vehicleLicenseList,callback)
 }
 
 
-trackingModel.getTracking5FromVehicle = function(vehicleLicense,callback)
+trackingModel.getLastTrackingsFromVehicle = function(requestData,callback)
 {
   db.open(function(err, db) {
     if(err) {
         callback(err, null);
     }
     else {
-        var collection = db.collection('TRACKING_'+vehicleLicense);
-        collection.find().sort({"pos_date": -1}).limit(5).toArray(function(err, docs) {
+        var collection = db.collection('TRACKING_'+requestData.vehicleLicense);
+        collection.find().sort({"pos_date": -1}).limit(parseInt(requestData.ntrackings)).toArray(function(err, docs) {
             callback(null, docs);
         });
     }
@@ -124,7 +124,7 @@ trackingModel.getTrackingFromVehicleAndDate_old = function(requestData,callback)
 trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
 {
     mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
-        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).limit(1000).toArray(function(err, docs) {
+        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).limit(5000).toArray(function(err, docs) {
             callback(null, docs);
         });
     });
@@ -141,21 +141,6 @@ trackingModel.getTrackingFromVehicle = function(requestData,callback)
     else {
         var collection = db.collection('TRACKING_'+requestData.vehicleLicense);
         collection.find({'tracking_id': parseInt(requestData.trackingId)}).toArray(function(err, docs) {
-            callback(null, docs);
-        });
-    }
-  });
-}
-
-trackingModel.getHeatmap = function(requestData,callback)
-{   
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('tracking');
-        collection.find({'_id': parseInt(id)}).toArray(function(err, docs) {
             callback(null, docs);
         });
     }

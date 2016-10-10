@@ -76,7 +76,12 @@
 	"graphs": "Graficos",
 	"config": "Config.",
 	"logout": "Salir",
-	"layer_vehicles_selected": "Dispositivos seleccionados"
+	"layer_vehicles_selected": "Dispositivos seleccionados",
+	"details": "Detalles",
+	"odometer": "Odometro",
+	"icon": "Icono",
+	"photo": "Foto"
+
 
 
 	
