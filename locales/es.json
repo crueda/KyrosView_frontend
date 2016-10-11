@@ -80,7 +80,11 @@
 	"details": "Detalles",
 	"odometer": "Odometro",
 	"icon": "Icono",
-	"photo": "Foto"
+	"photo": "Foto",
+	"historical_positions": "Histórico: posiciones",
+	"historical_track": "Histórico: track"
+
+
 
 
 

@@ -7,6 +7,8 @@ var Busboy = require('busboy'); // 0.2.9
 var mongo = require('mongodb'); // 2.0.31
 var Grid = require('gridfs-stream'); // 1.1.1"
 
+//var gm = require('gm');
+
 var status = require("../utils/statusCodes.js");
 var messages = require("../utils/statusMessages.js");
 
@@ -197,8 +199,25 @@ router.post('/icon/upload/:vehicleLicense', function(req, res)
         var busboy = new Busboy({ headers : req.headers });
         var fileId = new mongo.ObjectId();
 
+
         busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
           console.log('got file', 'icon_'+vehicleLicense, mimetype, encoding);
+          /*
+          file.on('limit', function() {
+            //Clear variables
+          });*/
+
+          // obtain the size of an image
+          /*
+          gm(file)
+          .size(function (err, size) {
+            if (!err) {
+              log.info('width = ' + size.width);
+              log.info('height = ' + size.height);
+            }
+          });*/
+
+
           var writeStream = gfs.createWriteStream({
             _id: fileId,
             filename: 'icon_'+vehicleLicense,

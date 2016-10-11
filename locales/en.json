@@ -81,7 +81,9 @@
 	"details": "Details",
 	"odometer": "Odometer",
 	"icon": "Icon",
-	"photo": "Photo"
+	"photo": "Photo",
+	"historical_positions": "Historical positions",
+	"historical_track": "Historical track"
 
 
 }
