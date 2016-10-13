@@ -392,13 +392,18 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
           else
           {
             //si existe enviamos el json
-            if (typeof data !== 'undefined' && data.length > 0)
+            if (typeof data !== 'undefined' && data.length > 999)
             {
-              res.status(200).json(data)
+              res.status(200).json({"status": "nok", "result": data});
+            }
+            else if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json({"status": "ok", "result": data});
             }
             else if (typeof data == 'undefined' || data.length == 0)
             {
-              res.status(200).json([])
+              res.status(200).json({"status": "ok", "result": []});
+              //res.status(200).json([])
             }
             //en otro caso mostramos un error
             else

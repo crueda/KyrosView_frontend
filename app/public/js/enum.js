@@ -52,11 +52,11 @@ function defineEnum(definition) {
     return e;
 }
 
-var EVENT = defineEnum({
+var EVENT_ENUM = defineEnum({
     SPEED : {
         value : 911,
         string : 'max_speed',
-        description: 'Velocidad máxima'
+        description: 'Velocidad máxima excedida'
     },
     UNPLUG : {
         value : 942,
@@ -65,7 +65,7 @@ var EVENT = defineEnum({
     },
     VEHICLE_STOPPED : {
         value : 913,
-        string : 'vehicle_stopped',
+        string : 'stop',
         description: 'Parada'
     }
 });

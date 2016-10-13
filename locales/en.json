@@ -84,7 +84,11 @@
 	"photo": "Photo",
 	"historical_positions": "Historical positions",
 	"historical_track": "Historical track",
-	"event": "Event"
+	"event": "Event",
+	"too_many_tracking": "Too many tracking points",
+	"narrow_search": "Narrow search dates and try again",
+	"event_max_speed": "Maximum speed exceeded",
+	"event_stop": "Stop"
 
 
 }
