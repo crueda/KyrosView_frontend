@@ -67,7 +67,7 @@
 	"layer_vehicles_real_time": "Mis dispositivos",
 	"pois": "PDIs",
 	"test": "Probar",
-	"map_ol": "Mapa OL",
+	"map_ol": "Mapa",
 	"real_time": "Tiempo real",
 	"map_g": "Mapa G.",
 	"globe": "Globo",
@@ -86,6 +86,11 @@
 	"too_many_tracking": "Demasiados puntos de tracking",
 	"narrow_search": "Reduzca las fechas de búsqueda e inténtelo de nuevo",
 	"event_max_speed": "Velocidad máxima excedida",
-	"event_stop": "Parada"
+	"event_stop": "Parada",
+	"loading_data": "Cargando datos",
+	"wait": "Espere un momento, por favor",
+	"find": "Buscar",
+	"about": "Acerca de"
+
 
 }

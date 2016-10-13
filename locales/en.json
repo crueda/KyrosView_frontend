@@ -68,7 +68,7 @@
 	"layer_vehicles_real_time": "My devices",
 	"pois": "POIs",
 	"test": "Probar",
-	"map_ol": "Map OL",
+	"map_ol": "Map",
 	"real_time": "Real time",
 	"map_g": "Map G.",
 	"historic": "Historic",
@@ -88,7 +88,11 @@
 	"too_many_tracking": "Too many tracking points",
 	"narrow_search": "Narrow search dates and try again",
 	"event_max_speed": "Maximum speed exceeded",
-	"event_stop": "Stop"
+	"event_stop": "Stop",
+	"loading_data": "Loading data",
+	"wait": "Wait a moment, please",
+	"find": "Find",
+	"about": "About"
 
 
 }

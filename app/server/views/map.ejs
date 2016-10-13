@@ -166,7 +166,7 @@
  var defaultVehicleLastLon = 0;
  var defaultVehicleLastTrackingId = 0;
  var mapmode = 0;
-
+ var loadMonitorLoaded = false;
  var vehicleLicenseToSelect = '';
  var encontradoChecked = false;
  var encontradoVehiculo = false;
@@ -256,6 +256,11 @@ $("#vehiclePhoto").fileinput({
     showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch);
 
     document.getElementById('attr-graph-hist').style.display = 'block';
+  });
+
+  $('#okButtonFind').click(function(){
+    var vehicleLicenseFind = $('#licenseFind').val();
+    showTrackingFind(vehicleLicenseFind);
   });
 
   if (isMobile()) {
@@ -437,6 +442,12 @@ function clearMapSelected() {
     }    
   }
 
+  function showTrackingFind(vehicleLicense) {
+    clearMap();
+    mapmode = 2;
+
+    addVehicleFindToMap(vehicleLicense);
+  }
 
   function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
     //clearMapHistoric();
@@ -446,6 +457,7 @@ function clearMapSelected() {
 
     var latHist = [];
     var lonHist = [];
+    var posDateHist = [];
     var trackingIdHist = [];
     var eventTrackingIdHist = [];
     var eventLatHist = [];
@@ -487,6 +499,7 @@ function clearMapSelected() {
             var lat = val.location.coordinates[1];
             var lon = val.location.coordinates[0];
             var trackingId = val.tracking_id;
+            var posDate = val.pos_date;
             var vehicleLicense = val.vehicle_license;
             if (initPos==true) {
               minLon=lon;
@@ -510,6 +523,7 @@ function clearMapSelected() {
             trackingIdHist.push(trackingId);
             latHist.push(lat);
             lonHist.push(lon);
+            posDateHist.push(posDate);
 
             // comprobar eventos
             if (val.events.length>0) {
@@ -559,7 +573,7 @@ function clearMapSelected() {
           if (i == 0) {
             addTrackingHistPointStart(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);            
           } else if (i == latHist.length -1 ) {
-            addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);            
+            addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i], posDateHist[i]);            
           } else {
             addTrackingHistPoint(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
             //addTrackingHistPointEffect(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
@@ -749,7 +763,7 @@ function clearMapSelected() {
       map.addOverlay(greenFlagOverlay);
   }
 
-    function addTrackingHistPointEnd(vehicleLicense, trackingId, lat, lon) {
+    function addTrackingHistPointEnd(vehicleLicense, trackingId, lat, lon, posDate) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
@@ -779,7 +793,7 @@ function clearMapSelected() {
         vehicleLicense: vehicleLicense,
         name: "<%= __('end_tracking_point') %>"
       });
-      var image_src = getVehicleIcon(vehicleLicense, 0, 0); 
+      var image_src = getVehicleIcon(vehicleLicense, 0, posDate); 
       iconStyleVehicle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
          scale: 0.8,
@@ -802,7 +816,8 @@ function clearMapSelected() {
       });
       map.addOverlay(redFlagOverlay);      
   }
-  
+
+
   function addTrackingHistLine(lat1, lon1, lat2, lon2) {
       var coords = [];
       coords.push([lon1, lat1]);
@@ -878,13 +893,39 @@ function clearMapSelected() {
   }
 
   function menuHistoric() {
-    $('#myModalMenuKyros').modal('hide');
-    $('#myModalCalendar').modal('show');
+    if (loadMonitorLoaded) {
+      $('#myModalMenuKyros').modal('hide');
+      $('#myModalCalendar').modal('show');      
+    } else {
+       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+       $('#myModalMsgLabel').css({ "color" : 'red' });
+       $('#myModalMsgLabel2').text("<%= __('wait') %>");
+       $('#myModalMsg').modal('show');
+    }
+  }
+
+  function menuFind() {
+    if (loadMonitorLoaded) {
+      $('#myModalMenuKyros').modal('hide');
+      $('#myModalFind').modal('show');      
+    } else {
+       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+       $('#myModalMsgLabel').css({ "color" : 'red' });
+       $('#myModalMsgLabel2').text("<%= __('wait') %>");
+       $('#myModalMsg').modal('show');
+    }
   }
 
   function menuDevices() {
-    $('#myModalMenuKyros').modal('hide');
-    $('#myModalMonitor').modal('show');
+    if (loadMonitorLoaded) {
+      $('#myModalMenuKyros').modal('hide');
+      $('#myModalMonitor').modal('show');
+    } else {
+       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+       $('#myModalMsgLabel').css({ "color" : 'red' });
+       $('#myModalMsgLabel2').text("<%= __('wait') %>");
+       $('#myModalMsg').modal('show');      
+    }
   }
 
   function openMenuKyros() {
@@ -1129,7 +1170,7 @@ function openTooltipMapPoint(latitude, longitude) {
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/gmap'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_gmap.png"/><br><%= __('map_g') %></button>
+        <button onclick="javascript:menuFind();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_find.png"/><br><%= __('find') %></button>
       </td>
       <td align="center">
         <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
@@ -1138,7 +1179,7 @@ function openTooltipMapPoint(latitude, longitude) {
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/globe'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br><%= __('globe') %></button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br><%= __('graphs') %></button>
       </td>
       <td align="center">
         <button onclick="javascript:menuDevices();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br><%= __('all') %></button>
@@ -1147,7 +1188,7 @@ function openTooltipMapPoint(latitude, longitude) {
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('config') %></button>
       </td>
       <td align="center">
         <button onclick="javascript:menuPois();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
@@ -1155,10 +1196,10 @@ function openTooltipMapPoint(latitude, longitude) {
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
+        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('logout') %></button>
       </td>
       <td align="center">
-        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br><%= __('logout') %></button>
+        <button onclick="javascript:menuAbout();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_about.png"/><br><%= __('about') %></button>
       </td>
     </tr>
     </table>
@@ -1258,6 +1299,38 @@ function openTooltipMapPoint(latitude, longitude) {
       </div>
 
       <div id="okButtonCalendar" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary"><%= __('consult') %></button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="myModalFind" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('find') %></h4>
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+      <div class="container">
+          <div class="row">
+              <div class='col-sm-2'>
+                  <div class="form-group">
+                      <h5 class="modal-title"><%= __('license') %>:</h5>                     
+                          <input type='text' class="form-control" id='licenseFind' data-provide="typeahead" placeholder=""/>                                           
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+
+      <div id="okButtonFind" class="modal-footer" data-dismiss="modal" aria-hidden="true">
         <button class="form-control btn btn-primary"><%= __('consult') %></button>
       </div>
     </div> <!-- /.modal-body -->
@@ -1971,6 +2044,7 @@ function loadMonitor() {
 
     // Rellenar el control de la ventana de historico
     $('#licenseHist').val('<%=vehicleLicense%>');
+    $('#licenseFind').val('<%=vehicleLicense%>');
     var strDevices = '[';
     var ndata = monitorVehicleLicense.length;
     for (i=0; i<ndata; i++) {
@@ -1984,6 +2058,9 @@ function loadMonitor() {
     strDevices = strDevices + ']';
     var jsonDevices = JSON.parse(strDevices);
     $('#licenseHist').typeahead({source:jsonDevices, 
+        autoSelect: true
+    }); 
+    $('#licenseFind').typeahead({source:jsonDevices, 
         autoSelect: true
     }); 
 
@@ -2046,6 +2123,7 @@ function loadMonitor() {
     */
 
     document.getElementById('attr-loading').style.display = 'none';
+    loadMonitorLoaded = true;
   //} //del ajax async
  });
 
@@ -2230,6 +2308,29 @@ function addVehicleSelectedToMap(vehicleLicense) {
       $.each( data, function( key, val ) {
           processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
         });                           
+    });    
+  }
+}
+
+function addVehicleFindToMap(vehicleLicense) {
+  if (vehicleLicense!='<%=vehicleLicense%>') {
+    $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+      $.each( data, function( key, val ) {
+          processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+
+          // circulo animado?
+          /*
+          var coordinate = new ol.geom.Point(ol.proj.transform([val.location.coordinates[0], val.location.coordinates[1]], 'EPSG:4326', 'EPSG:3857'));
+          var elem = document.createElement('div');
+          elem.setAttribute('class', 'circleOutPos');
+          this.actualPosOverlay = new ol.Overlay({
+                    element: elem,
+                    position: coordinate,
+                    positioning: 'center-center'
+          });
+          map.addOverlay(actualPosOverlay);*/
+                               
+    });    
     });    
   }
 }
