@@ -124,10 +124,17 @@ trackingModel.getTrackingFromVehicleAndDate_old = function(requestData,callback)
 trackingModel.getTrackingFromVehicleAndDate = function(requestData,callback)
 {
     mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
-        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).limit(5000).toArray(function(err, docs) {
-            callback(null, docs);
-        });
-    });
+        //collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).count().toArray(function(err, docs1) {
+            //log.info("-->"+docs1);
+            //callback(null, docs1);
+            
+            //mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
+                collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).limit(5000).toArray(function(err, docs) {
+                    callback(null, docs);
+                });
+            });
+       // });
+    //});
 }
 
 

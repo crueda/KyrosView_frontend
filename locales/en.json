@@ -83,7 +83,8 @@
 	"icon": "Icon",
 	"photo": "Photo",
 	"historical_positions": "Historical positions",
-	"historical_track": "Historical track"
+	"historical_track": "Historical track",
+	"event": "Event"
 
 
 }

@@ -23,7 +23,7 @@
 	"alias": "Apodo",
 	"coordinates": "Coordenadas",
 	"heading": "Orientación",
-	"historic": "Histórico de posiciones",
+	"historic": "Historico",
 	"message": "Mensaje",
 	"consult": "Consultar",
 	"init_date": "Fecha inicial",
@@ -70,7 +70,6 @@
 	"map_ol": "Mapa OL",
 	"real_time": "Tiempo real",
 	"map_g": "Mapa G.",
-	"historic": "Historico",
 	"globe": "Globo",
 	"all": "Posiciones",
 	"graphs": "Graficos",
@@ -82,11 +81,6 @@
 	"icon": "Icono",
 	"photo": "Foto",
 	"historical_positions": "Histórico: posiciones",
-	"historical_track": "Histórico: track"
-
-
-
-
-
-	
+	"historical_track": "Histórico: track",
+	"event": "Evento"
 }

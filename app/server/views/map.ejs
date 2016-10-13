@@ -47,6 +47,8 @@
 
 <script type="text/javascript" src="js/fileinput.min.js"> </script>
 
+<script type="text/javascript" src="js/enum.js"> </script>
+
   <!--link href="./css/main.css?1" rel="stylesheet"-->
 
 
@@ -332,6 +334,24 @@ function clearMap() {
 
 }
 
+function clearMapHistoric() {
+    document.getElementById('attr-graph-hist').style.display = 'none';
+
+    vehiclesHistSource.clear();
+    vehiclesHistLineSource.clear();
+
+    if (this.greenFlagOverlay!=null)
+      map.removeOverlay(this.greenFlagOverlay);
+    if (this.redFlagOverlay!=null)
+      map.removeOverlay(this.redFlagOverlay);
+
+}
+
+function clearMapSelected() {
+    document.getElementById('attr-graph-hist').style.display = 'none';
+
+    vehiclesSelectedSource.clear();
+}
 
   function closeTooltip() {
     
@@ -391,7 +411,7 @@ function clearMap() {
 
 
   function showSelectedVehicles() {
-    clearMap();
+    clearMapHistoric();
     mapmode=2;
 
     // añadir el vehiculo por defecto en la capa de seleccion (para que salga en el centrado)
@@ -415,12 +435,17 @@ function clearMap() {
 
   function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
 
-    clearMap();
+    clearMapHistoric();
+    clearMapSelected();
     mapmode = 1;
 
     var latHist = [];
     var lonHist = [];
     var trackingIdHist = [];
+    var eventLatHist = [];
+    var eventLonHist = [];
+    var eventTypeHist = [];
+    var eventDateHist = [];
     var minLon=0;
     var minLat=0;
     var maxLon=0;
@@ -430,7 +455,7 @@ function clearMap() {
     var initPos=true;
     var index = 0;
     var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
-    //alert(urlJson);
+    alert(urlJson);
     document.getElementById('attr-loading').style.display = 'block';
       $.getJSON( urlJson, function( data ) {
         if (data.length == 0) {
@@ -468,6 +493,16 @@ function clearMap() {
             latHist.push(lat);
             lonHist.push(lon);
 
+            // comprobar eventos
+            if (val.events.length>0) {
+              for (var i=0; i<val.events.length; i++) {
+                eventLatHist.push(lat);
+                eventLonHist.push(lon);
+                eventTypeHist.push(val.events[i].event_type);
+                eventDateHist.push(val.events[i].event_date);
+
+              }
+            }
 
           if (lat_anterior!=lat || lon_anterior!=lon) {
             addTrackingHistLine(lat_anterior, lon_anterior, lat, lon);
@@ -514,6 +549,12 @@ function clearMap() {
             
           }
           //}, 100*i);
+        }
+
+        // pintar los eventos
+        for (i=0; i<eventLatHist.length;i++)
+        {
+          addTrackingHistPointEvent(eventTypeHist[i], eventDateHist[i], eventLatHist[i], eventLonHist[i]);  
         }
 
 
@@ -576,6 +617,41 @@ function clearMap() {
       iconFeature.setStyle(iconStyle);
       
       vehiclesHistSource.addFeature(iconFeature); 
+  }
+
+  function addTrackingHistPointEvent(eventType, eventDate, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: eventType,
+        elementId: 'eventPoint',
+        name: "<%= __('event') %>" + ": " + getEventDescription(eventType)
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.7,
+         rotation: 0,
+         src: getEventIcon(eventType)
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vehiclesHistSource.addFeature(iconFeature); 
+  }
+
+  function getEventDescription(eventType) {
+    return EVENT.getByValue('value', eventType).description;
+  }
+
+  function getEventName(eventType) {
+    return EVENT.getByValue('value', eventType).string;
+  }
+
+  function getEventIcon(eventType) {
+    return './images/' + getEventName(eventType) + '_info_40.png'; 
   }
 
     function addTrackingHistPointStart(vehicleLicense, trackingId, lat, lon) {
@@ -761,16 +837,17 @@ function clearMap() {
 
   function menuRealtime() {
     $('#myModalMenuKyros').modal('hide');
-    clearMap();
+    clearMapHistoric();
+    clearMapSelected();
     mapmode = 1;
-
+    centerMap2Vehicle('<%=vehicleLicense%>');
   }
 
   function openTooltip(vehicleLicense) {
      $("#uploadFormIcon").attr("action", "/api/icon/upload/" + vehicleLicense);
      $("#uploadFormPhoto").attr("action", "/api/image/upload/" + vehicleLicense);
     
-    if (iconBase64Dict[vehicleLicense]!=null) {
+    if (iconBase64Dict[vehicleLicense]!=null && iconBase64Dict[vehicleLicense]!='') {
       document.getElementById('tooltipIcon').innerHTML = "<img src='data:image/png;base64," + iconBase64Dict[vehicleLicense] + "'/>";      
     } else {
       document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicense] + "'/>";      
@@ -1648,6 +1725,11 @@ var mapPointSource = new ol.source.Vector({
       }
     }
 
+    function centerMap2Vehicle(vehicleLicense) {
+      map.getView().setCenter(ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'));
+      map.getView().setZoom(14);
+    }
+
     function moveMap2Vehicle(vehicleLicense) {
         var new_view = new ol.View({
           center: ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'),
@@ -2004,7 +2086,7 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
   });
 
   var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
-      
+      console.log(image_src);
   iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
          scale: 0.8,
