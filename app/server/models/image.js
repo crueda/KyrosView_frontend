@@ -74,6 +74,38 @@ imageModel.getIconVehicle = function(vehicleLicense,callback)
     });
 }
 
+imageModel.getIconVehicles = function(vehicleLicenseList,callback)
+{
+    var result = [];
+    db.open(function(err, db) {
+        if (err)
+             callback(null, '');
+        else {
+            var array = vehicleLicenseList.split(',');
+            for (var i=0; i<array.length; i++) {
+                var vehicleLicense = array[i];        
+                log.info("leer icono de:"+vehicleLicense);
+                var gridStore = new GridStore(db, 'icon_'+vehicleLicense, "r").open(function(err, gridStore) {
+                    if (err)
+                        callback(null, '');
+                    else {
+                        gridStore.read(function(err, data) {
+                            if (err)
+                                log.error("error al leer el gridStore");
+                                //callback(null, '');
+                            else
+                                //callback(null, data.toString('base64'));
+                                log.info("leido icono de:"+vehicleLicense);
+                                result.push({"vehicle_license: ": vehicleLicense, "icon": data.toString('base64')})
+                        });            
+                    }
+                });  
+            }
+            callback(null, result);          
+        }
+    });
+}
+
 imageModel.uploadImageVehicle = function(vehicleLicense,req,callback)
 {
     var gfs;
