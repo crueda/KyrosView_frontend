@@ -90,7 +90,9 @@
 	"loading_data": "Cargando datos",
 	"wait": "Espere un momento, por favor",
 	"find": "Buscar",
-	"about": "Acerca de"
+	"about": "Acerca de",
+	"delete": "Eliminar",
+	"icon_updated": "Icono actualizado"
 
 
 }

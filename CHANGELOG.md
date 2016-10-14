@@ -1,6 +1,20 @@
 # KyrosView - Registro de cambios
 Todos los cambios importantes realizados en este proyecto será documentado en este fichero
 
+## [1.1.0] - 2016-10-xx
+### Funcionalidades añadidas
+- Icono para disositivo:
+	- Se permite la selección de un icono para el dispositivo.
+	- Si el dispositivo no dispone de icono, se mostrará con el mismo icono usado en Kyros
+- Tooltip mejorado
+	- Organización de la información del tooltip en pestañas.
+- Eventos de tracking
+	- Se muestran los posibles eventos, tanto en tiempo real como en consultas de histórico.
+- Opción de búsqueda de dispositivo (en menú principal).
+
+### Mejoras y funcionalidades menores
+- Eliminada precarga de iconos para evitar ralentizar las poticiones de usuario.
+
 ## [1.0.2] - 2016-09-30
 ### Funcionalidades añadidas
 - Gráficas sobre los datos de historico:
@@ -40,5 +54,6 @@ Todos los cambios importantes realizados en este proyecto será documentado en e
 - Configuración de la cuenta del usuario.
 - Heatmaps y clustering de posiciones.
 
+[1.1.0]: http://viewpre.kyroslbs.com/
 [1.0.2]: http://viewpre.kyroslbs.com/
 [1.0.1]: http://view.kyroslbs.com/

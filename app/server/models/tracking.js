@@ -27,7 +27,7 @@ var dbMongoPort = properties.get('bbdd.mongo.port');
 
 var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
 
-mongoose.connect('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
     if (error) {
         log.info(error);
     }

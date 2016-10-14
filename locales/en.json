@@ -92,7 +92,9 @@
 	"loading_data": "Loading data",
 	"wait": "Wait a moment, please",
 	"find": "Find",
-	"about": "About"
+	"about": "About",
+	"delete": "Delete",
+	"icon_updated": "Icon updated"
 
 
 }

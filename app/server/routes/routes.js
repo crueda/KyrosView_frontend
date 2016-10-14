@@ -3,6 +3,7 @@ var CT = require('../modules/country-list');
 var AM = require('../modules/account-manager');
 var EM = require('../modules/email-dispatcher');
 
+
 var colors = require('colors');
 
 module.exports = function(app) {
@@ -146,6 +147,7 @@ module.exports = function(app) {
 		if (req.session.user == null){
 			res.redirect('/');
 		}	else{
+			console.log(colors.red('--> %s'), req.body['vehicleLicense']);
 			AM.updateUserDevice({
 				username : req.session.user.username,
 				vehicleLicense : req.body['vehicleLicense']
@@ -254,8 +256,10 @@ module.exports = function(app) {
 		req.session.destroy(function(e){ 
 			res.redirect('/');
 		});
-	})
+	});
 	
+
+
 // creating new accounts //
 /*	
 	app.get('/signup', function(req, res) {

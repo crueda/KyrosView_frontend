@@ -1,5 +1,5 @@
-var Db = require('mongodb').Db;
 var server = require('mongodb').Server;
+var mongoose = require('mongoose');
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
@@ -22,25 +22,22 @@ var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
-var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
-
+mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+    if (error) {
+        log.info(error);
+    }
+});
 
 // Crear un objeto para ir almacenando todo lo necesario
 var poiModel = {};
 
 poiModel.getPoisFromBox = function(boxData,callback)
 {
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('POIS');
+    mongoose.connection.db.collection('VEHICLE', function (err, collection) {
         collection.find( { 'monitor': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
             callback(null, docs);
         });
-    }
-  });
+    });
 }
 
 //exportamos el objeto para tenerlo disponible en la zona de rutas

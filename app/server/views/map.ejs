@@ -260,6 +260,7 @@ $("#vehiclePhoto").fileinput({
 
   $('#okButtonFind').click(function(){
     var vehicleLicenseFind = $('#licenseFind').val();
+    getVehicleIconSync(vehicleLicenseFind);
     showTrackingFind(vehicleLicenseFind);
   });
 
@@ -308,8 +309,8 @@ $("#vehiclePhoto").fileinput({
   //reloadDefaultVehicleData();
 
 
-  //loadVehiclesDataSync(); 
-  loadVehiclesData();
+  loadVehiclesDataSync(); 
+  //loadVehiclesData();
   loadMonitor();
   
 
@@ -893,8 +894,8 @@ function clearMapSelected() {
   }
 
   function menuHistoric() {
+    $('#myModalMenuKyros').modal('hide');
     if (loadMonitorLoaded) {
-      $('#myModalMenuKyros').modal('hide');
       $('#myModalCalendar').modal('show');      
     } else {
        $('#myModalMsgLabel').text("<%= __('loading_data') %>");
@@ -905,20 +906,21 @@ function clearMapSelected() {
   }
 
   function menuFind() {
+    $('#myModalMenuKyros').modal('hide');
     if (loadMonitorLoaded) {
-      $('#myModalMenuKyros').modal('hide');
       $('#myModalFind').modal('show');      
     } else {
        $('#myModalMsgLabel').text("<%= __('loading_data') %>");
        $('#myModalMsgLabel').css({ "color" : 'red' });
        $('#myModalMsgLabel2').text("<%= __('wait') %>");
        $('#myModalMsg').modal('show');
+      //$('#myModalFind').modal('show');      
     }
   }
 
   function menuDevices() {
+    $('#myModalMenuKyros').modal('hide');
     if (loadMonitorLoaded) {
-      $('#myModalMenuKyros').modal('hide');
       $('#myModalMonitor').modal('show');
     } else {
        $('#myModalMsgLabel').text("<%= __('loading_data') %>");
@@ -973,6 +975,9 @@ function clearMapSelected() {
       document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicense] + "'/>";      
     }
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicense;
+
+    document.getElementById('formVehicleLicense').value = vehicleLicense;
+
 
     var date = new Date(dateDict[vehicleLicense]);
     var year = date.getFullYear();
@@ -1112,6 +1117,7 @@ function openTooltipMapPoint(latitude, longitude) {
  </form>
 
  <form id="myform" action="/map" method="POST">
+   <input type="hidden" id="formVehicleLicense" name="vehicleLicense" value="" />
  </form>
 
  <form id="myformGraphHist" action="/graphs-hist" method="POST">
@@ -1431,6 +1437,8 @@ function openTooltipMapPoint(latitude, longitude) {
         <div id="icon" class="tab-pane fade">
           <br>
           <img id="iconVehicle" src=""/>
+          <input onclick="javascript:deleteIcon();" type="submit" class="btn-danger" value="<%= __('delete') %>" name="submit">
+
           <form id        =  "uploadFormIcon"
                enctype   =  "multipart/form-data"
                action    =  "/api/icon/upload"
@@ -1933,7 +1941,79 @@ function loadDefaultVehicleDataSync() {
   });
 }
 
+function loadVehicleIconSync(vehicleLicense) {
+  // Leer el icono de un vehiculo en modo sincrono
+  $.ajax({ 
+    url: "/api/icon/vehicle/"+vehicleLicense, 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ 
+        iconBase64Dict[vehicleLicense] = data;
+    } 
+  });
+}
+function loadVehicleIcon(vehicleLicense) {
+  // Leer el icono de un vehiculo en modo asincrono
+  $.getJSON( "/api/icon/vehicle/"+vehicleLicense, function( data ) {
+    iconBase64Dict[vehicleLicense] = data; 
+  });
+}
+
+function getVehicleIconSync(vehicleLicense) {
+  // Leer si es necesario el icono de un vehiculo en modo sincrono
+  if (iconBase64Dict[vehicleLicense]!=undefined && iconBase64Dict[vehicleLicense]!='') {
+    return iconBase64Dict[vehicleLicense];
+  }
+  else {
+    $.ajax({ 
+      url: "/api/icon/vehicle/"+vehicleLicense, 
+      dataType: 'json', 
+      async: false, 
+      success: function(data){ 
+          iconBase64Dict[vehicleLicense] = data;
+          return iconBase64Dict[vehicleLicense];
+      } 
+    });
+  }
+}
+
 function loadVehiclesDataSync() {
+  // Leer los datos de los vehiculos en modo sincrono
+  $.ajax({ 
+    url: "/api/vehicles", 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ 
+        //Proceso de los datos recibidos
+      $.each( data, function( key, val ) {
+        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+        iconCoverDict[val.vehicle_license] = val.icon_cover;
+        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+        aliasDict[val.vehicle_license] = val.alias;
+        deviceIdDict[val.vehicle_license] = val.device_id;
+      });
+    } 
+  });
+}
+
+function loadVehiclesData() {
+  // Leer los datos de los vehiculos
+  $.getJSON( "/api/vehicles", function( data ) {
+    $.each( data, function( key, val ) {
+      iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+      iconCoverDict[val.vehicle_license] = val.icon_cover;
+      iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+      aliasDict[val.vehicle_license] = val.alias;
+      deviceIdDict[val.vehicle_license] = val.device_id;
+      // Leer el icono de todos 
+      /*$.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
+          iconBase64Dict[val.vehicle_license] = data;      
+      });*/
+   });
+  });
+}
+
+function loadVehiclesDataWithIconSync() {
   // Leer los datos de los vehiculos en modo sincrono
   $.ajax({ 
     url: "/api/vehicles", 
@@ -1962,11 +2042,9 @@ function loadVehiclesDataSync() {
       });
     } 
   });
-
-  
 }
 
-function loadVehiclesData() {
+function loadVehiclesDataWithIcon() {
   // Leer los datos de los vehiculos
   $.getJSON( "/api/vehicles", function( data ) {
     $.each( data, function( key, val ) {
@@ -1976,9 +2054,9 @@ function loadVehiclesData() {
       aliasDict[val.vehicle_license] = val.alias;
       deviceIdDict[val.vehicle_license] = val.device_id;
       // Leer el icono de todos 
-      /*$.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
+      $.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
           iconBase64Dict[val.vehicle_license] = data;      
-      });*/
+      });
    });
   });
 }
@@ -2126,8 +2204,19 @@ function loadMonitor() {
     loadMonitorLoaded = true;
   //} //del ajax async
  });
+}
 
+function deleteIcon() {
+  var vehicleLicense = document.getElementById('tooltipVehicleLicense').innerHTML;
+  iconBase64Dict[vehicleLicense] = ''; 
 
+  document.getElementById('iconVehicle').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
+  document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconRealTimeDict[vehicleLicense] + "'/>";      
+
+  clearMap();
+
+  $.getJSON( "/api/icon/delete/"+vehicleLicense, function( data ) {
+  });
 }
 
 function selectMonitor() {

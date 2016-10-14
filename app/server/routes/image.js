@@ -3,9 +3,9 @@ var router = express.Router();
 var jsonfy = require('jsonfy');
 var multer  =   require('multer');
 
-var Busboy = require('busboy'); // 0.2.9
-var mongo = require('mongodb'); // 2.0.31
-var Grid = require('gridfs-stream'); // 1.1.1"
+var Busboy = require('busboy'); 
+var mongo = require('mongodb'); 
+var Grid = require('gridfs-stream'); 
 
 //var gm = require('gm');
 
@@ -235,7 +235,7 @@ router.post('/icon/upload/:vehicleLicense', function(req, res)
           if (err){
             log.error("error al borrar los ficheros antiguos");
           }else{
-            log.debug("old file removed")
+            log.debug("old icon file removed")
           }           
         }); 
 
@@ -270,9 +270,42 @@ router.post('/icon/upload/:vehicleLicense', function(req, res)
           file.pipe(writeStream);
         }).on('finish', function() {
           res.redirect('/map');
+          /*res.render('map.ejs', {
+            msg: res.__('icon_updated'),
+            msg_color: 'green',
+            user : req.session.user.username,
+            vehicleLicense : req.session.user.vehicleLicense
+          });*/
+
         });
 
         req.pipe(busboy);
+      }
+    }
+});
+
+router.get('/icon/delete/:vehicleLicense', function(req, res)
+{
+  if (req.session.user == null){
+      res.redirect('/');
+    } 
+    else {
+      var vehicleLicense = req.params.vehicleLicense;
+
+      log.info("POST: /icon/delete");
+
+      if (vehicleLicense==null) {
+          res.redirect('/map');
+      } 
+      else {
+        // Borrar los ficheros antiguos
+        gfs.files.remove({filename:'icon_'+vehicleLicense} , function(err){
+          if (err){
+            log.error("error al borrar los ficheros antiguos");
+          }else{
+            log.debug("old icon file removed")
+          }           
+        }); 
       }
     }
 });

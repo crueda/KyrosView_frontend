@@ -8,6 +8,20 @@ var PropertiesReader = require('properties-reader');
 
 var properties = PropertiesReader('./kyrosview.properties');
 
+// Definición del log
+var fs = require('fs');
+var log = require('tracer').console({
+    transport : function(data) {
+        //console.log(data.output);
+        fs.open(properties.get('main.log.file'), 'a', 0666, function(e, id) {
+            fs.write(id, data.output+"\n", null, 'utf8', function() {
+                fs.close(id, function() {
+                });
+            });
+        });
+    }
+});
+
 /*
 	ESTABLISH DATABASE CONNECTION
 */
@@ -177,8 +191,10 @@ exports.updateAccount = function(newData, callback)
 exports.updateUserDevice = function(newData, callback)
 {
     pool.getConnection(function(err, connection) {
-        if (connection) {        
-            var sql = "UPDATE USER_GUI set DEFAULT_VEHICLE_LICENSE=" + newData.vehicleLicense + " WHERE USERNAME= '" + newData.username + "'";
+        if (connection) {       
+          console.log(colors.red('Qaaa'));
+            var sql = "UPDATE USER_GUI set DEFAULT_VEHICLE_LICENSE='" + newData.vehicleLicense + "' WHERE USERNAME= '" + newData.username + "'";
+            //log.info("-->"+sql);
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, result)
             {
