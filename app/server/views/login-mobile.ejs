@@ -117,19 +117,25 @@ form-signin
     <div class="row">
         <div class="col-sm-6 col-md-4 col-md-offset-4">
             <h1 class="text-center login-title"></h1>
+
             <div class="account-wall">
+                <h4 class="modal-title" id="myModalLabel"><%= __('login_kyros') %></h4>
                 <img class="profile-img" src="./img/kyros.png"
                     alt="">
                 <form class="form-signin" action="/" method="POST">
                 <input type="text" name="user" class="form-control" placeholder="usuario" required autofocus>
+                
                 <input type="password" name="pass" class="form-control" placeholder="contraseña" required>
+
                 <button class="btn btn-lg btn-primary btn-block" type="submit">
-                    Entrar</button>
+                    Ok</button>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
 
