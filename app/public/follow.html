@@ -9,12 +9,32 @@
 
   <link rel="stylesheet" href="./css/build/kyrosview.min.css?1" type="text/css">
 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   
-  <script src="http://openlayers.org/en/v3.18.2/build/ol.js"></script>
+  <!--script type="text/javascript" src="http://openlayers.org/en/master/build/ol.js"></script-->
+    <script src="http://openlayers.org/en/v3.18.2/build/ol.js"></script>
 
+  <script src="./js/bootstrap-treeview.js"></script>
   <script src="./js/ol3-layerswitcher.js" type="text/javascript"></script>
+  <script src="./js/bootstrap3-typeahead.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="/bower_components/jquery/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+  <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+  <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/featureanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/dropanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
+
   <script type="text/javascript" src="js/event-enum.js"> </script>
 
 
@@ -81,6 +101,8 @@ table.tooltip-header-table td {
 
  var realTimePoints = [];
 
+ var vehicleLicense = "";
+ var deviceId = 0;
  var dateVehicle = 0;
  var aliasVehicle = "";
  var latitudeVehicle = 0;
@@ -90,31 +112,151 @@ table.tooltip-header-table td {
  var headingVehicle = 0;
  var iconBase64Vehicle = "";
  var iconVehicle = "";
+ var iconCoverVehicle = "";
+ var iconRealTimeVehicle = "";
+ var iconAlarmVehicle = "";
 
 </script>
 
+<script type="text/javascript">    
+  function getUUID() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
 
-<script>
- window.onload = function() { uuid=getGETuuid(); setInterval(reloadVehicleData,5000);};
- 
- $(document).ready(function() {
-  $.ajaxSetup({ cache: false });
-
-  if (isMobile()) {
-    document.getElementById('attr-logo').style.display = 'none';
-  } else {
-    var width_window = $(window).width();  //getting windows width
-    var height_window = $(window).height();  //getting windows height
-    $("#attr-logo").css({ width: width_window*0.12279 + 'px' });
-    $("#attr-logo").css({ height: (width_window*0.12279)*0.46+ 'px' });
-
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        if (unescape(decodeURI(tmp[0])) == 'uuid')
+          return unescape(decodeURI(tmp[1]));
+      }
+      return null;
+    }
   }
 
-  document.getElementById('attr-loading').style.display = 'block';
+  function reloadVehicleData() {
+      $.getJSON( '/api/watch/'+uuid, function( data ) {
+       $.each( data, function( key, val ) {
 
-  loadVehicleDataSync();
-  initVehicleDataSync();
-});  //ready
+         processDevice (val.data.tracking_id,val.data.vehicle_license,aliasVehicle,val.data.location.coordinates[0],val.data.location.coordinates[1],val.data.geocoding,val.data.speed,val.data.heading,val.data.alarm_activated, val.data.pos_date, val.data.deviceId);
+
+         // comprobar eventos    
+         if (val.data.events.length>0) {
+          for (var i=0; i<val.data.events.length; i++) {
+            addTrackingPointEvent(val.data.vehicle_license,val.data.tracking_id,val.data.events[i].event_type, val.data.events[i].event_date,val.data.location.coordinates[1],val.data.location.coordinates[0]);
+          }
+         }
+          moveMap2Vehicle(val.data.vehicle_license);    
+          
+        });
+      }); 
+  }
+
+  function isMobile(){
+  //return true;
+    return (
+        (navigator.userAgent.match(/Android/i)) ||
+        (navigator.userAgent.match(/webOS/i)) ||
+        (navigator.userAgent.match(/iPhone/i)) ||
+        (navigator.userAgent.match(/iPod/i)) ||
+        (navigator.userAgent.match(/iPad/i)) ||
+        (navigator.userAgent.match(/BlackBerry/))
+    );
+  }
+
+  function loadVehicleDataSync() {
+    // Leer los datos de los vehiculos en modo sincrono
+    $.ajax({ 
+      url: "/api/vehicle/"+vehicleLicense, 
+      dataType: 'json', 
+      async: false, 
+      success: function(data){ 
+          //Proceso de los datos recibidos
+        $.each( data, function( key, val ) {
+          iconRealTimeVehicle = val.icon_real_time;
+          iconCoverVehicle = val.icon_cover;
+          iconAlarmVehicle = val.icon_alarm;
+          aliasVehicle = val.alias;
+          deviceId = val.device_id;
+        });
+      } 
+    });
+
+    // Leer el icono del vehiculo en base64 modo sincrono
+    $.ajax({ 
+      url: "/api/icon/vehicle/"+vehicleLicense, 
+      dataType: 'json', 
+      async: false, 
+      success: function(data){ 
+          //almacenar el icono recibido
+          iconBase64Vehicle = data;      
+      } 
+    });
+  }
+
+  function initVehicleData() {
+
+   $.getJSON( '/api/watch/'+uuid, function( data ) {
+     $.each( data.data, function( key, val ) {
+
+       processDevice (val.tracking_id,val.vehicle_license,aliasVehicle,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+
+       // comprobar eventos
+       if (val.events.length>0) {
+        for (var i=0; i<val.events.length; i++) {
+          addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+        }
+       }
+       
+       centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+
+       document.getElementById('attr-loading').style.display = 'none';
+
+      });
+   });
+  }
+
+  function loadVehicleIcon() {
+    // Leer el icono de un vehiculo en modo asincrono
+    $.getJSON( "/api/icon/vehicle/"+vehicleLicense, function( data ) {
+      iconBase64Vehicle = data; 
+    });
+  }
+
+</script>
+
+<script>
+ window.onload = function() { setInterval(reloadVehicleData,5000);};
+ 
+ $(document).ready(function() {
+    $.ajaxSetup({ cache: false });
+
+    if (isMobile()) {
+      document.getElementById('attr-logo').style.display = 'none';
+    } else {
+      var width_window = $(window).width();  //getting windows width
+      var height_window = $(window).height();  //getting windows height
+      $("#attr-logo").css({ width: width_window*0.12279 + 'px' });
+      $("#attr-logo").css({ height: (width_window*0.12279)*0.46+ 'px' });
+
+    }
+
+    document.getElementById('attr-loading').style.display = 'block';
+
+    uuid=getUUID(); 
+    loadVehicleDataSync();
+    initVehicleData();
+    loadVehicleIcon();
+
+    $('#tooltipHeader').css('background-color', '#F7BE81');
+  });  //ready
 
 </script>
 
@@ -189,7 +331,7 @@ table.tooltip-header-table td {
     }
   }
 
-  function openTooltip() {
+  function openTooltip(vehicleLicense) {
     
     if (iconBase64Vehicle!=null && iconBase64Vehicle!='') {
       document.getElementById('tooltipIcon').innerHTML = "<img src='data:image/png;base64," + iconBase64Vehicle + "'/>";      
@@ -198,10 +340,7 @@ table.tooltip-header-table td {
     }
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicense;
 
-    document.getElementById('formVehicleLicense').value = vehicleLicense;
-
-
-    var date = new Date(dateDict[vehicleLicense]);
+    var date = new Date(dateVehicle);
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
     var day = date.getDate();
@@ -211,12 +350,12 @@ table.tooltip-header-table td {
 
       document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
-    document.getElementById('tooltipAlias').innerHTML = aliasDict[vehicleLicense];
-    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[vehicleLicense].toFixed(4);
-    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[vehicleLicense].toFixed(4);
-    document.getElementById('tooltipLocation').innerHTML = geocodingDict[vehicleLicense];
-    document.getElementById('tooltipSpeed').innerHTML = speedDict[vehicleLicense];
-    document.getElementById('tooltipHeading').innerHTML = headingDict[vehicleLicense];
+    document.getElementById('tooltipAlias').innerHTML = aliasVehicle;
+    document.getElementById('tooltipLatitude').innerHTML = latitudeVehicle.toFixed(4);
+    document.getElementById('tooltipLongitude').innerHTML = longitudeVehicle.toFixed(4);
+    document.getElementById('tooltipLocation').innerHTML = geocodingVehicle;
+    document.getElementById('tooltipSpeed').innerHTML = speedVehicle;
+    document.getElementById('tooltipHeading').innerHTML = headingVehicle;
 
     document.getElementById('tooltipDaySpeed').innerHTML = '---';
     document.getElementById('tooltipWeekSpeed').innerHTML = '---';
@@ -232,14 +371,7 @@ table.tooltip-header-table td {
     document.getElementById('tooltipTotalSpeed').innerHTML = '---';
     document.getElementById('tooltipTotalConsume').innerHTML = '---';
     
-
-    /*
-    $.getJSON( 'http://geocoding.kyros.es/ProxyGeocodingWeb/Geocoding?latlng='+latitudeDict[vehicleLicense]+','+longitudeDict[vehicleLicense]+'&language=es&sensor=false&client=gme-deimosspaceslu1&signature=JtcKJ8U5oVG86fXMvSgyzerlpj4=', function( data ) {
-    
-    });*/
-
-    if (geocodingDict[vehicleLicense]=='' || geocodingDict[vehicleLicense]==undefined) {
-      
+    if (geocodingVehicle=='' || geocodingVehicle==undefined) {
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
       lat: latitudeDict[vehicleLicense],
       lon: longitudeDict[vehicleLicense],
@@ -249,7 +381,6 @@ table.tooltip-header-table td {
       }); 
 
     }
-
 
 
     $.getJSON( '/api/odometer/'+vehicleLicense, function( data ) {
@@ -272,19 +403,9 @@ table.tooltip-header-table td {
       $('#myModal').modal('show');
     });
 
-    if (vehicleLicense == '<%=vehicleLicense%>') {
-       $('#tooltipHeader').css('background-color', '#F7BE81');
-       document.getElementById('selectButton').style.display = 'none';
-    } else {
-        $('#tooltipHeader').css('background-color', '#3399ff');
-        document.getElementById('selectButton').style.display = 'block';
-        $('#selectButtonText').text("<%= __('select_button') %>");
-
-    }
-
+    
     // Cargar el icono del vehiculo
     var urlPostIconDevice = "/api/icon/vehicle/"+vehicleLicense;
-    //alert(urlPostIconDevice);
     $.getJSON( urlPostIconDevice, function( data ) {
       if (data!='')
         document.getElementById('iconVehicle').setAttribute( 'src', 'data:image/png;base64,'+data);
@@ -302,8 +423,6 @@ table.tooltip-header-table td {
         document.getElementById('imageVehicle').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
 
     });
-
-
   }
 
 function pad(value) {
@@ -347,289 +466,11 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
       $('#myModalTooltipTrackingPoint').modal('show');
     });
   }
-
-function openTooltipMapPoint(latitude, longitude) {
-    
-
-      document.getElementById('tooltipMapLatitude').innerHTML = latitude;
-      document.getElementById('tooltipMapLongitude').innerHTML = longitude;
-
-      //$('#tooltipTrackingHeader').css('background-color', '#66c2ff');
-
-      $('#myModalTooltipMapPoint').modal('show');
-  }
-
 </script>
 
 </head>
 <body>
- <form id="myformLogout" action="/logout" method="POST">
- </form>
-
- <form id="myform" action="/map" method="POST">
-   <input type="hidden" id="formVehicleLicense" name="vehicleLicense" value="" />
- </form>
-
- <form id="myformGraphHist" action="/graphs-hist" method="POST">
-  <input type="hidden" id="formGraphDeviceId" name="deviceId" value="0" />
-  <input type="hidden" id="formGraphInitDate" name="initDate" value="0" />
-  <input type="hidden" id="formGraphEndDate" name="endDate" value="0" />
-</form>
-
-
-<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title" id="myModalLabel"><%= __('message') %></h4>
-      </div> <!-- /.modal-header -->
-
-    <div class="modal-body">
-      <div class="form-group">
-        <h4 class="modal-title" id="myModalMsgLabel"></h4>
-      </div> 
-      <div class="form-group">
-        <h5 class="modal-title" id="myModalMsgLabel2"></h5>
-      </div> 
-
-      <div id="okButton" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary">Ok</button>
-      </div>
-    </div> <!-- /.modal-body -->
-
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal fade" id="myModalMenuKyros" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title" id="myModalLabel"><%= __('main_menu') %></h4>
-      </div> <!-- /.modal-header -->
-
-    <div class="modal-body" id="grad1">
-         
-    <table border="0" bgcolor="#bfbeb5">
-    <tr>
-      <td align="center">
-        <button type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_realtime.png"/><br><%= __('real_time') %></button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:menuFind();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_find.png"/><br><%= __('find') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br><%= __('graphs') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuDevices();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br><%= __('all') %></button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('config') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuPois();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
-      </td>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('logout') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuAbout();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_about.png"/><br><%= __('about') %></button>
-      </td>
-    </tr>
-    </table>
-    </div> <!-- /.modal-body -->
-
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
-<div class="modal fade" id="myModalMonitor" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title" id="myModalLabel"><%= __('monitor_devices') %></h4>
-      </div> <!-- /.modal-header -->
-
-      <div class="modal-body" id="treeBody">
-      
-      <div class="col-sm-12" id="monitorDiv">
-          <div id="treeview-checkable" class=""></div> 
-        </div>     
-
-      <div id="okButtonUpdateMonitor" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button id="showDevicesMapButton" class="form-control btn btn-primary"><%= __('show_over_map') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
-
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal fade" id="myModalCalendar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title" id="myModalLabel"><%= __('historic') %></h4>
-      </div> <!-- /.modal-header -->
-
-      <div class="modal-body">
-
-      <div class="container">
-          <div class="row">
-              <div class='col-sm-6'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('init_date') %>:</h5>
-
-                      <div class='input-group date' id='datetimepicker1'>
-                          <input type='text' class="form-control" id='initDate'/>
-                          <span class="input-group-addon">
-                              <span class="glyphicon glyphicon-calendar"></span>
-                          </span>
-                      </div>
-                  </div>
-              </div>
-              
-          </div>
-      </div>
-
-      <div class="container">
-          <div class="row">
-              <div class='col-sm-6'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('end_date') %>:</h5>
-
-                      <div class='input-group date' id='datetimepicker2'>
-                          <input type='text' class="form-control" id='endDate'/>
-                          <span class="input-group-addon">
-                              <span class="glyphicon glyphicon-calendar"></span>
-                          </span>
-                      </div>
-                  </div>
-              </div>
-              
-          </div>
-      </div>
-
-
-      <div class="container">
-          <div class="row">
-              <div class='col-sm-2'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('license') %>:</h5>
-
-                      
-                          <input type='text' class="form-control" id='licenseHist' data-provide="typeahead" placeholder=""/>
-                          
-                   
-                  </div>
-              </div>
-              
-          </div>
-      </div>
-
-      <div id="okButtonCalendar" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('consult') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
-
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal fade" id="myModalFind" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title" id="myModalLabel"><%= __('find') %></h4>
-      </div> <!-- /.modal-header -->
-
-      <div class="modal-body">
-
-      <div class="container">
-          <div class="row">
-              <div class='col-sm-2'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('license') %>:</h5>                     
-                          <input type='text' class="form-control" id='licenseFind' data-provide="typeahead" placeholder=""/>                                           
-                  </div>
-              </div>
-              
-          </div>
-      </div>
-
-      <div id="okButtonFind" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('consult') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
-
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal fade" id="myModalShare" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title" id="myModalLabel"><%= __('share') %></h4>
-      </div> <!-- /.modal-header -->
-
-      <div class="modal-body">
-
-      <div class="container">
-          <div class="row">
-              <div class='col-sm-6'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('email') %>:</h5>   
-                      <div class="input-group"> 
-                        <input type="text" class="form-control" id="emailShare" name="email">
-                        <label for="emailShare" class="input-group-addon glyphicon glyphicon-envelope"></label>
-                      </div>
-                                                                    
-                  </div>
-              </div>
-              
-          </div>
-      </div>
-
-      <div id="okButtonShare" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('send') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
-
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+ 
 
 <div style="z-index: 10000;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -650,10 +491,9 @@ function openTooltipMapPoint(latitude, longitude) {
       <div class="modal-body">
 
         <ul class="nav nav-tabs" id="tabContent">
-          <li class="active"><a href="#details" data-toggle="tab"><%= __('details') %></a></li>
-          <li><a href="#odometer" data-toggle="tab"><%= __('odometer') %></a></li>
-          <li><a href="#icon" data-toggle="tab"><%= __('icon') %></a></li>
-          <li><a href="#photo" data-toggle="tab"><%= __('photo') %></a></li>
+          <li class="active"><a href="#details" data-toggle="tab">Detalles</a></li>
+          <li><a href="#odometer" data-toggle="tab">Odometro</a></li>
+          <li><a href="#photo" data-toggle="tab">Foto</a></li>
         </ul>
   
         <div class="tab-content">
@@ -661,27 +501,27 @@ function openTooltipMapPoint(latitude, longitude) {
           <div id="details" class="tab-pane fade in active">
           <table class="tooltip-details-table" border="0">
             <tr>
-              <td width="20%"><b><%= __('date') %>&nbsp;</b></td>
+              <td width="20%"><b>Fecha&nbsp;</b></td>
               <td width="80%"><font color="black" id="tooltipDate">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('alias') %>&nbsp;</b></td>
+              <td><b>Alias&nbsp;</b></td>
               <td><font color="black" id="tooltipAlias">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('coordinates') %>&nbsp;</b></td>
+              <td><b>Coordenadas&nbsp;</b></td>
               <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('speed') %>&nbsp;</b></td>
+              <td><b>Velocidad&nbsp;</b></td>
               <td><font color="black" id="tooltipSpeed">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('heading') %>&nbsp;</b></td>
+              <td><b>Heading&nbsp;</b></td>
               <td><font color="black" id="tooltipHeading">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('geocoding') %>&nbsp;</b></td>
+              <td><b>Geocoding&nbsp;</b></td>
               <td valign="top"><font color="black" id="tooltipLocation">---</font></td>
             </tr>
           </table>
@@ -692,9 +532,9 @@ function openTooltipMapPoint(latitude, longitude) {
         <table class="bordered">
           <thead>
           <tr>
-                <th class="numeric" width="20%"><%= __('day') %></th>
-                <th class="numeric" width="20%"><%= __('week') %></th>
-                <th class="numeric" width="20%"><%= __('month') %></th>
+                <th class="numeric" width="20%">Día</th>
+                <th class="numeric" width="20%">Semana</th>
+                <th class="numeric" width="20%">Mes</th>
                 <th width="40%"></th>
           <tr>
           </thead>
@@ -703,101 +543,49 @@ function openTooltipMapPoint(latitude, longitude) {
                 <td id="tooltipDayDistance">---</td>
                 <td id="tooltipWeekDistance">---</td>
                 <td id="tooltipMonthDistance">---</td>
-                <td><font color="red"><%= __('distance') %></font> (Km)</td>
+                <td><font color="red">Distancia</font> (Km)</td>
               </tr>
               <tr>
                 <td id="tooltipDaySpeed">---</td>
                 <td id="tooltipWeekSpeed">---</td>
                 <td id="tooltipMonthSpeed">---</td>
-                <td><font color="red"><%= __('average_speed') %></font> (km/h)</td>
+                <td><font color="red">Velocidad media</font> (km/h)</td>
               </tr>
               <tr>
                 <td id="tooltipDayConsume">---</td>
                 <td id="tooltipWeekConsume">---</td>
                 <td id="tooltipMonthConsume">---</td>
-                <td><font color="red"><%= __('consume') %></font> (L)</td>
+                <td><font color="red">Consumo</font> (L)</td>
               </tr>
             </tbody>
           </table>
           <br>
           <table class="tooltip-details-table" border="0">
             <tr>
-              <td width="20%"><b><%= __('distance') %>&nbsp;</b></td>
+              <td width="20%"><b>Distancia&nbsp;</b></td>
               <td width="80%"><font color="black" id="tooltipTotalDistance">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('average_speed') %>&nbsp;</b></td>
+              <td><b>Velocidad media&nbsp;</b></td>
               <td><font color="black" id="tooltipTotalSpeed">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('consume') %>&nbsp;</b></td>
+              <td><b>Consumo&nbsp;</b></td>
               <td><font color="black" id="tooltipTotalConsume">---</font></td>
             </tr>
           </table>
 
         </div> 
 
-        <div id="icon" class="tab-pane fade">
-          <br>
-          <img id="iconVehicle" src=""/>
-          <input onclick="javascript:deleteIcon();" type="submit" class="btn-danger" value="<%= __('delete') %>" name="submit">
 
-          <form id        =  "uploadFormIcon"
-               enctype   =  "multipart/form-data"
-               action    =  "/api/icon/upload"
-               method    =  "POST"
-          >
-
-          <br>
-          <input id="vehicleIcon" name="vehicleIcon" multiple type="file" class="file file-loading" data-allowed-file-extensions='["png"]'>
-          <!--input type="file" class="filestyle" data-placeholder="No file" name="iconVehiclePhoto" data-buttonName="btn-primary">
-          <input type="submit" value="Actualizar" name="submit"-->
-
-          </form>
-       </div> 
-
-       <div id="photo" class="tab-pane fade">
-          <br>
-          <img id="imageVehicle" src=""/>
-          <form id        =  "uploadFormPhoto"
-               enctype   =  "multipart/form-data"
-               action    =  "/api/image/upload"
-               method    =  "POST"
-          >
-          <!-- the avatar markup -->
-          <!--div id="kv-avatar-errors-1" class="center-block" style="width:800px;display:none"></div>
-          <form class="text-center" action="/api/icon/upload" method="post" enctype="multipart/form-data">
-              <div class="kv-avatar center-block" style="width:200px">
-                  <input id="avatar-1" name="avatar-1" type="file" class="file-loading">
-              </div>
-          </form>
-
-          <br-->
-          <!--input type="file" class="filestyle" data-placeholder="No file" name="userPhoto" data-buttonName="btn-primary">
-          <input type="submit" value="Actualizar" name="submit"-->
-          <br>
-          <input id="vehiclePhoto" name="vehiclePhoto" multiple type="file" class="file file-loading" data-allowed-file-extensions='["png", "jpg", "jpeg", "gif", "bmp"]'>
-
-          </form>
-       </div> 
-
+         <div id="photo" class="tab-pane fade">
+            <br>
+            <img id="imageVehicle" src=""/>
+            <br>
+         </div> 
 
         <br>
       </div> <!-- /.modal-body -->
-      <table border="0">
-      <tr>
-        <td width="50" align="center">
-          <div id="selectButton2" class="modal-footer" onclick="javascript:openShare();">
-          <img src="./img/share.png"/>
-          </div> <!-- /.modal-footer -->
-        </td>
-        <td>
-          <div id="selectButton" class="modal-footer" onclick="$('#myform').submit();">
-            <button id="selectButtonText" class="form-control btn btn-primary"><%= __('select_button') %></button>
-          </div> <!-- /.modal-footer -->
-        </td>
-      </tr>
-      </table>
 
     </div>
     </div><!-- /.modal-content -->
@@ -812,7 +600,7 @@ function openTooltipMapPoint(latitude, longitude) {
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
             <table border="0">
             <tr>
-              <td><b><%= __('id') %>: </b><font color="black" id="tooltipTrackingTrackingId">---</font></td>
+              <td><b>Identificador: </b><font color="black" id="tooltipTrackingTrackingId">---</font></td>
             </tr>
             </table>
 
@@ -824,23 +612,23 @@ function openTooltipMapPoint(latitude, longitude) {
           
             <table border="0">
             <tr>
-              <td><b><%= __('date') %></b></td>
+              <td><b>Fecha</b></td>
               <td><font color="black" id="tooltipTrackingDate">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('coordinates') %></b></td>
+              <td><b>Coordenadas</b></td>
               <td><font color="black" id="tooltipTrackingLatitude">---</font>, <font color="black" id="tooltipTrackingLongitude">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('speed') %> (Km/h)</b></td>
+              <td><b>Velocidad (Km/h)</b></td>
               <td><font color="black" id="tooltipTrackingSpeed">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('altitude') %> (m)</b></td>
+              <td><b>Altitud (m)</b></td>
               <td><font color="black" id="tooltipTrackingAltitude">---</font></td>
             </tr>
             <tr>
-              <td><b><%= __('heading') %> (º)</b></td>
+              <td><b>Heading (º)</b></td>
               <td><font color="black" id="tooltipTrackingHeading">---</font></td>
             </tr>
           </table>
@@ -855,36 +643,6 @@ function openTooltipMapPoint(latitude, longitude) {
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<!-- Ventana modal punto sobre el mapa -->
-<div style="z-index: 10000;" class="modal fade" id="myModalTooltipMapPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header" id="tooltipMapHeader">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-            <table border="0">
-            <tr>
-              <td><b><%= __('position_map') %></td>
-            </tr>
-            </table>
-
-      </div> <!-- /.modal-header -->
-      <div class="modal-body">
-          <div class="form-group">          
-            <table border="0">
-            <tr>
-              <td><b><%= __('coordinates') %></b></td>
-              <td><font color="black" id="tooltipMapLatitude">---</font>, <font color="black" id="tooltipMapLongitude">---</font></td>
-            </tr>
-          </table>
-            
-         </div> <!-- /.form-group -->
-      </div> <!-- /.modal-body -->
-      </div> <!-- /.modal-footer -->
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
 
 
   <div class="container-fluid">
@@ -893,105 +651,15 @@ function openTooltipMapPoint(latitude, longitude) {
      <div id="map" class="map">
        <div id="attr-logo"></div>
        <div id="attr-loading"></div>
-       <!--div id="attr-conf" onclick="javascript:location.href=window.location.host"></div-->
-       <div id="attr-button-menu" onclick="javascript:openMenuKyros();"></div>
-       <div id="attr-graph-hist" onclick="$('#myformGraphHist').submit();"></div>
-       <!--div id="attr-button-update" onclick="javascript:reloadLayer();"></div-->
        <div id="info"></div>
-
-
-
      </div>
    </div>
  </div>
 </div>
 
 <script>
-  function getGET() {
-    // capturamos la url
-    var loc = document.location.href;
-    // si existe el interrogante
-    if(loc.indexOf('?')>0) {
-      // cogemos la parte de la url que hay despues del interrogante
-      var getString = loc.split('?')[1];
-      // obtenemos un array con cada clave=valor
-      var GET = getString.split('&');
-      var get = {};
 
-      // recorremos todo el array de valores
-      for(var i = 0, l = GET.length; i < l; i++){
-        var tmp = GET[i].split('=');
-        get[tmp[0]] = unescape(decodeURI(tmp[1]));
-      }
-      return get;
-    }
-  }
 
-  function getGETcar() {
-    // capturamos la url
-    var loc = document.location.href;
-    // si existe el interrogante
-    if(loc.indexOf('?')>0) {
-      // cogemos la parte de la url que hay despues del interrogante
-      var getString = loc.split('?')[1];
-      // obtenemos un array con cada clave=valor
-      var GET = getString.split('&');
-      var get = {};
-
-      // recorremos todo el array de valores
-      for(var i = 0, l = GET.length; i < l; i++){
-        var tmp = GET[i].split('=');
-        get[tmp[0]] = unescape(decodeURI(tmp[1]));
-        if (unescape(decodeURI(tmp[0])) == 'car')
-          return unescape(decodeURI(tmp[1]));
-      }
-      return null;
-    }
-  }
-
-  function getGETdeviceId() {
-    // capturamos la url
-    var loc = document.location.href;
-    // si existe el interrogante
-    if(loc.indexOf('?')>0) {
-      // cogemos la parte de la url que hay despues del interrogante
-      var getString = loc.split('?')[1];
-      // obtenemos un array con cada clave=valor
-      var GET = getString.split('&');
-      var get = {};
-
-      // recorremos todo el array de valores
-      for(var i = 0, l = GET.length; i < l; i++){
-        var tmp = GET[i].split('=');
-        get[tmp[0]] = unescape(decodeURI(tmp[1]));
-        if (unescape(decodeURI(tmp[0])) == 'deviceId')
-          return unescape(decodeURI(tmp[1]));
-      }
-      return null;
-    }
-  }
-
-  function getGETusername() {
-    // capturamos la url
-    var loc = document.location.href;
-    // si existe el interrogante
-    if(loc.indexOf('?')>0) {
-      // cogemos la parte de la url que hay despues del interrogante
-      var getString = loc.split('?')[1];
-      // obtenemos un array con cada clave=valor
-      var GET = getString.split('&');
-      var get = {};
-
-      // recorremos todo el array de valores
-      for(var i = 0, l = GET.length; i < l; i++){
-        var tmp = GET[i].split('=');
-        get[tmp[0]] = unescape(decodeURI(tmp[1]));
-        if (unescape(decodeURI(tmp[0])) == 'username')
-          return unescape(decodeURI(tmp[1]));
-      }
-      return null;
-    }
-  }
 
  // *******************************
  // Sources y Layers 
@@ -1065,53 +733,25 @@ var style2 =
   ];
   style2[1].getImage().getAnchor()[1] += 10;
 
-  var vectorPoiSource = new ol.source.Vector({
-   features: []
-  });
-  var poisLayer = new ol.layer.Vector({
-   title: '<%= __('pois') %>',
-   visible: true,
-   source: vectorPoiSource
-  });
+  
 
   var vehiclesRealTimeSource = new ol.source.Vector({
    features: []
   });
   var vehiclesRealTimeLayer = new ol.layer.Vector({
-   title: '<%=vehicleLicense%>',   
+   title: vehicleLicense,   
    style: style,
    visible: true,
    source: vehiclesRealTimeSource
   });
 
-  var vehiclesPointSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesPointLayer = new ol.layer.Vector({
-   //title: '<%=vehicleLicense%> track',   
-   title: '',   
-   style: style,
-   visible: true,
-   source: vehiclesPointSource
-  });
-
-  var vehiclesSelectedSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesSelectedLayer = new ol.layer.Vector({
-   title: '<%= __('layer_vehicles_selected') %>',   
-   visible: true,
-   source: vehiclesSelectedSource
-  });
 
   var vehiclesLineSource = new ol.source.Vector({
    features: []
   });
   var lineStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-        //color: '#0000ff',
         color: '#66c2ff',        
-        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
         width: 4
     })
   });
@@ -1122,87 +762,25 @@ var style2 =
     //style: lineStyle,
     source: vehiclesLineSource
   });
-
-
-var mapPointSource = new ol.source.Vector({
-   features: []
-  });
-  var mapPointLayer = new ol.layer.Vector({
-   visible: true,
-    style: style2,
-   source: mapPointSource
-  });
-
-  var vehiclesHistSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesHistLayer = new ol.layer.Vector({
-   title: "<%= __('historical_positions') %>",
-   visible: true,
-    style: style,
-   source: vehiclesHistSource
-  });
-
-  var vehiclesHistLineSource = new ol.source.Vector({
-   features: []
-  });
-  var lineStyleHist = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-        //color: '#0000ff',
-        color: '#66c2ff',        
-        width: 3
-    })
-  });
-  var vehiclesHistLineLayer = new ol.layer.Vector({
-    title: "<%= __('historical_track') %>",
-    visible: true,
-    style: lineStyleHist,
-    source: vehiclesHistLineSource
-  });
  
   var projection = ol.proj.get('EPSG:3857');
 
 
     function getVehicleIcon(vehicleLicense, vehicleState, posDate) 
     {
-      if (iconBase64Dict[vehicleLicense]!=null && iconBase64Dict[vehicleLicense]!='')
-        return "data:image/png;base64,"+iconBase64Dict[vehicleLicense];
+      if (iconBase64Vehicle!=null && iconBase64Vehicle!='')
+        return "data:image/png;base64,"+iconBase64Vehicle;
 
       var now = new Date();
       if (vehicleState==0)
         if (posDate < now.getTime() - 600000) 
-          iconDict[vehicleLicense] = iconCoverDict[vehicleLicense]; // posicion antigua: 10 minutos
+          iconVehicle = iconCoverVehicle; // posicion antigua: 10 minutos
         else
-            iconDict[vehicleLicense] = iconRealTimeDict[vehicleLicense];  
+            iconVehicle = iconRealTimeVehicle;  
       else
-       iconDict[vehicleLicense] = iconAlarmDict[vehicleLicense];
+       iconVehicle = iconAlarmVehicle;
 
-      return './images/' + iconDict[vehicleLicense]
-    }
-
-
-    function followCar(car, new_car, lat, lon) {
-      if (car == new_car) {
-
-        var new_view = new ol.View({
-          center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
-          zoom: map.getView().getZoom(),
-          maxZoom:22,
-          minZoom:3
-        });
-
-        var pan = ol.animation.pan({
-          duration: 700,
-          source:  (map.getView().getCenter()),
-        });
-        map.beforeRender(pan);
-        map.setView(new_view);
-      }
-    }
-
-    function centerMap2Vehicle(vehicleLicense) {
-      map.getView().setCenter(ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'));
-      map.getView().setZoom(14);
+      return './images/' + iconVehicle
     }
 
     function moveMap2Vehicle(vehicleLicense) {
@@ -1218,327 +796,11 @@ var mapPointSource = new ol.source.Vector({
           source:  (map.getView().getCenter()),
         });
 
-        //pan = ol.animation.pan({duration: 500, source: map.getView().getCenter()})
-        //zoom = ol.animation.zoom({duration: 500, resolution: map.getView().getResolution()})
-        //map.beforeRender(pan, zoom)
-
         map.beforeRender(pan);
         map.setView(new_view);
     }
 
-function loadDefaultVehicleDataSync() {
-  // Leer los datos de los vehiculos en modo sincrono
-  $.ajax({ 
-    url: "/api/vehicle/<%=vehicleLicense%>", 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ 
-        //Proceso de los datos recibidos
-      $.each( data, function( key, val ) {
-        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-        iconCoverDict[val.vehicle_license] = val.icon_cover;
-        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicle_license] = val.alias;
-        deviceIdDict[val.vehicle_license] = val.device_id;
-      });
-    } 
-  });
 
-  // Leer el icono del vehiculo en base64 modo sincrono
-  $.ajax({ 
-    url: "/api/icon/vehicle/<%=vehicleLicense%>", 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ 
-        //almacenar el icono recibido
-        iconBase64Dict['<%=vehicleLicense%>'] = data;      
-    } 
-  });
-}
-
-function loadVehicleIconSync(vehicleLicense) {
-  // Leer el icono de un vehiculo en modo sincrono
-  $.ajax({ 
-    url: "/api/icon/vehicle/"+vehicleLicense, 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ 
-        iconBase64Dict[vehicleLicense] = data;
-    } 
-  });
-}
-function loadVehicleIcon(vehicleLicense) {
-  // Leer el icono de un vehiculo en modo asincrono
-  $.getJSON( "/api/icon/vehicle/"+vehicleLicense, function( data ) {
-    iconBase64Dict[vehicleLicense] = data; 
-  });
-}
-
-function getVehicleIconSync(vehicleLicense) {
-  // Leer si es necesario el icono de un vehiculo en modo sincrono
-  if (iconBase64Dict[vehicleLicense]!=undefined && iconBase64Dict[vehicleLicense]!='') {
-    return iconBase64Dict[vehicleLicense];
-  }
-  else {
-    $.ajax({ 
-      url: "/api/icon/vehicle/"+vehicleLicense, 
-      dataType: 'json', 
-      async: false, 
-      success: function(data){ 
-          iconBase64Dict[vehicleLicense] = data;
-          return iconBase64Dict[vehicleLicense];
-      } 
-    });
-  }
-}
-
-function loadVehiclesDataSync() {
-  // Leer los datos de los vehiculos en modo sincrono
-  $.ajax({ 
-    url: "/api/vehicles", 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ 
-        //Proceso de los datos recibidos
-      $.each( data, function( key, val ) {
-        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-        iconCoverDict[val.vehicle_license] = val.icon_cover;
-        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicle_license] = val.alias;
-        deviceIdDict[val.vehicle_license] = val.device_id;
-      });
-    } 
-  });
-}
-
-function loadVehiclesData() {
-  // Leer los datos de los vehiculos
-  $.getJSON( "/api/vehicles", function( data ) {
-    $.each( data, function( key, val ) {
-      iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-      iconCoverDict[val.vehicle_license] = val.icon_cover;
-      iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-      aliasDict[val.vehicle_license] = val.alias;
-      deviceIdDict[val.vehicle_license] = val.device_id;
-      // Leer el icono de todos 
-      /*$.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
-          iconBase64Dict[val.vehicle_license] = data;      
-      });*/
-   });
-  });
-}
-
-function loadVehiclesDataWithIconSync() {
-  // Leer los datos de los vehiculos en modo sincrono
-  $.ajax({ 
-    url: "/api/vehicles", 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ 
-        //Proceso de los datos recibidos
-      $.each( data, function( key, val ) {
-        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-        iconCoverDict[val.vehicle_license] = val.icon_cover;
-        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicle_license] = val.alias;
-        deviceIdDict[val.vehicle_license] = val.device_id;
-
-        // Leer el icono del vehiculo en base64 modo sincrono
-        $.ajax({ 
-          url: "/api/icon/vehicle/" + val.vehicle_license, 
-          dataType: 'json', 
-          async: false, 
-          success: function(data){ 
-              //almacenar el icono recibido
-              iconBase64Dict[val.vehicle_license] = data;      
-          } 
-        });
-
-      });
-    } 
-  });
-}
-
-function loadVehiclesDataWithIcon() {
-  // Leer los datos de los vehiculos
-  $.getJSON( "/api/vehicles", function( data ) {
-    $.each( data, function( key, val ) {
-      iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-      iconCoverDict[val.vehicle_license] = val.icon_cover;
-      iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-      aliasDict[val.vehicle_license] = val.alias;
-      deviceIdDict[val.vehicle_license] = val.device_id;
-      // Leer el icono de todos 
-      $.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
-          iconBase64Dict[val.vehicle_license] = data;      
-      });
-   });
-  });
-}
-
-// This function handles arrays and objects
-function eachRecursive(obj)
-{
-    for (var k in obj)
-    {
-        if (typeof obj[k] == "object" && obj[k] !== null)
-            eachRecursive(obj[k]);
-        else
-            if ( (k=='checked') && (obj[k]=="true") ){
-              //console.log(obj[k]);
-              encontradoChecked = true;
-              if (encontradoVehiculo) {
-                if (selectedVehicles.indexOf(vehicleLicenseToSelect)==-1) {
-                  selectedVehicles.push(vehicleLicenseToSelect);
-                  //addVehicleSelectedToMap(vehicleLicenseToSelect);                  
-                }
-                encontradoVehiculo = false;
-                encontradoChecked = false;
-              }
-
-            }
-
-            if (k=='vehicle_license') {
-              //console.log("k:" + k + " - obj[k]:" + obj[k]);
-              monitorVehicleLicense.push(obj[k]);
-              vehicleLicenseToSelect = obj[k];
-              if (encontradoChecked) {
-                if (selectedVehicles.indexOf(vehicleLicenseToSelect)==-1) {
-                  selectedVehicles.push(vehicleLicenseToSelect);
-                  //addVehicleSelectedToMap(vehicleLicenseToSelect);
-                }
-                encontradoVehiculo = false;
-                encontradoChecked = false;
-              }
-              //addVehicleToMap(obj[k]);              
-            }
-    }
-}
-
-function loadMonitor() {
-//function loadMonitorSync() {
-  $.getJSON( "/api/monitor/<%=user%>", function( data ) {
-  /*$.ajax({ 
-    url: "/api/monitor/<%=user%>", 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ */
-
-
-
-    jsonString = JSON.stringify(data[0].monitor)
-
-    jsonObject = JSON.parse(jsonString);
-    // Recorrer el json para quedarnos con los datos de los vehiculos que monitoriza el usuario
-    eachRecursive(jsonObject);
-
-      //console.log("**>" + selectedVehicles);
-      //initSelectedVehicles();
-
-    // Rellenar el control de la ventana de historico
-    $('#licenseHist').val('<%=vehicleLicense%>');
-    $('#licenseFind').val('<%=vehicleLicense%>');
-    var strDevices = '[';
-    var ndata = monitorVehicleLicense.length;
-    for (i=0; i<ndata; i++) {
-      monitorDevices[monitorVehicleLicense[i]] = deviceIdDict[monitorVehicleLicense[i]];
-      if (i == ndata-1) {
-        strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i] + '"}' ;
-      } else {
-        strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i]+ '"},' ;
-      }
-    }    
-    strDevices = strDevices + ']';
-    var jsonDevices = JSON.parse(strDevices);
-    $('#licenseHist').typeahead({source:jsonDevices, 
-        autoSelect: true
-    }); 
-    $('#licenseFind').typeahead({source:jsonDevices, 
-        autoSelect: true
-    }); 
-
-    // construir el arbol     
-    jsonString = jsonString.split("fleet_name").join("text");
-    jsonString = jsonString.split("vehicle_license").join("text");
-    jsonString = jsonString.split("childs").join("nodes");
-    jsonString = jsonString.split("ndevices").join("tags");
-    jsonString = jsonString.split('"false"').join('false');
-    jsonString = jsonString.split('"true"').join('true');
-    jsonObject = JSON.parse(jsonString);
-    $('#monitorDiv').height($(window).height()-200);
-    var $checkableTree = $('#treeview-checkable').treeview({
-          data: jsonObject,
-          showIcon: true,
-          showCheckbox: true,
-          highlightSelected: false,
-          showTags: true,
-          onNodeChecked: function(event, node) {
-            //console.log(node.text + ' was checked');
-            //$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: false } ]);
-
-            if (node.type == 0) {
-              if (node.nodes !== undefined) {
-                for(var i in node.nodes) {
-                  var child = node.nodes[i];
-                  //$('#treeview-checkable').treeview('checkNode', node.nodes[i].id);
-                  $('#treeview-checkable').treeview('selectNode', [ child, { silent: false } ]);
-                }
-              }
-            }
-            else if (node.type == 1)
-              selectedVehicles.push(node.text);
-              //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
-          },
-          onNodeUnchecked: function (event, node) {
-            //console.log(node.text + ' was unchecked');
-            if (node.type == 1) {
-              var index = selectedVehicles.indexOf(node.text);
-              if (index > -1) {
-                selectedVehicles.splice(index, 1);
-              }
-            }
-            //$('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
-          }
-        });
-
-      $('#treeview-checkable').treeview('collapseAll', { silent: true });
-
-    //$('#treeview-checkable').treeview('selectNode', [ 655, { silent: false } ]);
-   /*
-   $.each( data, function( key, val ) {
-      console.log(val.name);
-      //console.log(val.childs[0]);
-      if (val.childs!=undefined) {
-        console.log(val.childs[0]);
-
-      }
-    });
-    */
-
-    document.getElementById('attr-loading').style.display = 'none';
-    loadMonitorLoaded = true;
-  //} //del ajax async
- });
-}
-
-function deleteIcon() {
-  var vehicleLicense = document.getElementById('tooltipVehicleLicense').innerHTML;
-  iconBase64Dict[vehicleLicense] = ''; 
-
-  document.getElementById('iconVehicle').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
-  document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconRealTimeDict[vehicleLicense] + "'/>";      
-
-  clearMap();
-
-  $.getJSON( "/api/icon/delete/"+vehicleLicense, function( data ) {
-  });
-}
-
-function selectMonitor() {
-  //alert("aa");
-  //$('#treeview-checkable').treeview('checkNode', 655);
-  $('#treeview-checkable').treeview('checkNode', [ 655, { silent: true } ]);
-}
 
 function drawNavigationPosition() {
   // posicion actual
@@ -1547,117 +809,23 @@ function drawNavigationPosition() {
   });
 }
 
-function initDefaultVehicleData() {
-
- $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
-   $.each( data, function( key, val ) {
-
-     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
-
-     // comprobar eventos
-     if (val.events.length>0) {
-      for (var i=0; i<val.events.length; i++) {
-        addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
-      }
-     }
-     
-     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-
-     document.getElementById('attr-loading').style.display = 'none';
-
-    });
- });
-}
-
-function initDefaultVehicleDataSync() {
-
-  $.ajax({ 
-    url: '/api/tracking1/vehicle/<%=vehicleLicense%>', 
-    dataType: 'json', 
-    async: false, 
-    success: function(data){ 
-
-   $.each( data, function( key, val ) {
-
-     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
-
-     // comprobar eventos    
-     if (val.events.length>0) {
-      for (var i=0; i<val.events.length; i++) {
-        addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
-      }
-     }
-     
-     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-
-     document.getElementById('attr-loading').style.display = 'none';
-
-    });
-  }
- });
-}
-
-function reloadDefaultVehicleData() {
-  if (mapmode==0) {
-    $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
-     $.each( data, function( key, val ) {
-
-       processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
-
-       // comprobar eventos    
-       if (val.events.length>0) {
-        for (var i=0; i<val.events.length; i++) {
-          addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
-        }
-       }
-
-       //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-       //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
-       moveMap2Vehicle(val.vehicle_license);    
-
-        
-      });
-    });
-  }  
-}
-
-function reloadSelectedVehiclesData() {
-
-    vehiclesSelectedSource.clear();
-    // añadir el vehiculo por defecto en la capa de seleccion (para que salga en el centrado)
-    addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
-
-    for (var i=0; i<selectedVehicles.length; i++) {
-      addVehicleSelectedToMap(selectedVehicles[i]);
-    }    
-}
-
-
 
 function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {             
   if (vehicleState==undefined)
     vehicleState = 0;
 
-  latitudeDict[vehicleLicense] = lat;
-  longitudeDict[vehicleLicense] = lon;
+  latitudeVehicle = lat;
+  longitudeVehicle = lon;
   if (geocoding!=null && geocoding!=undefined)
-    geocodingDict[vehicleLicense] = geocoding;
+    geocodingVehicle = geocoding;
   else
-    geocodingDict[vehicleLicense] = "<%= __('geocoding_unknown') %>";
+    geocodingVehicle = "Dirección desconocida";
 
-  speedDict[vehicleLicense] = speed;
-  headingDict[vehicleLicense] = heading;
+  speedVehicle = speed;
+  headingVehicle = heading;
 
-  if ( (dateDict[vehicleLicense]==null) || (dateDict[vehicleLicense]<posDate) )
+  if ( (dateVehicle==null) || (dateVehicle<posDate) )
   {  
-    // Eliminar el icono 
-    /*var features = vehiclesRealTimeSource.getFeatures();
-    iFeature = vehiclesRealTimeSource.getFeatureById(vehicleLicense);
-    if (iFeature!=null) {
-     vehiclesRealTimeSource.removeFeature(iFeature);
-    }*/
-    //temporal pq no funciona lo anterior
-    //vehiclesRealTimeSource.clear();
 
     // añadir la linea
     addLineTracking(vehicleLicense, defaultVehicleLastTrackingId, defaultVehicleLastLat,defaultVehicleLastLon, trackingId, lat, lon);
@@ -1672,7 +840,7 @@ function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,
     updateTooltipData(vehicleLicense);   
 
   }
-  dateDict[vehicleLicense] = posDate;
+  dateVehicle = posDate;
 }
 
 function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
@@ -1698,162 +866,15 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
 
   vehiclesRealTimeSource.clear();
   vehiclesRealTimeSource.addFeature(iconFeature); 
-
-  //kyrosDevicesGroup.getLayers().push(deviceVectorLayer);
 }
 
-function addVehicleToMap(vehicleLicense) {
-  $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
-    $.each( data, function( key, val ) {
-        processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
-      });                           
-  });
-}
-
-function addVehicleSelectedToMap(vehicleLicense) {
-  if (vehicleLicense!='<%=vehicleLicense%>') {
-    $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
-      $.each( data, function( key, val ) {
-          processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
-        });                           
-    });    
-  }
-}
-
-function addVehicleFindToMap(vehicleLicense) {
-  //if (vehicleLicense!='<%=vehicleLicense%>') {
-    $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
-      $.each( data, function( key, val ) {
-          processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
-
-          // circulo animado?
-          /*
-          var coordinate = new ol.geom.Point(ol.proj.transform([val.location.coordinates[0], val.location.coordinates[1]], 'EPSG:4326', 'EPSG:3857'));
-          var elem = document.createElement('div');
-          elem.setAttribute('class', 'circleOutPos');
-          this.actualPosOverlay = new ol.Overlay({
-                    element: elem,
-                    position: coordinate,
-                    positioning: 'center-center'
-          });
-          map.addOverlay(actualPosOverlay);*/
-                               
-    });    
-    });    
-  //}
-}
-
-function processDeviceSelected(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {    
-  if (vehicleState==undefined)
-    vehicleState = 0;
-
-  deviceIdDict[vehicleLicense]=deviceId;
-  vehicleLicenseDict[vehicleLicense] = vehicleLicense;
-  dateDict[vehicleLicense] = posDate;
-  aliasDict[vehicleLicense] = alias;
-  latitudeDict[vehicleLicense] = lat;
-  longitudeDict[vehicleLicense] = lon;
-  if (geocoding!=null && geocoding!=undefined)
-    geocodingDict[vehicleLicense] = geocoding;
-  else
-    geocodingDict[vehicleLicense] = "<%= __('geocoding_unknown') %>";
-  speedDict[vehicleLicense] = speed;
-  headingDict[vehicleLicense] = heading;
-
-   // añadir el icono
-  addSelected (vehicleLicense,alias,lon,lat,speed,heading,vehicleState,deviceId,posDate);
-}
-
-function addSelected(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
-    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
-
-    var iconFeature = new ol.Feature({
-        geometry: geo_point,
-        id: vehicleLicense,
-        elementId: 'device',
-        name: alias
-    });
-
-    var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
-      
-    iconStyle = [new ol.style.Style({
-        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         scale: 0.8,
-         //rotation: heading,
-         src: image_src
-       }))
-    })];
-    iconFeature.setStyle(iconStyle);
-
-    vehiclesSelectedSource.addFeature(iconFeature); 
-
-    // centrar el mapa en la capa de vehiculos seleccionados
-    //if (mapmode==2) {
-      map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
-      if(map.getView().getZoom()>20){
-          map.getView().setZoom(20);
-      }      
-    //}
-  }
-
-function addEmptyFeatureSelected(lon, lat) {
-    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
-
-    var iconFeature = new ol.Feature({
-        geometry: geo_point,
-        id: 0,
-        elementId: '',
-        name: ''
-    });
-
-    var normalStyle = new ol.style.Style({
-      image: new ol.style.Circle({
-        radius: 0,
-        fill: new ol.style.Fill({
-          color: 'rgba(20,150,200,0.3)'
-        }),
-        stroke: new ol.style.Stroke({
-          color: 'rgba(20,130,150,0.8)',
-          width: 0
-        })
-      })
-    });
-    iconFeature.setStyle(normalStyle);
-
-    vehiclesSelectedSource.addFeature(iconFeature); 
-
-    // centrar el mapa en la capa de vehiculos seleccionados
-    map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
-    if(map.getView().getZoom()>20){
-        map.getView().setZoom(20);
-    }
-  }
 
 
-    function addLineTracking(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2)
+  function addLineTracking(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2)
     {
       var coords = [];
       if (lat1!=0) {
-        coords.push([lon1, lat1]);
 
-        /*var iconFeature1 = new ol.Feature({
-          geometry: new ol.geom.Point(ol.proj.transform([lon1, lat1], 'EPSG:4326', 'EPSG:3857')),
-          id: trackingId1,
-          elementId: 'trackingPoint',
-          vehicleLicense: vehicleLicense,
-          name: "<%= __('tracking_point') %>"
-
-        });
-        iconFeature1.setStyle(new ol.style.Style({
-          //image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ //({
-          /* scale: 0.8,
-           src: './img/points/beacon_ball_blue.gif'
-         }))
-        }));
-        vehiclesLineSource.addFeature(iconFeature1); 
-        */
-
-        //addTrackingPointEffect(vehicleLicense, trackingId1, lat1, lon1);
 
      }
      if (lat2!=0) {
@@ -1873,12 +894,6 @@ function addEmptyFeatureSelected(lon, lat) {
       });
 
   }
-
-/*
- if (realTimePoints.length>2) {
-    //console.log(realTimePoints.shift());
-    vehiclesPointSource.removeFeatureById(realTimePoints.shift());
-  }*/
 
   // create the feature
   var featureLine = new ol.Feature({
@@ -1905,15 +920,11 @@ function addEmptyFeatureSelected(lon, lat) {
     vehiclesPointSource.removeFeature(features[0]);
   }*/
  
-
-
   }
 
 
   function addLinesTracking(vehicleLicense, vtracking, vlat, vlon) {
 
-    //clearMapRealTime();
-    
     // pintar los puntos
     var coords = [];
     for (var i=0; i<vtracking.length; i++) {
@@ -1965,210 +976,15 @@ function addEmptyFeatureSelected(lon, lat) {
   }
 
  function centerMap(lon, lat) {
-  /*map.setView (new ol.View({
-      center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
-      zoom: 14,
-      maxZoom:22,
-      minZoom:3
-    }));*/
-   // otra forma de centrar
-    /*map.getView().fit(vehiclesRealTimeSource.getExtent(), map.getSize());
-    if(map.getView().getZoom()>20){
-      map.getView().setZoom(20);
-    }*/
-    //y otra forma mas (esta sin crear un view)
     map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
     map.getView().setZoom(14);
 
-
-    // y otra con efecto
-    /*
-    var new_view = new ol.View({
-          center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
-          zoom: map.getView().getZoom(),
-          maxZoom:22,
-          minZoom:3
-        });
-
-        var pan = ol.animation.pan({
-          duration: 700,
-          source:  (map.getView().getCenter()),
-        });
-        map.beforeRender(pan);
-        map.setView(new_view);
-    */
  }
 
  function moveMap(lon, lat) {
     map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));   
  }
 
- function getInitDateLastDays(days) {
-        var milliseconds = (new Date).getTime();
-        return (milliseconds - days * 86400000);
-  }
- 
-var sourceHeatmap3 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(15),
-  format: new ol.format.GeoJSON(),
-  projection: 'EPSG:3857'
-});
-var sourceHeatmap2 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7),
-  format: new ol.format.GeoJSON(),
-  projection: 'EPSG:3857'
-});
-var sourceHeatmap1 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1),
-  format: new ol.format.GeoJSON(),
-  projection: 'EPSG:3857'
-});
-
-var heatmap3 = new ol.layer.Heatmap({
-    title: '<%= __('heatmap3') %>',
-    visible: false,
-    source: sourceHeatmap3,
-    opacity: .9
- });
-var heatmap2 = new ol.layer.Heatmap({
-    title: '<%= __('heatmap2') %>',
-    visible: false,
-    source: sourceHeatmap2,
-    opacity: .9
- });
-var heatmap1 = new ol.layer.Heatmap({
-    title: '<%= __('heatmap1') %>',
-    visible: false,
-    source: sourceHeatmap1,
-    opacity: .9
- });
-
-
-var sourceCluster3 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(15),
-  format: new ol.format.GeoJSON(),
-  projection: 'EPSG:3857'
-});
-var clusterSource3 = new ol.source.Cluster({
-  distance: 40,
-  source: sourceCluster3
-});
-var styleCache = {};
-var clusters3 = new ol.layer.Vector({
-  title: '<%= __('clusters3') %>',
-  visible: false,
-  source: clusterSource3,
-  style: function(feature, resolution) {
-    var size = feature.get('features').length;
-    var style = styleCache[size];
-    if (!style) {
-      style = [new ol.style.Style({
-        image: new ol.style.Circle({
-          radius: 20,
-          stroke: new ol.style.Stroke({
-            color: '#fff'
-          }),
-          fill: new ol.style.Fill({
-            //color: '#3399CC'
-            color: '#6411ED'
-          })
-        }),
-        text: new ol.style.Text({
-          text: size.toString(),
-          fill: new ol.style.Fill({
-            color: '#fff'
-          })
-        })
-      })];
-      styleCache[size] = style;
-    }
-    return style;
-  }
-});
-
-var sourceCluster2 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7),
-  format: new ol.format.GeoJSON(),
-  projection: 'EPSG:3857'
-});
-var clusterSource2 = new ol.source.Cluster({
-  distance: 40,
-  source: sourceCluster2
-});
-var styleCache = {};
-var clusters2 = new ol.layer.Vector({
-  title: '<%= __('clusters2') %>',
-  visible: false,
-  source: clusterSource2,
-  style: function(feature, resolution) {
-    var size = feature.get('features').length;
-    var style = styleCache[size];
-    if (!style) {
-      style = [new ol.style.Style({
-        image: new ol.style.Circle({
-          radius: 20,
-          stroke: new ol.style.Stroke({
-            color: '#fff'
-          }),
-          fill: new ol.style.Fill({
-            //color: '#3399CC'
-            color: '#11ED72'
-          })
-        }),
-        text: new ol.style.Text({
-          text: size.toString(),
-          fill: new ol.style.Fill({
-            color: '#fff'
-          })
-        })
-      })];
-      styleCache[size] = style;
-    }
-    return style;
-  }
-});
-
-var sourceCluster1 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1),
-  format: new ol.format.GeoJSON(),
-  projection: 'EPSG:3857'
-});
-var clusterSource1 = new ol.source.Cluster({
-  distance: 40,
-  source: sourceCluster1
-});
-var styleCache = {};
-var clusters1 = new ol.layer.Vector({
-  title: '<%= __('clusters1') %>',
-  visible: false,
-  source: clusterSource1,
-  style: function(feature, resolution) {
-    var size = feature.get('features').length;
-    var style = styleCache[size];
-    if (!style) {
-      style = [new ol.style.Style({
-        image: new ol.style.Circle({
-          radius: 20,
-          stroke: new ol.style.Stroke({
-            color: '#fff'
-          }),
-          fill: new ol.style.Fill({
-            //color: '#3399CC'
-            color: '#ED1111'
-          })
-        }),
-        text: new ol.style.Text({
-          text: size.toString(),
-          fill: new ol.style.Fill({
-            color: '#fff'
-          })
-        })
-      })];
-      styleCache[size] = style;
-    }
-    return style;
-  }
-});
 
 var toner = new ol.layer.Tile({
  title: 'Toner',
@@ -2196,36 +1012,20 @@ var osm = new ol.layer.Tile({
  source: new ol.source.OSM()
 });
  
-var kyrosDevicesGroup = new ol.layer.Group({
-    'title': '<%= __('kyros_devices') %>',
-    //layers: [vectorLayer]
-    layers: []
-  });
 
 var kyrosGroup = new ol.layer.Group({
-    'title': '<%= __('tracking') %>',
-    layers: [vehiclesHistLineLayer,vehiclesHistLayer, mapPointLayer, vehiclesLineLayer, vehiclesPointLayer, vehiclesRealTimeLayer, vehiclesSelectedLayer, poisLayer]
+    'title': 'Tracking',
+    layers: [vehiclesLineLayer, vehiclesRealTimeLayer]
   });
 
 var map = new ol.Map({
   layers: [
   new ol.layer.Group({
-   'title': '<%= __('base_maps') %>',
+   'title': 'Mapas',
    layers: [toner, roads, osm]
  }),
 
-kyrosDevicesGroup,
 kyrosGroup,
-
-  new ol.layer.Group({
-   'title': '<%= __('heatmap') %>',
-   layers: [heatmap3, heatmap2, heatmap1]
- }),
-  new ol.layer.Group({
-   'title': '<%= __('clusters') %>',
-   layers: [clusters3, clusters2, clusters1]
- }),
-
 
   ],
   target: 'map',
@@ -2239,7 +1039,7 @@ kyrosGroup,
 
 if (!isMobile()) {
 var layerSwitcher = new ol.control.LayerSwitcher({
-    tipLabel: '<%= __('layers') %>' // Optional label for button
+    tipLabel: 'Capas' // Optional label for button
   });
   map.addControl(layerSwitcher);
 }
@@ -2254,13 +1054,6 @@ map.addControl(new ol.control.ZoomSlider({
   minResolution: 39135.76
 }));  
 }
-
-/*
-if (!isMobile()) {
-  map.addControl(new ol.control.OverviewMap({
-    collapsed: true
-  }));
-}*/
 
 var scaleLineControl = new ol.control.ScaleLine();
 
@@ -2277,45 +1070,6 @@ map.addControl(new ol.control.MousePosition({
 //*****************
 
 
-// Vector layer
-  /*var source = new ol.source.Vector();
-  var vector = new ol.layer.Vector(
-  { source: source,
-    style: style
-  });
-  map.addLayer(vector);*/
-
-// Add a feature on the map
-  function addFeatureAt(trackingId, p) { 
-    var f, r = map.getView().getResolution() *10;
- 
-        
-      var geo_point = new ol.geom.Point(ol.proj.transform([p[0], p[1]], 'EPSG:4326', 'EPSG:3857'));
-      var f = new ol.Feature({
-        geometry: geo_point,
-        id: trackingId,
-        elementId: 'trackingPoint',
-        //vehicleLicense: vehicleLicense,
-        name: "<%= __('tracking_point') %>"      
-      });
-
- 
-    vehiclesHistSource.addFeature(f);
-    vehiclesHistLayer.animateFeature (f, 
-      [ new ol.featureAnimation["Drop"](
-        { speed: Number(0.8), 
-          duration: Number(760),
-          side: false
-        }),
-        new ol.featureAnimation[
-        "Bounce"](
-        { speed: Number(0.8), 
-          duration: Number(760),
-          horizontal: /Slide/.test("Drop")
-        })
-      ]);
-  }
-
 function addFeaturePointAt(p) { 
   mapPointSource.clear();
 
@@ -2328,7 +1082,7 @@ function addFeaturePointAt(p) {
         elementId: 'positionPoint',
         lon: p[0],
         lat: p[1],
-        name: "<%= __('position_map') %>"  
+        name: "Posición sobre el mapa"  
   });
 
 
@@ -2349,36 +1103,6 @@ function addFeaturePointAt(p) {
       ]);
   }
 
-function addTrackingHistPointEffect(vehicleLicense, trackingId, lat, lon) { 
-  var f, r = map.getView().getResolution() *10;
-       
-  var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
-  var f = new ol.Feature({
-        geometry: geo_point,
-        id: trackingId,
-        vehicleLicense: vehicleLicense,
-        elementId: 'trackingPoint',
-        lon: lon,
-        lat: lat,
-        name: "<%= __('position_map') %>"  
-  });
-
-  vehiclesHistSource.addFeature(f);
-
-  vehiclesHistLayer.animateFeature (f, 
-      [ new ol.featureAnimation["Drop"](
-        { speed: Number(1.4), 
-          duration: Number(260),
-          side: false
-        }),
-        new ol.featureAnimation[
-        "Bounce"](
-        { speed: Number(0.8), 
-          duration: Number(760),
-          horizontal: /Slide/.test("Shake")
-        })
-      ]);
-  }
 
   function addTrackingPointEffect(vehicleLicense, trackingId, lat, lon) { 
     if (lat!=0) {
@@ -2393,7 +1117,7 @@ function addTrackingHistPointEffect(vehicleLicense, trackingId, lat, lon) {
           elementId: 'trackingPoint',
           lon: lon,
           lat: lat,
-          name: "<%= __('position_map') %>"  
+          name: "Posición sobre el mapa"  
     });
 
     vehiclesPointSource.addFeature(f);
@@ -2460,10 +1184,6 @@ var displayTooltipInfo = function(evt) {
     else if (feature.get('elementId')=='device') {
     //if (isMobile()) {
       openTooltip(feature.get('id'));
-
-      // Muestro ultimos trackings solo si no es el dispositivo por defecto
-      if (feature.get('id')!='<%=vehicleLicense%>')
-        showLastTrackings(feature.get('id'), 7);
     //} else {
       info.tooltip('hide');
     }
@@ -2494,15 +1214,6 @@ var displayTooltipInfo = function(evt) {
     //}
   });
          
-/*
-$(map.getViewport()).on("click", function(e) {
-    map.forEachFeatureAtPixel(map.getEventPixel(e), function (feature, layer) {
-        //do something
-        console.log(feature.get('elementId'));
-    });
-});*/
-
-
        </script>
      </body>
      </html>

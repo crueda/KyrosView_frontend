@@ -2393,7 +2393,7 @@ function initDefaultVehicleData() {
  $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
    $.each( data, function( key, val ) {
 
-     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
      // comprobar eventos
      if (val.events.length>0) {
@@ -2420,7 +2420,7 @@ function initDefaultVehicleDataSync() {
 
    $.each( data, function( key, val ) {
 
-     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
      // comprobar eventos    
      if (val.events.length>0) {
@@ -2443,7 +2443,7 @@ function reloadDefaultVehicleData() {
     $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
      $.each( data, function( key, val ) {
 
-       processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+       processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
        // comprobar eventos    
        if (val.events.length>0) {
@@ -2546,7 +2546,7 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
 function addVehicleToMap(vehicleLicense) {
   $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
     $.each( data, function( key, val ) {
-        processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+        processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
       });                           
   });
 }
