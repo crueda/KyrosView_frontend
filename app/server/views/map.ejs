@@ -58,8 +58,11 @@
 
 <style>
 
-td {
+table.tooltip-details-table td {
     vertical-align: top;
+}
+table.tooltip-header-table td {
+    vertical-align: center;
 }
 
 #attr-button-menu
@@ -163,6 +166,7 @@ td {
  var redFlagOverlay = null;
  var actualPosOverlay = null;
  //var selectedVehicles = [];
+ var tooltipSelectedVehicleLicense = "";
  var selectedVehicles = new Array();
  var defaultVehicleLastLat = 0;
  var defaultVehicleLastLon = 0;
@@ -211,16 +215,21 @@ $("#vehiclePhoto").fileinput({
   document.getElementById('attr-graph-hist').style.display = 'none';
 
   var nowDate = new Date();
+  var yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
   var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
   var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
   $('#datetimepicker1').datetimepicker({
       locale: 'en',
-      maxDate: today,
-      defaultDate: today
+      //maxDate: today,
+      //defaultDate: today
+      defaultDate: yesterdayDate
     });
   $('#datetimepicker2').datetimepicker({
       locale: 'en',
-      defaultDate: today2
+      //defaultDate: today2
+      defaultDate: nowDate
     });
 
   var dateNow = new Date();
@@ -233,6 +242,10 @@ $("#vehiclePhoto").fileinput({
   $("#datetimepicker1").on("dp.change", function (e) {
     $('#datetimepicker2').data("DateTimePicker").minDate(e.date);
   });
+
+
+//$("#datetimepicker1").datepicker('setDate',dateNow);
+//$("#datetimepicker2").datepicker("setDate",'1d');
 
   $('#showDevicesMapButton').click(function(){
     saveSelectedVehicles();
@@ -264,6 +277,19 @@ $("#vehiclePhoto").fileinput({
     var vehicleLicenseFind = $('#licenseFind').val();
     getVehicleIconSync(vehicleLicenseFind);
     showTrackingFind(vehicleLicenseFind);
+  });
+
+  $('#okButtonShare').click(function(){
+    var email = $('#emailShare').val();
+      $.getJSON( '/api/share/vehicle/'+tooltipSelectedVehicleLicense+'?email='+email, function( data ) {
+          if (data=='ok') {
+            $('#myModalMsgLabel').text("<%= __('share_ok') %>");
+          } else {
+            $('#myModalMsgLabel').text("<%= __('share_error') %>");
+          }
+          $('#myModalMsgLabel').css({ "color" : 'green' });
+          $('#myModalMsg').modal('show');
+      });
   });
 
   if (isMobile()) {
@@ -304,7 +330,7 @@ $("#vehiclePhoto").fileinput({
 
   document.getElementById('attr-loading').style.display = 'block';
 
-  loadEventText();
+
 
   loadDefaultVehicleDataSync();
   initDefaultVehicleDataSync();
@@ -382,7 +408,7 @@ function clearMapSelected() {
   }
 
   function showLastTrackings(vehicleLicense, ntrackings) {
-      $.getJSON( 'api/last-trackings/vehicle/'+vehicleLicense+'?ntrackings='+ntrackings, function( data ) {
+      $.getJSON( '/api/last-trackings/vehicle/'+vehicleLicense+'?ntrackings='+ntrackings, function( data ) {
         var vtracking = [];
         var vlat = [];
         var vlon = [];
@@ -701,10 +727,6 @@ function clearMapSelected() {
       vehiclesHistSource.addFeature(iconFeature); 
   }
 
-  // TODO
-  function loadEventText() {
-    EventEnum.properties[EventEnum[913]].description = "<%= __('event_stop') %>";
-  }
 
   function getEventDescription(eventType) {
     //var evento = EVENT_ENUM.getByValue('value', eventType);
@@ -835,6 +857,11 @@ function clearMapSelected() {
         name: "<%= __('tracking_line') %>"
       });
       vehiclesHistLineSource.addFeature(featureLine);
+  }
+
+  function openShare() {
+    $('#myModal').modal('hide');
+    $('#myModalShare').modal('show');
   }
 
   function menuPois() {
@@ -1001,6 +1028,7 @@ function clearMapSelected() {
   }
 
   function openTooltip(vehicleLicense) {
+    tooltipSelectedVehicleLicense = vehicleLicense;
      $("#uploadFormIcon").attr("action", "/api/icon/upload/" + vehicleLicense);
      $("#uploadFormPhoto").attr("action", "/api/image/upload/" + vehicleLicense);
     
@@ -1041,7 +1069,10 @@ function clearMapSelected() {
     document.getElementById('tooltipWeekConsume').innerHTML = '---';
     document.getElementById('tooltipMonthConsume').innerHTML = '---';
     
-
+    document.getElementById('tooltipTotalDistance').innerHTML = '---';
+    document.getElementById('tooltipTotalSpeed').innerHTML = '---';
+    document.getElementById('tooltipTotalConsume').innerHTML = '---';
+    
 
     /*
     $.getJSON( 'http://geocoding.kyros.es/ProxyGeocodingWeb/Geocoding?latlng='+latitudeDict[vehicleLicense]+','+longitudeDict[vehicleLicense]+'&language=es&sensor=false&client=gme-deimosspaceslu1&signature=JtcKJ8U5oVG86fXMvSgyzerlpj4=', function( data ) {
@@ -1055,7 +1086,6 @@ function clearMapSelected() {
       lon: longitudeDict[vehicleLicense],
       format: 'json',
       }, function (result) {
-        console.log(result);
         document.getElementById('tooltipLocation').innerHTML = result.display_name;
       }); 
 
@@ -1074,6 +1104,10 @@ function clearMapSelected() {
         document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume.toFixed(2).replace(".",",");
         document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume.toFixed(2).replace(".",",");
         document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume.toFixed(2).replace(".",",");
+        document.getElementById('tooltipTotalSpeed').innerHTML = val.totalSpeed.toFixed(1).replace(".",",");
+        document.getElementById('tooltipTotalDistance').innerHTML = val.totalDistance.toFixed(3).replace(".",",");
+        document.getElementById('tooltipTotalConsume').innerHTML = val.totalConsume.toFixed(2).replace(".",",");
+
       });
 
       $('#myModal').modal('show');
@@ -1402,6 +1436,42 @@ function openTooltipMapPoint(latitude, longitude) {
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade" id="myModalShare" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('share') %></h4>
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+      <div class="container">
+          <div class="row">
+              <div class='col-sm-6'>
+                  <div class="form-group">
+                      <h5 class="modal-title"><%= __('email') %>:</h5>   
+                      <div class="input-group"> 
+                        <input type="text" class="form-control" id="emailShare" name="email">
+                        <label for="emailShare" class="input-group-addon glyphicon glyphicon-envelope"></label>
+                      </div>
+                                                                    
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+
+      <div id="okButtonShare" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary"><%= __('send') %></button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div style="z-index: 10000;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1409,10 +1479,11 @@ function openTooltipMapPoint(latitude, longitude) {
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
         <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true"><img src="./img/close.png"/></button-->
         <!--h4 class="modal-title" id="myModalLabel">Log in</h4-->
-            <table border="0">
+            <table class="tooltip-header-table" border="0">
             <tr>
               <td id="tooltipIcon" width="100"></td>
               <td><b><font color="black" id="tooltipVehicleLicense">---</font></b></td>
+
             </tr>
             </table>
       </div> <!-- /.modal-header -->
@@ -1429,7 +1500,7 @@ function openTooltipMapPoint(latitude, longitude) {
         <div class="tab-content">
         <br>
           <div id="details" class="tab-pane fade in active">
-                    <table border="0">
+          <table class="tooltip-details-table" border="0">
             <tr>
               <td width="20%"><b><%= __('date') %>&nbsp;</b></td>
               <td width="80%"><font color="black" id="tooltipDate">---</font></td>
@@ -1470,16 +1541,16 @@ function openTooltipMapPoint(latitude, longitude) {
           </thead>
             <tbody>
               <tr>
-                <td id="tooltipDaySpeed">---</td>
-                <td id="tooltipWeekSpeed">---</td>
-                <td id="tooltipMonthSpeed">---</td>
-                <td><font color="red"><%= __('average_speed') %></font> (km/h)</td>
-              </tr>
-              <tr>
                 <td id="tooltipDayDistance">---</td>
                 <td id="tooltipWeekDistance">---</td>
                 <td id="tooltipMonthDistance">---</td>
                 <td><font color="red"><%= __('distance') %></font> (Km)</td>
+              </tr>
+              <tr>
+                <td id="tooltipDaySpeed">---</td>
+                <td id="tooltipWeekSpeed">---</td>
+                <td id="tooltipMonthSpeed">---</td>
+                <td><font color="red"><%= __('average_speed') %></font> (km/h)</td>
               </tr>
               <tr>
                 <td id="tooltipDayConsume">---</td>
@@ -1489,6 +1560,22 @@ function openTooltipMapPoint(latitude, longitude) {
               </tr>
             </tbody>
           </table>
+          <br>
+          <table class="tooltip-details-table" border="0">
+            <tr>
+              <td width="20%"><b><%= __('distance') %>&nbsp;</b></td>
+              <td width="80%"><font color="black" id="tooltipTotalDistance">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('average_speed') %>&nbsp;</b></td>
+              <td><font color="black" id="tooltipTotalSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('consume') %>&nbsp;</b></td>
+              <td><font color="black" id="tooltipTotalConsume">---</font></td>
+            </tr>
+          </table>
+
         </div> 
 
         <div id="icon" class="tab-pane fade">
@@ -1538,11 +1625,22 @@ function openTooltipMapPoint(latitude, longitude) {
 
         <br>
       </div> <!-- /.modal-body -->
+      <table border="0">
+      <tr>
+        <td width="50" align="center">
+          <div id="selectButton2" class="modal-footer" onclick="javascript:openShare();">
+          <img src="./img/share.png"/>
+          </div> <!-- /.modal-footer -->
+        </td>
+        <td>
+          <div id="selectButton" class="modal-footer" onclick="$('#myform').submit();">
+            <button id="selectButtonText" class="form-control btn btn-primary"><%= __('select_button') %></button>
+          </div> <!-- /.modal-footer -->
+        </td>
+      </tr>
+      </table>
 
-      <div id="selectButton" class="modal-footer" onclick="$('#myform').submit();">
-        <button id="selectButtonText" class="form-control btn btn-primary"><%= __('select_button') %></button>
-      </div> <!-- /.modal-footer -->
-</div>
+    </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -2216,7 +2314,7 @@ function loadMonitor() {
           highlightSelected: false,
           showTags: true,
           onNodeChecked: function(event, node) {
-            console.log(node.text + ' was checked');
+            //console.log(node.text + ' was checked');
             //$('#treeview-checkable').treeview('toggleNodeChecked', [ node, { silent: false } ]);
 
             if (node.type == 0) {
@@ -2233,7 +2331,7 @@ function loadMonitor() {
               //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
           },
           onNodeUnchecked: function (event, node) {
-            console.log(node.text + ' was unchecked');
+            //console.log(node.text + ' was unchecked');
             if (node.type == 1) {
               var index = selectedVehicles.indexOf(node.text);
               if (index > -1) {
@@ -2358,7 +2456,7 @@ function reloadDefaultVehicleData() {
        //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
        moveMap2Vehicle(val.vehicle_license);    
 
-       updateTooltipData(val.vehicle_license);    
+        
       });
     });
   }  
@@ -2412,6 +2510,8 @@ function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,
     defaultVehicleLastLon = lon;
     defaultVehicleLastTrackingId = trackingId;
 
+    updateTooltipData(vehicleLicense);   
+
   }
   dateDict[vehicleLicense] = posDate;
 }
@@ -2462,7 +2562,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
 }
 
 function addVehicleFindToMap(vehicleLicense) {
-  if (vehicleLicense!='<%=vehicleLicense%>') {
+  //if (vehicleLicense!='<%=vehicleLicense%>') {
     $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
       $.each( data, function( key, val ) {
           processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
@@ -2481,7 +2581,7 @@ function addVehicleFindToMap(vehicleLicense) {
                                
     });    
     });    
-  }
+  //}
 }
 
 function processDeviceSelected(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {    

@@ -94,7 +94,13 @@
 	"find": "Find",
 	"about": "About",
 	"delete": "Delete",
-	"icon_updated": "Icon updated"
+	"icon_updated": "Icon updated",
+	"share": "Share position",
+	"email": "e-mail",
+	"send": "Send",
+	"share_ok": "e-mail sent successfully",
+	"share_error": "Error in sending e-mail. Try again"
+
 
 
 }

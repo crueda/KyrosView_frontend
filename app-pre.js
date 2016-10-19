@@ -20,6 +20,8 @@ var api_numpositions = require('./app/server/routes/numpositions');
 var api_image = require('./app/server/routes/image');
 var api_heatmap = require('./app/server/routes/heatmap');
 var api_vehicle = require('./app/server/routes/vehicle');
+var api_share = require('./app/server/routes/share');
+var api_watch = require('./app/server/routes/watch');
 
 var i18n = require("i18n");
 
@@ -137,6 +139,9 @@ app.use('/api', api_numpositions);
 app.use('/api', api_image);
 app.use('/api', api_heatmap);
 app.use('/api', api_vehicle);
+app.use('/api', api_share);
+app.use('/api', api_watch);
+
 require('./app/server/routes/routes')(app);
 
 

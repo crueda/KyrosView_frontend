@@ -57,6 +57,45 @@ EM.dispatchResetPasswordLink = function(account, callback)
 
 }
 
+EM.dispatchShareVehicleLink = function(shareData, callback)
+{
+    var nodemailer = require('nodemailer');
+
+    var transporter = nodemailer.createTransport(smtpTransport({
+        host: properties.get('mail.account.host'),
+        port: 25,
+        auth: {
+            user: properties.get('mail.account.user'),
+            pass: properties.get('mail.account.password')
+        }
+    }));
+    
+    // setup e-mail data with unicode symbols
+    var mailOptions = {
+        from: '"Kyros LBS" <logistica@kyroslbs.com>', 
+        to: shareData.email, 
+        subject: 'KyrosView - seguimiento de vehículo', 
+        html: EM.composeShareVehicleHtmlEmail(shareData.username, shareData.vehicle_license, shareData.uuid),
+        text: EM.composeShareVehicleTextEmail(shareData.username, shareData.vehicle_license, shareData.uuid)
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            transporter.close();
+            console.log("error:" + error);
+            callback (error, null);
+        } 
+        else {
+            transporter.close();
+            //console.log('Message sent: ' + info.response);
+            callback (null, "ok");            
+        }
+    });
+
+
+}
+
 EM.composeHtmlEmail = function(o)
 {
     var link = 'http://view.kyroslbs.com/reset-password?u='+o.user+'&h='+o.uuid;
@@ -80,5 +119,33 @@ EM.composeTextEmail = function(o)
         html += "Hasta pronto!";
         html += "Kyros LBS Team";
     //return  [{data:html, alternative:true}];
+    return  html;
+}
+
+EM.composeShareVehicleHtmlEmail = function(username, vehicleLicense, uuid)
+{
+    var link = 'http://view.kyroslbs.com/follow.html?uuid='+uuid;
+    var html = "<html><body>";
+        html += "Hola !<br><br>";
+        html += "El usuario de Kyros <b>"+username+"</b> desea compartir contigo la localización del vehículo <b>"+vehicleLicense+"</b>.<br><br>";
+        html += "Haga click en el siguiente <a href='"+link+"'>enlace</a> para seguir su posición en tiempo real.<br>";
+        html += "Este enlace tienen una validez de 24 horas.<br><br>";
+        html += "Hasta pronto!,<br>";
+        html += "<a href='http://www.kyroslbs.com'>Kyros LBS Team</a><br><br>";
+        html += "</body></html>";
+    return  html;
+}
+
+EM.composeShareVehicleTextEmail = function(username, vehicleLicense, uuid)
+{
+    var link = 'http://view.kyroslbs.com/follow.html?uuid='+uuid;
+    var html = "<html><body>";
+        html += "Hola !<br><br>";
+        html += "El usuario de Kyros <b>"+username+"</b> desea compartir contigo la localización del vehículo <b>"+vehicleLicense+"</b>.<br><br>";
+        html += "Haga click en el siguiente <a href='"+link+"'>enlace</a> para seguir su posición en tiempo real.<br>";
+        html += "Este enlace tienen una validez de 24 horas.<br><br>";
+        html += "Hasta pronto!,<br>";
+        html += "<a href='http://www.kyroslbs.com'>Kyros LBS Team</a><br><br>";
+        html += "</body></html>";
     return  html;
 }

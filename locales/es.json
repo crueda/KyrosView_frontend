@@ -92,7 +92,11 @@
 	"find": "Buscar",
 	"about": "Acerca de",
 	"delete": "Eliminar",
-	"icon_updated": "Icono actualizado"
-
-
+	"icon_updated": "Icono actualizado",
+	"share": "Compartir localización",
+	"email": "Correo electrónico",
+	"send": "Enviar",
+	"share_ok": "Correo electrónico enviado correctamente",
+	"share_error": "Error en el envio. Inténtelo de nuevo",
+	"share_nok": "share_nok"
 }
