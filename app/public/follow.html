@@ -171,71 +171,47 @@ table.tooltip-header-table td {
     );
   }
 
-  function loadVehicleDataSync() {
-    // Leer los datos de los vehiculos en modo sincrono
-    $.ajax({ 
-      url: "/api/vehicle/"+vehicleLicense, 
-      dataType: 'json', 
-      async: false, 
-      success: function(data){ 
-          //Proceso de los datos recibidos
-        $.each( data, function( key, val ) {
-          iconRealTimeVehicle = val.icon_real_time;
-          iconCoverVehicle = val.icon_cover;
-          iconAlarmVehicle = val.icon_alarm;
-          aliasVehicle = val.alias;
-          deviceId = val.device_id;
-        });
-      } 
-    });
-
-    // Leer el icono del vehiculo en base64 modo sincrono
-    $.ajax({ 
-      url: "/api/icon/vehicle/"+vehicleLicense, 
-      dataType: 'json', 
-      async: false, 
-      success: function(data){ 
-          //almacenar el icono recibido
-          iconBase64Vehicle = data;      
-      } 
-    });
-  }
-
-  function loadVehicleIconSync() {
-    // Leer el icono de un vehiculo en modo sincrono
-    $.ajax({ 
-      url: "/api/icon/vehicle/"+vehicleLicense, 
-      dataType: 'json', 
-      async: false, 
-      success: function(data){ 
-        iconBase64Vehicle = data;
-      } 
-    });
-  }
 
   function initVehicleData() {
 
    $.getJSON( '/api/watch/'+uuid, function( data ) {
-     $.each( data.data, function( key, val ) {
-        vehicleLicense=val.vehicle_license;
-        loadVehicleDataSync();
-        loadVehicleIconSync();
+     if (data.result=='nok') {
+        $('#myModalMsgLabel').text("Error al recuperar los datos del vehículo");
+        $('#myModalMsgLabel2').text("Por favor, informe del problema a logistica@kyroslbs.com");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsg').modal('show'); 
+        document.getElementById('attr-loading').style.display = 'none';
+     } else {
+        vehicleLicense=data.data.tracking[0].vehicle_license;
+        var trackingId = data.data.tracking[0].tracking_id;
+        var longitude = data.data.tracking[0].location.coordinates[0];
+        var latitude = data.data.tracking[0].location.coordinates[1];
+        var geocoding = data.data.tracking[0].geocoding;
+        var heading = data.data.tracking[0].heading;
+        var speed = data.data.tracking[0].speed;
+        var alarmActivated = data.data.tracking[0].alarm_activated;
+        var posDate = data.data.tracking[0].pos_date;
+        var deviceId = data.data.tracking[0].deviceId;
 
-       processDevice (val.tracking_id,val.vehicle_license,aliasVehicle,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+        iconRealTimeVehicle = data.data.vehicle[0].icon_real_time;
+        iconCoverVehicle = data.data.vehicle[0].icon_cover;
+        iconAlarmVehicle = data.data.vehicle[0].icon_alarm;
+        
+       processDevice (trackingId,vehicleLicense,aliasVehicle,longitude,latitude,geocoding,speed,heading,alarmActivated, posDate, deviceId);
 
        // comprobar eventos
-       if (val.events.length>0) {
-        for (var i=0; i<val.events.length; i++) {
-          addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+       if (data.data.tracking[0].events.length>0) {
+        for (var i=0; i<data.data.tracking[0].events.length; i++) {
+          addTrackingPointEvent(vehicleLicense,trackingId,data.data.tracking[0].events[i].event_type, data.data.tracking[0].events[i].event_date,latitude,longitude);
         }
        }
        
-       centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+       centerMap(longitude, latitude);
 
        document.getElementById('attr-loading').style.display = 'none';
-
-      });
-   });
+      }
+    });
+   
   }
 
   function loadVehicleIcon() {
@@ -508,6 +484,31 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
 </head>
 <body>
  
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel">Mensaje</h4>
+      </div> <!-- /.modal-header -->
+
+    <div class="modal-body">
+      <div class="form-group">
+        <h4 class="modal-title" id="myModalMsgLabel"></h4>
+      </div> 
+      <div class="form-group">
+        <h5 class="modal-title" id="myModalMsgLabel2"></h5>
+      </div> 
+
+      <div id="okButton" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary">Ok</button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <div style="z-index: 10000;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">

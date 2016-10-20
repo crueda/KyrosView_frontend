@@ -37,32 +37,41 @@ shareModel.addSharing = function(requestData, callback)
             callback(err, null);
         }
         else {
-            var collection = db.collection('SHARE');
-
-            var timestamp = (new Date).getTime();
-            var expiration = timestamp + 86400000;
-            var uuid1 = uuid.v1();
-
-            var shareCollection = {
-                vehicle_license: requestData.vehicleLicense,
-                email: requestData.email,
-                username: requestData.username,
-                timestamp: timestamp,
-                expiration: expiration,
-                uuid: uuid1
-
-            }
-            collection.save(shareCollection);
+            var collectionVehicle = db.collection('VEHICLE');
+            collectionVehicle.find({'vehicle_license': requestData.vehicleLicense}).toArray(function(err, docsVehicle) {
             
-            // enviar mail
-            EM.dispatchShareVehicleLink(shareCollection, function(e, m){
-                if (m!=null){
-                    callback(null, "ok");
-                }   else{
-                    callback(null, "nok");
+                var collection = db.collection('SHARE');
+
+                var timestamp = (new Date).getTime();
+                var expiration = timestamp + 86400000;
+                var uuid1 = uuid.v1();
+
+                var shareCollection = {
+                    vehicle_license: requestData.vehicleLicense,
+                    email: requestData.email,
+                    username: requestData.username,
+                    timestamp: timestamp,
+                    expiration: expiration,
+                    icon_real_time: docsVehicle[0].icon_real_time,
+                    icon_cover: docsVehicle[0].icon_cover,
+                    icon_alarm: docsVehicle[0].icon_alarm,
+                    alias: docsVehicle[0].alias,
+                    uuid: uuid1
+
                 }
+                collection.save(shareCollection);
+                
+                // enviar mail
+                EM.dispatchShareVehicleLink(shareCollection, function(e, m){
+                    if (m!=null){
+                        callback(null, "ok");
+                    }   else{
+                        callback(null, "nok");
+                    }
+                });
             });
-            //callback(null, "ok");
+
+            
         }
     });
 

@@ -35,18 +35,18 @@ var watchModel = {};
 watchModel.getPosition = function(uuid, callback)
 {
   mongoose.connection.db.collection('SHARE', function (err, collection) {
-        collection.find({"uuid" : uuid}).sort({"expiration": -1}).limit(1).toArray(function(err, docs) {
-            if (docs.length==0) {
+        collection.find({"uuid" : uuid}).sort({"expiration": -1}).limit(1).toArray(function(err, docsShare) {
+            if (docsShare.length==0) {
                 callback(null, {result: "nok", data: "notfound"});                
             } else{
                 var now = (new Date).getTime();
-                if (docs[0].expiration<now) {
+                if (docsShare[0].expiration<now) {
                     callback(null, {result: "nok", data: "expired"});                                    
                 } else {
-                    vehicleLicense = docs[0].vehicle_license;
+                    vehicleLicense = docsShare[0].vehicle_license;
                     mongoose.connection.db.collection('TRACKING_' + vehicleLicense, function (err, collection) {
                         collection.find().sort({"pos_date": -1}).limit(1).toArray(function(err, docs) {
-                            callback(null, {result: "nok", data: docs});
+                            callback(null, {result: "ok", data: {vehicle: docsShare, tracking: docs}});
                         });
                     });                    
                 }
