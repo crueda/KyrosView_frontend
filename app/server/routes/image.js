@@ -38,10 +38,10 @@ var dbMongoPort = properties.get('bbdd.mongo.port');
 
 router.get('/image/vehicle/:vehicleLicense', function(req, res)
 {
-    if (req.session.user == null){
-      res.redirect('/');
-    } 
-    else {
+    //if (req.session.user == null){
+    //  res.redirect('/');
+    //} 
+    //else {
       var vehicleLicense = req.params.vehicleLicense;
 
       log.info("GET: /image/vehicle/"+vehicleLicense);
@@ -75,15 +75,15 @@ router.get('/image/vehicle/:vehicleLicense', function(req, res)
           }
         }); 
       }   
-    }
+   // }
 });
 
 router.get('/icon/vehicle/:vehicleLicense', function(req, res)
 {
-    if (req.session.user == null){
-      res.redirect('/');
-    } 
-    else {
+    //if (req.session.user == null){
+    //  res.redirect('/');
+    //} 
+    //else {
       var vehicleLicense = req.params.vehicleLicense;
 
       log.info("GET: /icon/vehicle/"+vehicleLicense);
@@ -117,7 +117,7 @@ router.get('/icon/vehicle/:vehicleLicense', function(req, res)
           }
         }); 
       }   
-    }
+    //}
 });
 
 router.get('/icon/vehicles', function(req, res)

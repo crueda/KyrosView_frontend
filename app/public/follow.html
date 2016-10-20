@@ -143,19 +143,37 @@ table.tooltip-header-table td {
 
   function reloadVehicleData() {
       $.getJSON( '/api/watch/'+uuid, function( data ) {
-       $.each( data.data, function( key, val ) {
+       if (data.result=='nok') {
+        $('#myModalMsgLabel').text("Error al recuperar los datos del vehículo");
+        $('#myModalMsgLabel2').text("Por favor, informe del problema a logistica@kyroslbs.com");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsg').modal('show'); 
+        document.getElementById('attr-loading').style.display = 'none';
+      } else {
 
-         processDevice (val.tracking_id,val.vehicle_license,aliasVehicle,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
+        var trackingId = data.data.tracking[0].tracking_id;
+        var longitude = data.data.tracking[0].location.coordinates[0];
+        var latitude = data.data.tracking[0].location.coordinates[1];
+        var geocoding = data.data.tracking[0].geocoding;
+        var heading = data.data.tracking[0].heading;
+        var speed = data.data.tracking[0].speed;
+        var alarmActivated = data.data.tracking[0].alarm_activated;
+        var posDate = data.data.tracking[0].pos_date;
+        var deviceId = data.data.tracking[0].deviceId;
+
+        processDevice (trackingId,vehicleLicense,aliasVehicle,longitude,latitude,geocoding,speed,heading,alarmActivated, posDate, deviceId);
+
 
          // comprobar eventos    
-         if (val.events.length>0) {
-          for (var i=0; i<val.events.length; i++) {
-            addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+         if (data.data.tracking[0].events.length>0) {
+          for (var i=0; i<data.data.tracking[0].events.length; i++) {
+            addTrackingPointEvent(vehicleLicense,trackingId,data.data.tracking[0].events[i].event_type, data.data.tracking[0].events[i].event_date,latitude,longitude);
           }
          }
-          moveMap2Vehicle(val.vehicle_license);    
+
+          moveMap2Vehicle(vehicleLicense);    
           
-        });
+       }
       }); 
   }
 
@@ -171,6 +189,18 @@ table.tooltip-header-table td {
     );
   }
 
+function loadVehicleIconSync(vehicleLicense) {
+  // Leer el icono de un vehiculo en modo sincrono
+  $.ajax({ 
+    url: "/api/icon/vehicle/"+vehicleLicense, 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ 
+        iconBase64Vehicle = data;
+    } 
+  });
+}
+
 
   function initVehicleData() {
 
@@ -183,6 +213,7 @@ table.tooltip-header-table td {
         document.getElementById('attr-loading').style.display = 'none';
      } else {
         vehicleLicense=data.data.tracking[0].vehicle_license;
+        loadVehicleIconSync(vehicleLicense);
         var trackingId = data.data.tracking[0].tracking_id;
         var longitude = data.data.tracking[0].location.coordinates[0];
         var latitude = data.data.tracking[0].location.coordinates[1];
@@ -196,7 +227,7 @@ table.tooltip-header-table td {
         iconRealTimeVehicle = data.data.vehicle[0].icon_real_time;
         iconCoverVehicle = data.data.vehicle[0].icon_cover;
         iconAlarmVehicle = data.data.vehicle[0].icon_alarm;
-        
+
        processDevice (trackingId,vehicleLicense,aliasVehicle,longitude,latitude,geocoding,speed,heading,alarmActivated, posDate, deviceId);
 
        // comprobar eventos
@@ -212,13 +243,6 @@ table.tooltip-header-table td {
       }
     });
    
-  }
-
-  function loadVehicleIcon() {
-    // Leer el icono de un vehiculo en modo asincrono
-    $.getJSON( "/api/icon/vehicle/"+vehicleLicense, function( data ) {
-      iconBase64Vehicle = data; 
-    });
   }
 
   function addTrackingPointEvent(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
@@ -370,19 +394,6 @@ table.tooltip-header-table td {
     document.getElementById('tooltipSpeed').innerHTML = speedVehicle;
     document.getElementById('tooltipHeading').innerHTML = headingVehicle;
 
-    document.getElementById('tooltipDaySpeed').innerHTML = '---';
-    document.getElementById('tooltipWeekSpeed').innerHTML = '---';
-    document.getElementById('tooltipMonthSpeed').innerHTML = '---';
-    document.getElementById('tooltipDayDistance').innerHTML = '---';
-    document.getElementById('tooltipWeekDistance').innerHTML = '---';
-    document.getElementById('tooltipMonthDistance').innerHTML = '---';
-    document.getElementById('tooltipDayConsume').innerHTML = '---';
-    document.getElementById('tooltipWeekConsume').innerHTML = '---';
-    document.getElementById('tooltipMonthConsume').innerHTML = '---';
-    
-    document.getElementById('tooltipTotalDistance').innerHTML = '---';
-    document.getElementById('tooltipTotalSpeed').innerHTML = '---';
-    document.getElementById('tooltipTotalConsume').innerHTML = '---';
     
     if (geocodingVehicle=='' || geocodingVehicle==undefined) {
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
@@ -394,27 +405,6 @@ table.tooltip-header-table td {
       }); 
 
     }
-
-
-    $.getJSON( '/api/odometer/'+vehicleLicense, function( data ) {
-      $.each( data, function( key, val ) {
-        document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipWeekSpeed').innerHTML = val.weekSpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipMonthSpeed').innerHTML = val.monthSpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipDayDistance').innerHTML = val.dayDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipWeekDistance').innerHTML = val.weekDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipMonthDistance').innerHTML = val.monthDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume.toFixed(2).replace(".",",");
-        document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume.toFixed(2).replace(".",",");
-        document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume.toFixed(2).replace(".",",");
-        document.getElementById('tooltipTotalSpeed').innerHTML = val.totalSpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipTotalDistance').innerHTML = val.totalDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipTotalConsume').innerHTML = val.totalConsume.toFixed(2).replace(".",",");
-
-      });
-
-      $('#myModal').modal('show');
-    });
 
     
     // Cargar el icono del vehiculo
@@ -436,6 +426,8 @@ table.tooltip-header-table td {
         document.getElementById('imageVehicle').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
 
     });
+
+    $('#myModal').modal('show');
   }
 
 function pad(value) {
@@ -446,39 +438,6 @@ function pad(value) {
     }
 }
 
-function openTooltipTrackingPoint(vehicleLicense, trackingId) {
-    
-    var urlJson = "/api/tracking?vehicleLicense="+vehicleLicense+"&trackingId="+trackingId;
-    //alert(urlJson);
-      $.getJSON( urlJson, function( data ) {
-      $.each( data, function( key, val ) {
-
-      document.getElementById('tooltipTrackingTrackingId').innerHTML = trackingId;
-      var date = new Date(val.pos_date);
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      var hours = pad(date.getHours());
-      var minutes = pad(date.getMinutes());
-      var seconds = pad(date.getSeconds());
-
-      document.getElementById('tooltipTrackingDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
-      document.getElementById('tooltipTrackingLatitude').innerHTML = val.location.coordinates[1];
-      document.getElementById('tooltipTrackingLongitude').innerHTML = val.location.coordinates[0];
-      if (val.speed == undefined)
-        document.getElementById('tooltipTrackingSpeed').innerHTML = '';
-      else
-        document.getElementById('tooltipTrackingSpeed').innerHTML = val.speed;
-      document.getElementById('tooltipTrackingAltitude').innerHTML = val.altitude;
-      document.getElementById('tooltipTrackingHeading').innerHTML = val.heading;
-
-      });
-
-      $('#tooltipTrackingHeader').css('background-color', '#66c2ff');
-
-      $('#myModalTooltipTrackingPoint').modal('show');
-    });
-  }
 </script>
 
 </head>
@@ -530,7 +489,6 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
 
         <ul class="nav nav-tabs" id="tabContent">
           <li class="active"><a href="#details" data-toggle="tab">Detalles</a></li>
-          <li><a href="#odometer" data-toggle="tab">Odometro</a></li>
           <li><a href="#photo" data-toggle="tab">Foto</a></li>
         </ul>
   
@@ -565,55 +523,7 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
           </table>
         </div>
         
-        <div id="odometer" class="tab-pane fade">
-        <br>
-        <table class="bordered">
-          <thead>
-          <tr>
-                <th class="numeric" width="20%">Día</th>
-                <th class="numeric" width="20%">Semana</th>
-                <th class="numeric" width="20%">Mes</th>
-                <th width="40%"></th>
-          <tr>
-          </thead>
-            <tbody>
-              <tr>
-                <td id="tooltipDayDistance">---</td>
-                <td id="tooltipWeekDistance">---</td>
-                <td id="tooltipMonthDistance">---</td>
-                <td><font color="red">Distancia</font> (Km)</td>
-              </tr>
-              <tr>
-                <td id="tooltipDaySpeed">---</td>
-                <td id="tooltipWeekSpeed">---</td>
-                <td id="tooltipMonthSpeed">---</td>
-                <td><font color="red">Velocidad media</font> (km/h)</td>
-              </tr>
-              <tr>
-                <td id="tooltipDayConsume">---</td>
-                <td id="tooltipWeekConsume">---</td>
-                <td id="tooltipMonthConsume">---</td>
-                <td><font color="red">Consumo</font> (L)</td>
-              </tr>
-            </tbody>
-          </table>
-          <br>
-          <table class="tooltip-details-table" border="0">
-            <tr>
-              <td width="20%"><b>Distancia&nbsp;</b></td>
-              <td width="80%"><font color="black" id="tooltipTotalDistance">---</font></td>
-            </tr>
-            <tr>
-              <td><b>Velocidad media&nbsp;</b></td>
-              <td><font color="black" id="tooltipTotalSpeed">---</font></td>
-            </tr>
-            <tr>
-              <td><b>Consumo&nbsp;</b></td>
-              <td><font color="black" id="tooltipTotalConsume">---</font></td>
-            </tr>
-          </table>
-
-        </div> 
+       
 
 
          <div id="photo" class="tab-pane fade">
@@ -1133,10 +1043,7 @@ var displayTooltipInfo = function(evt) {
     return feature;
   });
   if (feature) {
-    if (feature.get('elementId')=='trackingPoint') {
-      openTooltipTrackingPoint(feature.get('vehicleLicense'), feature.get('id'));
-    }
-    else if (feature.get('elementId')=='device') {
+    if (feature.get('elementId')=='device') {
     //if (isMobile()) {
       openTooltip(feature.get('id'));
     //} else {
