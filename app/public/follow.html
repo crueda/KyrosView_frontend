@@ -143,17 +143,17 @@ table.tooltip-header-table td {
 
   function reloadVehicleData() {
       $.getJSON( '/api/watch/'+uuid, function( data ) {
-       $.each( data, function( key, val ) {
+       $.each( data.data, function( key, val ) {
 
-         processDevice (val.data.tracking_id,val.data.vehicle_license,aliasVehicle,val.data.location.coordinates[0],val.data.location.coordinates[1],val.data.geocoding,val.data.speed,val.data.heading,val.data.alarm_activated, val.data.pos_date, val.data.deviceId);
+         processDevice (val.tracking_id,val.vehicle_license,aliasVehicle,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.deviceId);
 
          // comprobar eventos    
-         if (val.data.events.length>0) {
-          for (var i=0; i<val.data.events.length; i++) {
-            addTrackingPointEvent(val.data.vehicle_license,val.data.tracking_id,val.data.events[i].event_type, val.data.events[i].event_date,val.data.location.coordinates[1],val.data.location.coordinates[0]);
+         if (val.events.length>0) {
+          for (var i=0; i<val.events.length; i++) {
+            addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
           }
          }
-          moveMap2Vehicle(val.data.vehicle_license);    
+          moveMap2Vehicle(val.vehicle_license);    
           
         });
       }); 
@@ -201,10 +201,25 @@ table.tooltip-header-table td {
     });
   }
 
+  function loadVehicleIconSync() {
+    // Leer el icono de un vehiculo en modo sincrono
+    $.ajax({ 
+      url: "/api/icon/vehicle/"+vehicleLicense, 
+      dataType: 'json', 
+      async: false, 
+      success: function(data){ 
+        iconBase64Vehicle = data;
+      } 
+    });
+  }
+
   function initVehicleData() {
 
    $.getJSON( '/api/watch/'+uuid, function( data ) {
      $.each( data.data, function( key, val ) {
+        vehicleLicense=val.vehicle_license;
+        loadVehicleDataSync();
+        loadVehicleIconSync();
 
        processDevice (val.tracking_id,val.vehicle_license,aliasVehicle,val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
@@ -230,6 +245,30 @@ table.tooltip-header-table td {
     });
   }
 
+  function addTrackingPointEvent(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        vehicleLicense: vehicleLicense,
+        elementId: 'trackingPoint',
+        name: "Evento: " + getEventDescription(eventType)
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.9,
+         rotation: 0,
+         src: getEventIconSmall(eventType)
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vehiclesRealTimeSource.addFeature(iconFeature); 
+  }
+
 </script>
 
 <script>
@@ -251,9 +290,7 @@ table.tooltip-header-table td {
     document.getElementById('attr-loading').style.display = 'block';
 
     uuid=getUUID(); 
-    loadVehicleDataSync();
     initVehicleData();
-    loadVehicleIcon();
 
     $('#tooltipHeader').css('background-color', '#F7BE81');
   });  //ready
@@ -373,8 +410,8 @@ table.tooltip-header-table td {
     
     if (geocodingVehicle=='' || geocodingVehicle==undefined) {
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
-      lat: latitudeDict[vehicleLicense],
-      lon: longitudeDict[vehicleLicense],
+      lat: latitudeVehicle,
+      lon: longitudeVehicle,
       format: 'json',
       }, function (result) {
         document.getElementById('tooltipLocation').innerHTML = result.display_name;
@@ -682,7 +719,6 @@ var style =
     new ol.style.Style(
       { 
 
-
       image: new ol.style.RegularShape(
         { radius: 7,
           radius2: 7,
@@ -704,62 +740,33 @@ var style =
   ];
   style[1].getImage().getAnchor()[1] += 10;
 
-var style2 = 
-  [ new ol.style.Style(
-      { image: new ol.style.Shadow(
-        { radius: 6,
-        }),
-        stroke: new ol.style.Stroke(
-        { color: [0,0,0,0.3],
-          width: 1
-        }),
-        fill: new ol.style.Fill(
-          { color: [0,0,0,0.3]
-          }),
-        zIndex: -1
-      }),
-    new ol.style.Style(
-      { 
-
-
-      image: new ol.style.RegularShape(
-        { radius: 8,
-          radius2: 8,
-          points: 12,
-          fill: new ol.style.Fill({ color: '#ff8000' })
-        })
-      
-      })
-  ];
-  style2[1].getImage().getAnchor()[1] += 10;
-
-  
-
   var vehiclesRealTimeSource = new ol.source.Vector({
    features: []
   });
   var vehiclesRealTimeLayer = new ol.layer.Vector({
-   title: vehicleLicense,   
+   title: 'Última posición',   
    style: style,
    visible: true,
    source: vehiclesRealTimeSource
   });
 
+  var vehiclesPointSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesPointLayer = new ol.layer.Vector({
+   title: 'Puntos de tracking',   
+   style: style,
+   visible: true,
+   source: vehiclesPointSource
+  });
 
   var vehiclesLineSource = new ol.source.Vector({
    features: []
   });
-  var lineStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-        color: '#66c2ff',        
-        width: 4
-    })
-  });
   var vehiclesLineLayer = new ol.layer.Vector({
-    title: '',
+    title: 'Línea de tracking',
     visible: true,
     style: style,
-    //style: lineStyle,
     source: vehiclesLineSource
   });
  
@@ -785,7 +792,7 @@ var style2 =
 
     function moveMap2Vehicle(vehicleLicense) {
         var new_view = new ol.View({
-          center: ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'),
+          center: ol.proj.transform([longitudeVehicle, latitudeVehicle], 'EPSG:4326', 'EPSG:3857'),
           zoom: map.getView().getZoom(),
           maxZoom:22,
           minZoom:3
@@ -875,6 +882,7 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
       var coords = [];
       if (lat1!=0) {
 
+      coords.push([lon1, lat1]);
 
      }
      if (lat2!=0) {
@@ -886,8 +894,6 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
 
       var lineStyle = new ol.style.Style({
       stroke: new ol.style.Stroke({
-          //color: '#'+Math.floor(Math.random()*16777215).toString(16),
-          //color: '#0000ff',
           color: '#66c2ff',        
           width: 3
         })
@@ -899,7 +905,7 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
   var featureLine = new ol.Feature({
     geometry: lineString,
     style: lineStyle,
-    name: "<%= __('tracking_line') %>"
+    name: "Línea de tracking"
   });
   vehiclesLineSource.addFeature(featureLine);
 
@@ -922,58 +928,6 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
  
   }
 
-
-  function addLinesTracking(vehicleLicense, vtracking, vlat, vlon) {
-
-    // pintar los puntos
-    var coords = [];
-    for (var i=0; i<vtracking.length; i++) {
-      if (vlat[i]!=0) {
-        coords.push([vlon[i], vlat[i]]);
-
-        var iconFeature = new ol.Feature({
-          geometry: new ol.geom.Point(ol.proj.transform([vlon[i], vlat[i]], 'EPSG:4326', 'EPSG:3857')),
-          id: vtracking[i],
-          elementId: 'trackingPoint',
-          vehicleLicense: vehicleLicense,
-          name: "<%= __('tracking_point') %>"
-        });
-        iconFeature.setStyle(new ol.style.Style({
-          image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-           scale: 0.8,
-           src: './img/points/beacon_ball_blue.gif'
-         }))
-        }));
-        vehiclesLineSource.addFeature(iconFeature); 
-      }
-    }
-    
-    // Crear la linea
-    var lineString = new ol.geom.LineString(coords);
-    // transform to EPSG:3857
-    lineString.transform('EPSG:4326', 'EPSG:3857');
-
-    var lineStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        //color: '#0000ff',
-        color: '#66c2ff',        
-        width: 4
-      })
-    });
-    var featureLine = new ol.Feature({
-      geometry: lineString,
-      style: lineStyle,
-      name: "<%= __('tracking_line') %>"
-    });
-    vehiclesLineSource.addFeature(featureLine);
-
-    // centrar el mapa
-    map.getView().fit(vehiclesLineSource.getExtent(), map.getSize());
-    if(map.getView().getZoom()>20){
-      map.getView().setZoom(20);
-    }
-  }
 
  function centerMap(lon, lat) {
     map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
@@ -1015,7 +969,7 @@ var osm = new ol.layer.Tile({
 
 var kyrosGroup = new ol.layer.Group({
     'title': 'Tracking',
-    layers: [vehiclesLineLayer, vehiclesRealTimeLayer]
+    layers: [vehiclesLineLayer, vehiclesPointLayer, vehiclesRealTimeLayer]
   });
 
 var map = new ol.Map({

@@ -99,7 +99,8 @@
 	"email": "e-mail",
 	"send": "Send",
 	"share_ok": "e-mail sent successfully",
-	"share_error": "Error in sending e-mail. Try again"
+	"share_error": "Error in sending e-mail. Try again",
+	"email_address_nok": "e-mail address incorrect"
 
 
 

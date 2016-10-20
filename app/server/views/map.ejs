@@ -190,7 +190,13 @@ table.tooltip-header-table td {
         (navigator.userAgent.match(/BlackBerry/))
     );
 }
-
+function validarEmail( email ) {
+      expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      if ( !expr.test(email) )
+        return false;
+      else
+        return true;
+  }
 </script>
 
 
@@ -281,6 +287,11 @@ $("#vehiclePhoto").fileinput({
 
   $('#okButtonShare').click(function(){
     var email = $('#emailShare').val();
+    if (validarEmail(email)==false) {
+        $('#myModalMsgLabel').text("<%= __('email_address_nok') %>");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsg').modal('show');  
+    } else {
       $.getJSON( '/api/share/vehicle/'+tooltipSelectedVehicleLicense+'?email='+email, function( data ) {
           if (data=='ok') {
             $('#myModalMsgLabel').text("<%= __('share_ok') %>");
@@ -290,6 +301,8 @@ $("#vehiclePhoto").fileinput({
           $('#myModalMsgLabel').css({ "color" : 'green' });
           $('#myModalMsg').modal('show');
       });
+    }
+
   });
 
   if (isMobile()) {
