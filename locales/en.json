@@ -100,7 +100,9 @@
 	"send": "Send",
 	"share_ok": "e-mail sent successfully",
 	"share_error": "Error in sending e-mail. Try again",
-	"email_address_nok": "e-mail address incorrect"
+	"email_address_nok": "e-mail address incorrect",
+	"recent_pos": "Recent positions",
+	"recent": "last"
 
 
 

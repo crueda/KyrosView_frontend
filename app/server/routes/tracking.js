@@ -163,6 +163,75 @@ router.get('/tracking1/vehicle/:vehicleLicense', function(req, res)
 });
 
 /**
+ * @api {get} /api/tracking1 Últimas posiciones de los vehiculos (ordenadas por fecha)
+ * @apiName GetTracking1 Obtener información de último tracking de todos los vehiculos 
+ * @apiGroup Tracking
+ * @apiDescription Datos del último tracking para todos los vehiculos
+ * @apiVersion 1.0.2
+ * @apiSampleRequest http://view.kyroslbs.com/api/tracking1
+ *
+ * @apiSuccess {json} trackingData Datos de último tracking
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *     [{
+ *      "_id" : ObjectId("57f3fd5efbb7137a40b5fa60"),
+ *      "pos_date" : NumberLong(1475600701000),
+ *      "battery" : 88,
+ *      "altitude" : 726,
+ *      "heading" : 306,
+ *      "location" : {
+ *        "type" : "Point",
+ *        "coordinates" : [ 
+ *           -4.713148, 
+ *           41.655135
+ *        ]
+ *      },
+ *      "tracking_id" : 35815375,
+ *      "vehicle_license" : "1615-FDW",
+ *      "geocoding" : "",
+ *      "events" : [],
+ *      "device_id" : 13
+ *     }]
+ *     }
+ */
+router.get('/tracking1', function(req, res)
+{
+    if (req.session.user == null){
+      res.redirect('/');
+    } 
+    else {
+        TrackingModel.getTracking1(function(error, data)
+        {
+          if (data == null)
+          {
+            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+          }
+          else
+          {
+            //si existe enviamos el json
+            if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json(data)
+            }
+            else if (typeof data == 'undefined' || data.length == 0)
+            {
+              res.status(200).json([])
+            }
+            //en otro caso mostramos un error
+            else
+            {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+          }
+        });    
+
+    }
+});
+
+
+/**
  * @api {get} /api/tracking1/vehicles Últimas posiciones de los vehiculos que se indican por parámetro
  * @apiName GetTracking1Vehicles Obtener información de último tracking de todos los vehiculos indicados
  * @apiGroup Tracking

@@ -209,6 +209,11 @@ function validarEmail( email ) {
   //$(":file").filestyle('buttonText', 'Imagen');
   //$(":file").filestyle('size', 'sm');
 
+ $('.ckbox label').on('click', function () {
+      $(this).parents('tr').toggleClass('selected');
+    });
+
+
 $("#vehiclePhoto").fileinput({
     uploadAsync: true,
     maxFileCount: 1,
@@ -281,6 +286,13 @@ $("#vehiclePhoto").fileinput({
 
   $('#okButtonFind').click(function(){
     var vehicleLicenseFind = $('#licenseFind').val();
+    getVehicleIconSync(vehicleLicenseFind);
+    showTrackingFind(vehicleLicenseFind);
+  });
+
+  $('#okButtonRecentPos').click(function(){
+    //var vehicleLicenseFind = document.getElementById('selectRecent').value;
+    var vehicleLicenseFind = document.recentPosForm.selectRecent.value;
     getVehicleIconSync(vehicleLicenseFind);
     showTrackingFind(vehicleLicenseFind);
   });
@@ -960,6 +972,52 @@ function clearMapSelected() {
     }
   }
 
+  function menuRecentPos() {
+    //loadMonitorLoaded=true; // TEMPORAL
+    $('#myModalMenuKyros').modal('hide');
+    if (loadMonitorLoaded) {
+      //$('#myModalRecentPos').modal('show');     
+
+      // Llamada a la api
+      $.getJSON( '/api/tracking1', function( data ) {
+        var i=1;
+        $.each( data, function( key, val ) {
+          // comprobar si monitorizo el vehiculo
+          if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1 && i<10) {
+
+            var icon = "";
+            if (iconBase64Dict[val.vehicle_icense]!=null && iconBase64Dict[val.vehicle_license]!='') {
+              icon = "<img src='data:image/png;base64," + iconBase64Dict[val.vehicle_license] + "'/>";      
+            } else {
+              icon = "<img src='./images/" + iconRealTimeDict[val.vehicle_license] + "'/>";      
+            }
+
+            var d = new Date(val.pos_date);
+            var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+
+            var check = "";
+            if (i==1)
+              check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "' checked>";
+            else
+              check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "'>";
+            $('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td>" + datestring + "</td>");
+
+            $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
+          }
+          i++; 
+        });
+
+        $('#myModalRecentPos').modal('show'); 
+      });
+    } else {
+       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+       $('#myModalMsgLabel').css({ "color" : 'red' });
+       $('#myModalMsgLabel2').text("<%= __('wait') %>");
+       $('#myModalMsg').modal('show');
+    }
+  }
+
+
   function menuDevices() {
     $('#myModalMenuKyros').modal('hide');
     if (loadMonitorLoaded) {
@@ -1301,7 +1359,7 @@ function openTooltipMapPoint(latitude, longitude) {
         <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('config') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:menuPois();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
+        <button onclick="javascript:menuRecentPos();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_recent.png"/><br><%= __('recent') %></button>
       </td>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
@@ -1309,7 +1367,7 @@ function openTooltipMapPoint(latitude, longitude) {
         <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('logout') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:menuAbout();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_about.png"/><br><%= __('about') %></button>
+        <button onclick="javascript:menuPois();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
       </td>
     </tr>
     </table>
@@ -1441,6 +1499,57 @@ function openTooltipMapPoint(latitude, longitude) {
       </div>
 
       <div id="okButtonFind" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary"><%= __('consult') %></button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="myModalRecentPos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('recent_pos') %></h4>
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+      <div class="container">
+          <div class="row">
+              <div class="col-sm-6 column">
+      <form id="recentPosForm" name="recentPosForm">
+      <table class="table table-bordered table-hover" id="tab_logic">
+        <thead>
+          <tr >
+            <th class="text-center">
+            </th>
+            <th class="text-center">
+              <%= __('icon') %>
+            </th>
+            <th class="text-center">
+              <%= __('license') %>
+            </th>
+            <th class="text-center">
+              <%= __('date') %>
+            </th>
+            
+          </tr>
+        </thead>
+        <tbody>
+            <tr id='addr1'></tr>
+        </tbody>
+      </table>
+      </form>
+    </div>
+              
+          </div>
+      </div>
+
+      <div id="okButtonRecentPos" class="modal-footer" data-dismiss="modal" aria-hidden="true">
         <button class="form-control btn btn-primary"><%= __('consult') %></button>
       </div>
     </div> <!-- /.modal-body -->
@@ -2253,7 +2362,7 @@ function eachRecursive(obj)
             }
 
             if (k=='vehicle_license') {
-              //console.log("k:" + k + " - obj[k]:" + obj[k]);
+              console.log("k:" + k + " - obj[k]:" + obj[k]);
               monitorVehicleLicense.push(obj[k]);
               vehicleLicenseToSelect = obj[k];
               if (encontradoChecked) {
@@ -2281,19 +2390,22 @@ function loadMonitor() {
 
 
     jsonString = JSON.stringify(data[0].monitor)
+    //jsonString = JSON.stringify(data)
 
     jsonObject = JSON.parse(jsonString);
     // Recorrer el json para quedarnos con los datos de los vehiculos que monitoriza el usuario
     eachRecursive(jsonObject);
 
-      //console.log("**>" + selectedVehicles);
       //initSelectedVehicles();
 
     // Rellenar el control de la ventana de historico
     $('#licenseHist').val('<%=vehicleLicense%>');
     $('#licenseFind').val('<%=vehicleLicense%>');
+
+
     var strDevices = '[';
-    var ndata = monitorVehicleLicense.length;
+   /* var ndata = monitorVehicleLicense.length;
+
     for (i=0; i<ndata; i++) {
       monitorDevices[monitorVehicleLicense[i]] = deviceIdDict[monitorVehicleLicense[i]];
       if (i == ndata-1) {
@@ -2301,8 +2413,10 @@ function loadMonitor() {
       } else {
         strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i]+ '"},' ;
       }
-    }    
+    }
+    */    
     strDevices = strDevices + ']';
+
     var jsonDevices = JSON.parse(strDevices);
     $('#licenseHist').typeahead({source:jsonDevices, 
         autoSelect: true
@@ -2312,12 +2426,17 @@ function loadMonitor() {
     }); 
 
     // construir el arbol     
+    //jsonString = jsonString.split("name").join("text");
+    //jsonString = jsonString.split("children").join("nodes");
+    
     jsonString = jsonString.split("fleet_name").join("text");
     jsonString = jsonString.split("vehicle_license").join("text");
     jsonString = jsonString.split("childs").join("nodes");
     jsonString = jsonString.split("ndevices").join("tags");
     jsonString = jsonString.split('"false"').join('false');
     jsonString = jsonString.split('"true"').join('true');
+
+    //console.log(jsonString);
     jsonObject = JSON.parse(jsonString);
     $('#monitorDiv').height($(window).height()-200);
     var $checkableTree = $('#treeview-checkable').treeview({
@@ -2644,8 +2763,8 @@ function addSelected(vehicleLicense, alias, lon, lat, speed, heading, vehicleSta
     // centrar el mapa en la capa de vehiculos seleccionados
     //if (mapmode==2) {
       map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
-      if(map.getView().getZoom()>20){
-          map.getView().setZoom(20);
+      if(map.getView().getZoom()>16){
+          map.getView().setZoom(16);
       }      
     //}
   }

@@ -11,7 +11,8 @@ Todos los cambios importantes realizados en este proyecto será documentado en e
 - Eventos de tracking
 	- Se muestran los posibles eventos, tanto en tiempo real como en consultas de histórico.
 - Opción de búsqueda de dispositivo (en menú principal).
-
+- Compartir ubicación de un vehículo
+	- Se envia link por correo electrónico que permite el seguimiento del vehículo durante las siguientes 24 horas.
 ### Mejoras y funcionalidades menores
 - Eliminada precarga de iconos para evitar ralentizar las poticiones de usuario.
 

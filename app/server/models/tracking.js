@@ -53,6 +53,15 @@ trackingModel.getTracking1FromUser = function(username,callback)
   });
 }
 
+trackingModel.getTracking1 = function(callback)
+{
+    mongoose.connection.db.collection('TRACKING1', function (err, collection) {
+        collection.find().sort({'pos_date': -1}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });
+}
+
 trackingModel.getTracking1FromVehicle = function(vehicleLicense,callback)
 {
   db.open(function(err, db) {

@@ -99,6 +99,11 @@
 	"share_ok": "Correo electrónico enviado correctamente",
 	"share_error": "Error en el envio. Inténtelo de nuevo",
 	"share_nok": "share_nok",
-	"email_address_nok": "La dirección de correo es incorrecta"
+	"email_address_nok": "La dirección de correo es incorrecta",
+	"recent_pos": "Posiciones recientes",
+	"recent": "Últimas"
+
+
+
 
 }
