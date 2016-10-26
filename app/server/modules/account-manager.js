@@ -259,6 +259,7 @@ exports.updateUserDevice = function(newData, callback)
         }
     });*/     
   mongoose.connection.db.collection('USER', function (err, collection) { 
+    //debugger;
       collection.update({ _id: newData.username }, { $set: { vehicle_license: newData.vehicleLicense }}, function (err, doc) {
         // doc contains the modified document
         if(err) {

@@ -191,148 +191,7 @@ function showSelectedVehicles() {
     addVehicleFindToMap(vehicleLicense);
 }
 
- function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
-    //clearMapHistoric();
-    //clearMapSelected();
-    clearMap();
-    mapmode = 1;
 
-    var latHist = [];
-    var lonHist = [];
-    var posDateHist = [];
-    var trackingIdHist = [];
-    var eventTrackingIdHist = [];
-    var eventLatHist = [];
-    var eventLonHist = [];
-    var eventTypeHist = [];
-    var eventDateHist = [];
-    var minLon=0;
-    var minLat=0;
-    var maxLon=0;
-    var maxLat=0;
-    var lon_anterior=0;
-    var lat_anterior=0;
-    var initPos=true;
-    var index = 0;
-
-     /*$.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
-          iconBase64Dict[val.vehicle_license] = data;      
-      });*/
-    //if (iconBase64Dict[vehicle_license]==undefined)
-
-    var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
-    //alert(urlJson);
-    document.getElementById('attr-loading').style.display = 'block';
-      $.getJSON( urlJson, function( data ) {
-        if (data.status == 'nok') {
-          $('#myModalMsgLabel').text("<%= __('too_many_tracking') %>");
-          $('#myModalMsgLabel').css({ "color" : 'red' });
-          $('#myModalMsgLabel2').text("<%= __('narrow_search') %>");
-          $('#myModalMsg').modal('show');
-        }
-        else if (data.result.length == 0) {
-          $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
-          $('#myModalMsgLabel').css({ "color" : 'red' });
-          $('#myModalMsgLabel2').text("<%= __('check_search') %>");
-          $('#myModalMsg').modal('show');
-        } 
-        else {
-          $.each( data.result, function( key, val ) {
-            var lat = val.location.coordinates[1];
-            var lon = val.location.coordinates[0];
-            var trackingId = val.tracking_id;
-            var posDate = val.pos_date;
-            var vehicleLicense = val.vehicle_license;
-            if (initPos==true) {
-              minLon=lon;
-              minLat=lat;
-              maxLon=lon;
-              maxLat=lat;
-              lon_anterior=lon;
-              lat_anterior=lat;
-              initPos=false;
-            } else {
-              if (lat<minLat) 
-                minLat=lat;
-              if (lat>maxLat) 
-                maxLat=lat;
-              if (lon<minLon) 
-                minLon=lon;
-              if (lon>maxLon) 
-                maxLon=lon;              
-            }
-            
-            trackingIdHist.push(trackingId);
-            latHist.push(lat);
-            lonHist.push(lon);
-            posDateHist.push(posDate);
-
-            // comprobar eventos
-            if (val.events.length>0) {
-              for (var i=0; i<val.events.length; i++) {
-                eventTrackingIdHist.push(trackingId);
-                eventLatHist.push(lat);
-                eventLonHist.push(lon);
-                eventTypeHist.push(val.events[i].event_type);
-                eventDateHist.push(val.events[i].event_date);
-
-              }
-            }
-
-          if (lat_anterior!=lat || lon_anterior!=lon) {
-            addTrackingHistLine(lat_anterior, lon_anterior, lat, lon);
-          }
-          lon_anterior=lon;
-          lat_anterior=lat;          
-          index++;
-        });
-      } // else
-      document.getElementById('attr-loading').style.display = 'none';
-
-        if (index>1) {
-          // Hay mas de 1 dispositivo -> centrar
-          if (minLon != 0 && minLat != 0 && maxLon != 0 && maxLat != 0){
-           var bottomLeft = ol.proj.transform([minLon, minLat], 'EPSG:4326', 'EPSG:3857');
-           var topRight = ol.proj.transform([maxLon, maxLat], 'EPSG:4326', 'EPSG:3857');
-           extent = new ol.extent.boundingExtent([bottomLeft,topRight]);
-           map.getView().fit(extent, map.getSize());
-          }          
-        } else {
-          // solo 1 dispositivo, centrar en su posicion
-          var new_view = new ol.View({
-            center: ol.proj.transform(maxLon, maxLat, 'EPSG:4326', 'EPSG:3857'),
-            zoom: map.getView().getZoom(),
-            maxZoom:22,
-            minZoom:3
-          });
-          map.setView(new_view);
-        }
-
-        // pintar historico
-        for (i=0; i<latHist.length;i++)
-        {
-          //setTimeout(function() {
-          if (i == 0) {
-            addTrackingHistPointStart(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);            
-          } else if (i == latHist.length -1 ) {
-            addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i], posDateHist[i]);            
-          } else {
-            addTrackingHistPoint(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
-            //addTrackingHistPointEffect(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
-            
-          }
-          //}, 100*i);
-        }
-
-        // pintar los eventos
-        for (i=0; i<eventLatHist.length;i++)
-        {
-          addTrackingHistPointEvent(vehicleLicenseHist,eventTrackingIdHist[i],eventTypeHist[i], eventDateHist[i], eventLatHist[i], eventLonHist[i]);  
-        }
-
-
-      });      
-  }
 
   function addActualPosition(lat, lon, accuracy) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
@@ -341,7 +200,8 @@ function showSelectedVehicles() {
         geometry: geo_point,
         id: 0,
         elementId: 'actualPosition',
-        name: "<%= __('actual_position') %>"
+        //name: "<%= __('actual_position') %>"
+        name: "Posición"
       });
 
       iconStyle = [new ol.style.Style({
@@ -567,7 +427,7 @@ function showSelectedVehicles() {
       // create the feature
       var featureLine = new ol.Feature({
         geometry: lineString,
-        name: "<%= __('tracking_line') %>"
+        name: "Tracking"
       });
       vehiclesHistLineSource.addFeature(featureLine);
   }
@@ -576,7 +436,13 @@ function showSelectedVehicles() {
     $('#myModal').modal('hide');
     $('#myModalShare').modal('show');
   }
-
+  
+  function openHist() {
+    $('#myModal').modal('hide');
+    $('#licenseHist').val(tooltipSelectedVehicleLicense);
+    $('#myModalCalendar').modal('show');
+  }
+  
   function showPois(username) {
       vectorPoiSource.clear();
 
@@ -627,40 +493,10 @@ function showSelectedVehicles() {
 
 
 // --------------------------------------------------------------
-// Menu
+// 
 // --------------------------------------------------------------
 
-function menuHistoric() {
-    $('#myModalMenuKyros').modal('hide');
-    if (loadMonitorLoaded) {
-      $('#myModalCalendar').modal('show');      
-    } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
-    }
-  }
-
-  function menuFind() {
-    $('#myModalMenuKyros').modal('hide');
-    if (loadMonitorLoaded) {
-      $('#myModalFind').modal('show');      
-    } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
-      //$('#myModalFind').modal('show');      
-    }
-  }
-
-  function menuRecentPos() {
-    //loadMonitorLoaded=true; // TEMPORAL
-    $('#myModalMenuKyros').modal('hide');
-    if (loadMonitorLoaded) {
-      //$('#myModalRecentPos').modal('show');     
-
+  function showRecentPos() {
       // Llamada a la api
       $.getJSON( '/api/tracking1', function( data ) {
         var i=1;
@@ -692,25 +528,6 @@ function menuHistoric() {
 
         $('#myModalRecentPos').modal('show'); 
       });
-    } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
-    }
-  }
-
-
-  function menuDevices() {
-    $('#myModalMenuKyros').modal('hide');
-    if (loadMonitorLoaded) {
-      $('#myModalMonitor').modal('show');
-    } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');      
-    }
   }
 
   function openMenuKyros() {
@@ -723,7 +540,6 @@ function menuHistoric() {
     //clearMapSelected();
     clearMap();
     mapmode = 0;
-    //centerMap2Vehicle('<%=vehicleLicense%>');
     initDefaultVehicleData();
   }
 
