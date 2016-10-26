@@ -461,7 +461,7 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
           else
           {
             //si existe enviamos el json
-            if (typeof data !== 'undefined' && data.length > 999)
+            if (typeof data !== 'undefined' && data.length > 6999)
             {
               res.status(200).json({"status": "nok", "result": data});
             }

@@ -236,7 +236,8 @@ function showSelectedVehicles() {
         id: trackingId,
         elementId: 'trackingPoint',
         vehicleLicense: vehicleLicense,
-        name: "<%= __('tracking_point') %>"
+        //name: "<%= __('tracking_point') %>"
+        name: "Tracking"
       });
 
       iconStyle = [new ol.style.Style({
@@ -334,7 +335,8 @@ function showSelectedVehicles() {
         id: trackingId,
         elementId: 'trackingPoint',
         vehicleLicense: vehicleLicense,
-        name: "<%= __('init_tracking_point') %>"
+        //name: "<%= __('init_tracking_point') %>"
+        name: "Punto de tracking inicial>"
       });
 
       iconStyle = [new ol.style.Style({
@@ -369,7 +371,8 @@ function showSelectedVehicles() {
         id: trackingId,
         elementId: 'trackingPoint',
         vehicleLicense: vehicleLicense,
-        name: "<%= __('end_tracking_point') %>"
+        //name: "<%= __('end_tracking_point') %>"
+        name: "Punto de tracking final"
       });
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
@@ -389,7 +392,8 @@ function showSelectedVehicles() {
         id: trackingId,
         elementId: 'trackingPoint',
         vehicleLicense: vehicleLicense,
-        name: "<%= __('end_tracking_point') %>"
+        //name: "<%= __('end_tracking_point') %>"
+        name: "Punto de tracking final"
       });
       var image_src = getVehicleIcon(vehicleLicense, 0, posDate); 
       iconStyleVehicle = [new ol.style.Style({
@@ -606,14 +610,14 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
       var seconds = pad(date.getSeconds());
 
       document.getElementById('tooltipTrackingDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
-      document.getElementById('tooltipTrackingLatitude').innerHTML = val.location.coordinates[1];
-      document.getElementById('tooltipTrackingLongitude').innerHTML = val.location.coordinates[0];
+      document.getElementById('tooltipTrackingLatitude').innerHTML = val.location.coordinates[1].toFixed(4);
+      document.getElementById('tooltipTrackingLongitude').innerHTML = val.location.coordinates[0].toFixed(4);
       if (val.speed == undefined)
         document.getElementById('tooltipTrackingSpeed').innerHTML = '';
       else
-        document.getElementById('tooltipTrackingSpeed').innerHTML = val.speed;
-      document.getElementById('tooltipTrackingAltitude').innerHTML = val.altitude;
-      document.getElementById('tooltipTrackingHeading').innerHTML = val.heading;
+        document.getElementById('tooltipTrackingSpeed').innerHTML = val.speed.toFixed(1);
+      document.getElementById('tooltipTrackingAltitude').innerHTML = val.altitude.toFixed(1);
+      document.getElementById('tooltipTrackingHeading').innerHTML = val.heading.toFixed(1);
 
       });
 
