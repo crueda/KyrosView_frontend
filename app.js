@@ -5,8 +5,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var cookieParser = require('cookie-parser');
-//var MongoStore = require('connect-mongo')(session);
-var MySQLStore = require('express-mysql-session')(session);
+var MongoDBStore = require('connect-mongodb-session')(session);
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
@@ -67,53 +66,34 @@ app.all('/*', function(req, res, next) {
 });
 
 
-// build mysql database connection url //
-var dbMysqlName = properties.get('bbdd.mysql.name');
-var dbMysqlHost = properties.get('bbdd.mysql.ip');
-var dbMysqlPort = properties.get('bbdd.mysql.port');
-var dbMysqlUser = properties.get('bbdd.mysql.user');
-var dbMysqlPass = properties.get('bbdd.mysql.passwd');
+var dbMongoName = properties.get('bbdd.mongo.name');
+var dbMongoHost = properties.get('bbdd.mongo.ip');
+var dbMongoPort = properties.get('bbdd.mongo.port');
 
-var options = {
-    host: dbMysqlHost,
-    user: dbMysqlUser,
-    password: dbMysqlPass,
-    database: dbMysqlName,
-};
+ var store = new MongoDBStore(
+      {
+        uri: 'mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName,
+        collection: 'USER_SESSIONS'
+      });
  
-var sessionStore = new MySQLStore(options);
-
-app.use(session({
-	key: 'session_kyrosview_cookie',
-	secret: 'faeb4453e5d14fe6f6d04637f78077c76c73d1b4',
-    proxy: true,
-	store: sessionStore,
-    checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds. 
-	expiration: 86400000,// The maximum age of a valid session; milliseconds. 
-	resave: true,
-	saveUninitialized: true
-}));
-
-
-/*
-var dbHost = process.env.DB_HOST || 'localhost'
-var dbPort = process.env.DB_PORT || 27017;
-var dbName = process.env.DB_NAME || 'node-login';
-
-var dbURL = 'mongodb://'+dbHost+':'+dbPort+'/'+dbName;
-if (app.get('env') == 'live'){
-// prepend url with authentication credentials // 
-	dbURL = 'mongodb://'+process.env.DB_USER+':'+process.env.DB_PASS+'@'+dbHost+':'+dbPort+'/'+dbName;
-}
-
-app.use(session({
-	secret: 'faeb4453e5d14fe6f6d04637f78077c76c73d1b4',
-	proxy: true,
-	resave: true,
-	saveUninitialized: true,
-	store: new MongoStore({ url: dbURL })
-	})
-);*/
+    // Catch errors 
+    store.on('error', function(error) {
+      assert.ifError(error);
+      assert.ok(false);
+    });
+ 
+    app.use(require('express-session')({
+      secret: 'faeb4453e5d14fef6d04637f780787c76c73d1b4',
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 // 1 day
+      },
+      store: store,
+      // Boilerplate options, see: 
+      // * https://www.npmjs.com/package/express-session#resave 
+      // * https://www.npmjs.com/package/express-session#saveuninitialized 
+      resave: true,
+      saveUninitialized: true
+    }));
 
 
 i18n.configure({

@@ -34,7 +34,13 @@ var poiModel = {};
 poiModel.getPoisFromBox = function(boxData,callback)
 {
     mongoose.connection.db.collection('VEHICLE', function (err, collection) {
-        collection.find( { 'monitor': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
+        log.info(boxData.ullon);
+        log.info(boxData.ullat);
+        log.info(boxData.drlon);
+        log.info(boxData.drlat);
+        //collection.find( { 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
+        collection.find( { 'username': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
+            log.info(docs);
             callback(null, docs);
         });
     });
