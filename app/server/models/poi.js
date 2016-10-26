@@ -33,7 +33,7 @@ var poiModel = {};
 
 poiModel.getPoisFromBox = function(boxData,callback)
 {
-    mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+    mongoose.connection.db.collection('POIS', function (err, collection) {
         log.info(boxData.ullon);
         log.info(boxData.ullat);
         log.info(boxData.drlon);

@@ -64,7 +64,13 @@ trackingModel.getTracking1 = function(callback)
 
 trackingModel.getTracking1FromVehicle = function(vehicleLicense,callback)
 {
-  db.open(function(err, db) {
+    mongoose.connection.db.collection('TRACKING_'+vehicleLicense, function (err, collection) {
+        collection.find().sort({'pos_date': -1}).limit(1).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });
+
+  /*db.open(function(err, db) {
     if(err) {
         callback(err, null);
     }
@@ -74,7 +80,7 @@ trackingModel.getTracking1FromVehicle = function(vehicleLicense,callback)
             callback(null, docs);
         });
     }
-  });
+  });*/
 }
 
 //TODO. MODIFICAR!

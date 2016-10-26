@@ -1,8 +1,9 @@
 var crypto 		= require('crypto');
-var mysql       = require('mysql');
+var mysql     = require('mysql');
 var moment 		= require('moment');
-var crypt       = require('crypt3');
-var uuid = require('node-uuid');
+var crypt     = require('crypt3');
+var uuid      = require('node-uuid');
+var mongoose  = require('mongoose');
 
 var PropertiesReader = require('properties-reader');
 
@@ -46,12 +47,21 @@ var dbConfig = {
 
 var pool = mysql.createPool(dbConfig);
 
+var dbMongoName = properties.get('bbdd.mongo.name');
+var dbMongoHost = properties.get('bbdd.mongo.ip');
+var dbMongoPort = properties.get('bbdd.mongo.port');
+
+mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+    if (error) {
+        log.info(error);
+    }
+});
 
 exports.autoLogin = function(user, pass, callback)
 {
     pool.getConnection(function(err, connection) {
         if (connection) {        
-            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, DEFAULT_VEHICLE_LICENSE as vehicleLicense, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
+            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, LANGUAGE_USER as lang, DATE_END as dateEnd, BLOCKED as blocked FROM USER_GUI WHERE USERNAME= '" + user + "'";
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
@@ -81,7 +91,7 @@ exports.manualLogin = function(user, pass, callback)
 {
     pool.getConnection(function(err, connection) {
         if (connection) {        
-            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, DEFAULT_VEHICLE_LICENSE as vehicleLicense, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
+            var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
@@ -100,7 +110,28 @@ exports.manualLogin = function(user, pass, callback)
                     if( crypt(pass, passDB) !== passDB) {
                        callback(null);
                     } else {
-                      callback(null, rows[0]);
+                      // comprobar si existe en la bbdd de mongo
+                      mongoose.connection.db.collection('USER', function (err, collection) {
+                        collection.find({"username" : user}).toArray(function(err, docs) {
+                            if (docs.length==0) {
+                                user_mongo = {
+                                  "username" : user,
+                                  "password" : rows[0]['password'],
+                                  "firstname" : rows[0]['firstname'],
+                                  "language" : rows[0]['lang'],
+                                  "vehicle_license" : "",
+                                  "lastname" : rows[0]['lastname'],
+                                  "date_end" : rows[0]['dateEnd'],
+                                  "email" : rows[0]['email'],
+                                  "blocked" : rows[0]['blocked']
+                                }
+                                collection.save(user_mongo);
+                              }
+                            callback(null, rows[0]);
+                          });
+                      });
+
+                      //callback(null, rows[0]);
                     }
                   }
               }
@@ -109,6 +140,20 @@ exports.manualLogin = function(user, pass, callback)
             callback(null);
         }
     });            
+}
+
+exports.loadDefaultVehicle = function(username, callback) 
+{
+    mongoose.connection.db.collection('USER', function (err, collection) {
+        collection.find({"username" : username}).toArray(function(err, docs) {
+          if (docs[0].vehicle_license == undefined) {
+            callback("");
+          } else {
+            callback(docs[0].vehicle_license);
+          }
+        });
+  });
+
 }
 
 /* record insertion, update & deletion methods */
@@ -190,9 +235,9 @@ exports.updateAccount = function(newData, callback)
 
 exports.updateUserDevice = function(newData, callback)
 {
+  /*
     pool.getConnection(function(err, connection) {
         if (connection) {       
-          console.log(colors.red('Qaaa'));
             var sql = "UPDATE USER_GUI set DEFAULT_VEHICLE_LICENSE='" + newData.vehicleLicense + "' WHERE USERNAME= '" + newData.username + "'";
             //log.info("-->"+sql);
             console.log(colors.green('Query: %s'), sql);
@@ -212,7 +257,19 @@ exports.updateUserDevice = function(newData, callback)
         } else {
             callback(null);
         }
-    });            
+    });*/     
+  mongoose.connection.db.collection('USER', function (err, collection) { 
+      collection.update({ _id: newData.username }, { $set: { vehicle_license: newData.vehicleLicense }}, function (err, doc) {
+        // doc contains the modified document
+        if(err) {
+            console.log(colors.red('updateUserDevice error: %s'), err);
+            callback('error');
+        }
+        else {
+          callback('ok', 'ok');
+        }
+      });    
+  });           
 }
 
 exports.generateUserUUID = function(user, callback)

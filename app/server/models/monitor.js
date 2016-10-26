@@ -72,7 +72,7 @@ monitorModel.getMonitorFromUser = function(username,callback)
 {
     mongoose.connection.db.collection('TREE', function (err, collection) {
         collection.find({'username': username}).toArray(function(err, docs) {
-            log.info(JSON.stringify(docs));
+            //log.info(JSON.stringify(docs));
             callback(null, docs);
         });
     });

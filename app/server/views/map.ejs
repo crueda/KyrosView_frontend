@@ -273,6 +273,21 @@ function addVehicleSelectedToMap(vehicleLicense) {
 
     });
   }
+
+   function menuPois(username) {
+    $('#myModalMenuKyros').modal('hide');
+
+    // comprobar nivel de zoom actual
+    if (map.getView().getZoom() < 10) {
+        $('#myModalMsgLabel').text("<%= __('zoom_low') %>");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsgLabel2').text("<%= __('check_zoom_level') %>");
+        $('#myModalMsg').modal('show');
+    }
+    else {
+      showPois(username);
+    }    
+  }
 </script>
 
 
@@ -523,7 +538,7 @@ $("#vehiclePhoto").fileinput({
         <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('logout') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:menuPois(<%=user%>);" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
+        <button onclick="javascript:menuPois('<%=user%>');" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
       </td>
     </tr>
     </table>

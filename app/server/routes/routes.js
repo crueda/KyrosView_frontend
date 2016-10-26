@@ -24,8 +24,17 @@ module.exports = function(app) {
 				    req.session.user = o;
 					//console.log("FIJAR COOKIE -1 ");
 				    //res.cookie('kyrosview_lang', 'en', { maxAge: 900000, httpOnly: true });
-					//res.redirect('/home');
-					res.redirect('/map');
+
+				    // consultar vehiculo por defecto
+				    AM.loadDefaultVehicle(req.cookies.user , function(data){
+						if (data != null){
+				    		req.session.user.vehicleLicense = data;
+				    		res.redirect('/map');
+				   		} else {
+				   			res.render('login.ejs', { msg: '', msg_color: 'black'});
+				   		} 
+
+				    }); 
 				}	else{
 					res.render('login.ejs', { msg: '', msg_color: 'black'});
 				}
@@ -48,7 +57,16 @@ module.exports = function(app) {
 					res.cookie('user', o.user, { maxAge: 900000 });
 					res.cookie('pass', o.pass, { maxAge: 900000 });
 				}*/
-				res.redirect('/map');
+				// consultar vehiculo por defecto
+				AM.loadDefaultVehicle(req.body['user'] , function(data){
+					if (data != null){
+				    	req.session.user.vehicleLicense = data;
+				    	res.redirect('/map');
+				   	} else {
+				   		res.render('login.ejs', { msg: '', msg_color: 'black'});
+				   	} 
+
+				}); 
 			}
 		});
 	});
@@ -147,7 +165,7 @@ module.exports = function(app) {
 		if (req.session.user == null){
 			res.redirect('/');
 		}	else{
-			console.log(colors.red('--> %s'), req.body['vehicleLicense']);
+			//console.log(colors.red('--> %s'), req.body['vehicleLicense']);
 			AM.updateUserDevice({
 				username : req.session.user.username,
 				vehicleLicense : req.body['vehicleLicense']

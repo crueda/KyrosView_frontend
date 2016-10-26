@@ -577,17 +577,7 @@ function showSelectedVehicles() {
     $('#myModalShare').modal('show');
   }
 
-  function menuPois(username) {
-    $('#myModalMenuKyros').modal('hide');
-
-    // comprobar nivel de zoom actual
-    if (map.getView().getZoom() < 10) {
-        $('#myModalMsgLabel').text("<%= __('zoom_low') %>");
-        $('#myModalMsgLabel').css({ "color" : 'red' });
-        $('#myModalMsgLabel2').text("<%= __('check_zoom_level') %>");
-        $('#myModalMsg').modal('show');
-    }
-    else {
+  function showPois(username) {
       vectorPoiSource.clear();
 
       var extent = map.getView().calculateExtent(map.getSize());
@@ -601,15 +591,15 @@ function showSelectedVehicles() {
           $.each( data, function( key, val ) {
               var lat = val.location.coordinates[1];
               var lon = val.location.coordinates[0];
-              var poiId = val._id;
-              var poiName = val.poiName;
+              var poiId = val.id;
+              var poiName = val.name;
               var poiIcon = val.icon;
 
               addPoiPoint(poiId, poiName, poiIcon, lat, lon);
           });
           document.getElementById('attr-loading').style.display = 'none';
         });  
-    }    
+        
   }
 
   function addPoiPoint(poiId, poiName, icon, lat, lon) {
