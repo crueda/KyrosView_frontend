@@ -7,6 +7,8 @@ var Busboy = require('busboy');
 var mongo = require('mongodb'); 
 var Grid = require('gridfs-stream'); 
 
+//var gm = require('gm').subClass({imageMagick: true});
+
 //var gm = require('gm');
 
 var status = require("../utils/statusCodes.js");
@@ -250,13 +252,19 @@ router.post('/icon/upload/:vehicleLicense', function(req, res)
             //Clear variables
           });*/
 
+          file.on('data', function(data) {
+        console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+
+
+      });
+
           // obtain the size of an image
           /*
           gm(file)
           .size(function (err, size) {
             if (!err) {
-              log.info('width = ' + size.width);
-              log.info('height = ' + size.height);
+              console.log('width = ' + size.width);
+              console.log('height = ' + size.height);
             }
           });*/
 

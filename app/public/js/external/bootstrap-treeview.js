@@ -565,7 +565,7 @@
 			}
 
 			// Add check / unchecked icon
-			if (_this.options.showCheckbox) {
+			if (_this.options.showCheckbox &&  node.type==1) {
 
 				var classList = ['check-icon'];
 				if (node.state.checked) {
@@ -597,12 +597,22 @@
 			}
 
 			// Add tags as badges
+			
 			if (_this.options.showTags && node.tags) {
+				var index = 0;
 				$.each(node.tags, function addTag(id, tag) {
-					treeItem
-						.append($(_this.template.badge)
-							.append(tag)
-						);
+					if (index==0) {
+						treeItem
+							.append($(_this.template.badge)
+								.append(tag)
+							);	
+					} else {
+						treeItem
+							.append($(_this.template.badgeFleet)
+								.append(tag)
+							);												
+					}
+					index++;
 				});
 			}
 
@@ -615,6 +625,7 @@
 			}
 		});
 	};
+
 
 	// Define any node level style override for
 	// 1. selectedNode
@@ -692,7 +703,8 @@
 		indent: '<span class="indent"></span>',
 		icon: '<span class="icon"></span>',
 		link: '<a href="#" style="color:inherit;"></a>',
-		badge: '<span class="badge"></span>'
+		badge: '<span id="badge" class="badge"></span>',
+		badgeFleet: '<span id="badgeFleet" class="badgeFleet"></span>'
 	};
 
 	Tree.prototype.css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'

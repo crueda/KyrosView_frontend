@@ -167,7 +167,7 @@ function showSelectedVehicles() {
     mapmode=2;
 
     // añadir el vehiculo por defecto en la capa de seleccion (para que salga en el centrado)
-    addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
+    //addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
 
     for (var i=0; i<selectedVehicles.length; i++) {
       addVehicleSelectedToMap(selectedVehicles[i]);
@@ -444,6 +444,10 @@ function showSelectedVehicles() {
   function openHist() {
     $('#myModal').modal('hide');
     $('#licenseHist').val(tooltipSelectedVehicleLicense);
+    //var lastPosDate = new Date(dateDict[tooltipSelectedVehicleLicense]);
+    //$("#datetimepicker2").datetimepicker("setDate", lastPosDate);
+	//$('#datetimepicker2').datetimepicker('update', lastPosDate);
+    
     $('#myModalCalendar').modal('show');
   }
   
@@ -538,14 +542,6 @@ function showSelectedVehicles() {
     $('#myModalMenuKyros').modal('show');
   }
 
-  function menuRealtime() {
-    $('#myModalMenuKyros').modal('hide');
-    //clearMapHistoric();
-    //clearMapSelected();
-    clearMap();
-    mapmode = 0;
-    initDefaultVehicleData();
-  }
 
 // --------------------------------------------------------------
 // Tooltip
