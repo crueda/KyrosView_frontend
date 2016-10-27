@@ -519,15 +519,25 @@ function showSelectedVehicles() {
               icon = "<img src='./images/" + iconRealTimeDict[val.vehicle_license] + "'/>";      
             }
 
-            var d = new Date(val.pos_date);
-            var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+            //var d = new Date(val.pos_date+date.getTimezoneOffset()*60*1000);
+            var date = new Date(val.pos_date);
+		    var year = date.getFullYear();
+		    var month = pad(date.getMonth() + 1);
+		    var day = pad(date.getDate());
+		    var hours = pad(date.getHours());
+		    var minutes = pad(date.getMinutes());
+		    var seconds = pad(date.getSeconds());
+
+   			var datestring = day + "/" + month + "/" + year + " - " + hours + ":" + minutes + ":" + seconds;
+
+            //var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
 
             var check = "";
             if (i==1)
               check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "' checked>";
             else
               check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "'>";
-            $('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td>" + datestring + "</td>");
+            $('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
 
             $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
           }
@@ -548,10 +558,11 @@ function showSelectedVehicles() {
 // --------------------------------------------------------------
 
 function updateTooltipData(vehicleLicense) {
+    //var date = new Date(dateDict[vehicleLicense]+date.getTimezoneOffset()*60*1000);
     var date = new Date(dateDict[vehicleLicense]);
     var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
+    var month = pad(date.getMonth() + 1);
+    var day = pad(date.getDate());
     var hours = pad(date.getHours());
     var minutes = pad(date.getMinutes());
     var seconds = pad(date.getSeconds());
@@ -597,10 +608,11 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
       $.each( data, function( key, val ) {
 
       document.getElementById('tooltipTrackingTrackingId').innerHTML = trackingId;
+      //var date = new Date(val.pos_date+date.getTimezoneOffset()*60*1000);
       var date = new Date(val.pos_date);
       var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
+      var month = pad(date.getMonth() + 1);
+      var day = pad(date.getDate());
       var hours = pad(date.getHours());
       var minutes = pad(date.getMinutes());
       var seconds = pad(date.getSeconds());

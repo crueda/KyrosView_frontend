@@ -15,38 +15,21 @@
 <!--link href="/css/kyrosview_all.min.css?1" rel="stylesheet"-->
 
 
-  
-
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <!--link rel="stylesheet" href="/css/bootstrap.css?1" type="text/css"-->
   <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+<link rel="stylesheet" href="./css/fileinput.min.css?1" type="text/css">
 
 
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/js/external/bootstrap-treeview.js"></script>
+
   <script type="text/javascript" src="/js/external/ol.js"></script>
   <script type="text/javascript" src="/js/external/ol3-layerswitcher.js" type="text/javascript"></script>
-  <script type="text/javascript" src="/js/external/bootstrap3-typeahead.min.js" type="text/javascript"></script>
-  <!--script type="text/javascript" src="/js/external_all.min.js" type="text/javascript"></script-->
-
-  <!--script type="text/javascript" src="/bower_components/jquery/jquery.min.js"></script-->
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
-  <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-  <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/featureanimation.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/dropanimation.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
-  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
-
-
-<link rel="stylesheet" href="./css/fileinput.min.css?1" type="text/css">
-<script type="text/javascript" src="js/fileinput.min.js"> </script>
+    
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
 
 
 <script type="text/javascript" src="js/kyrosview/event-enum.js"> </script>
@@ -197,8 +180,8 @@ function addVehicleSelectedToMap(vehicleLicense) {
 
     var date = new Date(dateDict[vehicleLicense]);
     var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
+    var month = pad(date.getMonth() + 1);
+    var day = pad(date.getDate());
     var hours = pad(date.getHours());
     var minutes = pad(date.getMinutes());
     var seconds = pad(date.getSeconds());
@@ -495,6 +478,178 @@ function addVehicleSelectedToMap(vehicleLicense) {
 <script>
  window.onload = function() {setInterval(reloadDefaultVehicleData,5000);};
  
+ // *******************************
+ // Sources y Layers 
+ // *******************************
+
+var style = 
+  [ new ol.style.Style(
+      { image: new ol.style.Shadow(
+        { radius: 6,
+        }),
+        stroke: new ol.style.Stroke(
+        { color: [0,0,0,0.3],
+          width: 1
+        }),
+        fill: new ol.style.Fill(
+          { color: [0,0,0,0.3]
+          }),
+        zIndex: -1
+      }),
+    new ol.style.Style(
+      { 
+
+
+      image: new ol.style.RegularShape(
+        { radius: 7,
+          radius2: 7,
+          points: 12,
+          //fill: new ol.style.Fill({ color: '#0052cc' })
+          fill: new ol.style.Fill({ color: '#008000' })
+        }),
+      stroke: new ol.style.Stroke(
+        { 
+        //color: '#66c2ff',        
+        color: '#00cc00',        
+        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
+        width: 6
+        }),
+      fill: new ol.style.Fill(
+        { color: [0,0,255,0.3]
+        })
+      })
+  ];
+  style[1].getImage().getAnchor()[1] += 10;
+
+var style2 = 
+  [ new ol.style.Style(
+      { image: new ol.style.Shadow(
+        { radius: 6,
+        }),
+        stroke: new ol.style.Stroke(
+        { color: [0,0,0,0.3],
+          width: 1
+        }),
+        fill: new ol.style.Fill(
+          { color: [0,0,0,0.3]
+          }),
+        zIndex: -1
+      }),
+    new ol.style.Style(
+      { 
+
+
+      image: new ol.style.RegularShape(
+        { radius: 8,
+          radius2: 8,
+          points: 12,
+          fill: new ol.style.Fill({ color: '#ff8000' })
+        })
+      
+      })
+  ];
+  style2[1].getImage().getAnchor()[1] += 10;
+
+  var vectorPoiSource = new ol.source.Vector({
+   features: []
+  });
+  var poisLayer = new ol.layer.Vector({
+   title: '<%= __('pois') %>',
+   visible: true,
+   source: vectorPoiSource
+  });
+
+  var vehiclesRealTimeSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesRealTimeLayer = new ol.layer.Vector({
+   title: '<%=vehicleLicense%>',   
+   style: style,
+   visible: true,
+   source: vehiclesRealTimeSource
+  });
+
+  var vehiclesPointSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesPointLayer = new ol.layer.Vector({
+   //title: '<%=vehicleLicense%> track',   
+   title: '',   
+   style: style,
+   visible: true,
+   source: vehiclesPointSource
+  });
+
+  var vehiclesSelectedSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesSelectedLayer = new ol.layer.Vector({
+   title: '<%= __('layer_vehicles_selected') %>',   
+   visible: true,
+   source: vehiclesSelectedSource
+  });
+
+  var vehiclesLineSource = new ol.source.Vector({
+   features: []
+  });
+  var lineStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+        //color: '#0000ff',
+        color: '#66c2ff',        
+        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
+        width: 4
+    })
+  });
+  var vehiclesLineLayer = new ol.layer.Vector({
+    title: '',
+    visible: true,
+    style: style,
+    //style: lineStyle,
+    source: vehiclesLineSource
+  });
+
+
+var mapPointSource = new ol.source.Vector({
+   features: []
+  });
+  var mapPointLayer = new ol.layer.Vector({
+   visible: true,
+    style: style2,
+   source: mapPointSource
+  });
+
+  var vehiclesHistSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesHistLayer = new ol.layer.Vector({
+   title: "<%= __('historical_positions') %>",
+   visible: true,
+    style: style,
+   source: vehiclesHistSource
+  });
+
+  var vehiclesHistLineSource = new ol.source.Vector({
+   features: []
+  });
+  var lineStyleHist = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+        //color: '#0000ff',
+        color: '#66c2ff',        
+        width: 3
+    })
+  });
+  var vehiclesHistLineLayer = new ol.layer.Vector({
+    title: "<%= __('historical_track') %>",
+    visible: true,
+    style: lineStyleHist,
+    source: vehiclesHistLineSource
+  });
+ 
+  var projection = ol.proj.get('EPSG:3857');
+
+
+
+// ------------------- READY
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
   
@@ -1240,179 +1395,7 @@ $("#vehiclePhoto").fileinput({
 
 <script>
 
- // *******************************
- // Sources y Layers 
- // *******************************
-
-var style = 
-  [ new ol.style.Style(
-      { image: new ol.style.Shadow(
-        { radius: 6,
-        }),
-        stroke: new ol.style.Stroke(
-        { color: [0,0,0,0.3],
-          width: 1
-        }),
-        fill: new ol.style.Fill(
-          { color: [0,0,0,0.3]
-          }),
-        zIndex: -1
-      }),
-    new ol.style.Style(
-      { 
-
-
-      image: new ol.style.RegularShape(
-        { radius: 7,
-          radius2: 7,
-          points: 12,
-          //fill: new ol.style.Fill({ color: '#0052cc' })
-          fill: new ol.style.Fill({ color: '#008000' })
-        }),
-      stroke: new ol.style.Stroke(
-        { 
-        //color: '#66c2ff',        
-        color: '#00cc00',        
-        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        width: 6
-        }),
-      fill: new ol.style.Fill(
-        { color: [0,0,255,0.3]
-        })
-      })
-  ];
-  style[1].getImage().getAnchor()[1] += 10;
-
-var style2 = 
-  [ new ol.style.Style(
-      { image: new ol.style.Shadow(
-        { radius: 6,
-        }),
-        stroke: new ol.style.Stroke(
-        { color: [0,0,0,0.3],
-          width: 1
-        }),
-        fill: new ol.style.Fill(
-          { color: [0,0,0,0.3]
-          }),
-        zIndex: -1
-      }),
-    new ol.style.Style(
-      { 
-
-
-      image: new ol.style.RegularShape(
-        { radius: 8,
-          radius2: 8,
-          points: 12,
-          fill: new ol.style.Fill({ color: '#ff8000' })
-        })
-      
-      })
-  ];
-  style2[1].getImage().getAnchor()[1] += 10;
-
-  var vectorPoiSource = new ol.source.Vector({
-   features: []
-  });
-  var poisLayer = new ol.layer.Vector({
-   title: '<%= __('pois') %>',
-   visible: true,
-   source: vectorPoiSource
-  });
-
-  var vehiclesRealTimeSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesRealTimeLayer = new ol.layer.Vector({
-   title: '<%=vehicleLicense%>',   
-   style: style,
-   visible: true,
-   source: vehiclesRealTimeSource
-  });
-
-  var vehiclesPointSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesPointLayer = new ol.layer.Vector({
-   //title: '<%=vehicleLicense%> track',   
-   title: '',   
-   style: style,
-   visible: true,
-   source: vehiclesPointSource
-  });
-
-  var vehiclesSelectedSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesSelectedLayer = new ol.layer.Vector({
-   title: '<%= __('layer_vehicles_selected') %>',   
-   visible: true,
-   source: vehiclesSelectedSource
-  });
-
-  var vehiclesLineSource = new ol.source.Vector({
-   features: []
-  });
-  var lineStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-        //color: '#0000ff',
-        color: '#66c2ff',        
-        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
-        width: 4
-    })
-  });
-  var vehiclesLineLayer = new ol.layer.Vector({
-    title: '',
-    visible: true,
-    style: style,
-    //style: lineStyle,
-    source: vehiclesLineSource
-  });
-
-
-var mapPointSource = new ol.source.Vector({
-   features: []
-  });
-  var mapPointLayer = new ol.layer.Vector({
-   visible: true,
-    style: style2,
-   source: mapPointSource
-  });
-
-  var vehiclesHistSource = new ol.source.Vector({
-   features: []
-  });
-  var vehiclesHistLayer = new ol.layer.Vector({
-   title: "<%= __('historical_positions') %>",
-   visible: true,
-    style: style,
-   source: vehiclesHistSource
-  });
-
-  var vehiclesHistLineSource = new ol.source.Vector({
-   features: []
-  });
-  var lineStyleHist = new ol.style.Style({
-    stroke: new ol.style.Stroke({
-        //color: '#0000ff',
-        color: '#66c2ff',        
-        width: 3
-    })
-  });
-  var vehiclesHistLineLayer = new ol.layer.Vector({
-    title: "<%= __('historical_track') %>",
-    visible: true,
-    style: lineStyleHist,
-    source: vehiclesHistLineSource
-  });
  
-  var projection = ol.proj.get('EPSG:3857');
-
-
-    
-
-
 // This function handles arrays and objects
 function eachRecursive(obj)
 {
@@ -1800,12 +1783,14 @@ var osm = new ol.layer.Tile({
  visible: false,
  source: new ol.source.OSM()
 });
- 
+
+/* 
 var kyrosDevicesGroup = new ol.layer.Group({
     'title': '<%= __('kyros_devices') %>',
     //layers: [vectorLayer]
     layers: []
   });
+*/
 
 var kyrosGroup = new ol.layer.Group({
     'title': '<%= __('tracking') %>',
@@ -1819,7 +1804,7 @@ var map = new ol.Map({
    layers: [toner, roads, osm]
  }),
 
-kyrosDevicesGroup,
+//kyrosDevicesGroup,
 kyrosGroup,
 
   new ol.layer.Group({
@@ -1974,7 +1959,23 @@ $(map.getViewport()).on("click", function(e) {
 
        </script>
 
+<script type="text/javascript" src="/js/external/bootstrap-treeview.js"></script>
+<script type="text/javascript" src="/js/external/bootstrap3-typeahead.min.js" type="text/javascript"></script>
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
 
+<script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
+  
+<script type="text/javascript" src="js/fileinput.min.js"> </script>
+
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/featureanimation.js"></script>
+  
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/dropanimation.js"></script>
+    <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
 
      </body>
      </html>
