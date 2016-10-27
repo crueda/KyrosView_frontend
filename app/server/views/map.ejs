@@ -1488,11 +1488,57 @@ function loadMonitor() {
     jsonString = jsonString.split('"false"').join('false');
     jsonString = jsonString.split('"true"').join('true');
 
+var tree = [
+  {
+    text: "Parent 1",
+    nodes: [
+      {
+        text: "Child 1",
+        selectable: false,
+        state: {
+      checked: true,
+      selected: true
+      },
+        nodes: [
+          {
+            text: "Grandchild 1"
+          },
+          {
+            text: "Grandchild 2"
+          }
+        ]
+      },
+      {
+        text: "Child 2"
+      }
+    ]
+  },
+  {
+    text: "Parent 2",
+    state: {
+      checked: true,
+      selected: true
+    },
+  },
+  {
+    text: "Parent 3",
+    backColor: "#e60000",
+    icon: "glyphicon glyphicon-stop"
+  },
+  {
+    text: "Parent 4"
+  },
+  {
+    text: "Parent 5"
+  }
+];
+
     //console.log(jsonString);
     jsonObject = JSON.parse(jsonString);
     $('#monitorDiv').height($(window).height()-200);
     var $checkableTree = $('#treeview-checkable').treeview({
           data: jsonObject,
+          //data: tree,
           showIcon: true,
           showCheckbox: true,
           highlightSelected: false,
