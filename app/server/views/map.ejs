@@ -126,11 +126,61 @@ function reloadDefaultVehicleData() {
        //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
        //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
        moveMap2Vehicle(val.vehicle_license);    
-
         
       });
     });
+  } else if (mapmode==2) {
+     //clearMapSelected();
+     for (var i=0; i<selectedVehicles.length; i++) {
+
+      $.getJSON( '/api/tracking1/vehicle/'+selectedRecentVehicles[i], function( data ) {
+        $.each( data, function( key, val ) {
+
+          // añadir la linea
+          if (dateDict[val.vehicle_license] != val.pos_date) {
+            addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);            
+          }
+
+         processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+
+         // comprobar eventos    
+         if (val.events.length>0) {
+          for (var i=0; i<val.events.length; i++) {
+            addTrackingPointEventSelected(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+          }
+         }        
+        });
+      });
+
+     }
+  }  else if (mapmode==22) {
+     //clearMapSelected();
+     for (var i=0; i<selectedRecentVehicles.length; i++) {
+
+      $.getJSON( '/api/tracking1/vehicle/'+selectedRecentVehicles[i], function( data ) {
+        $.each( data, function( key, val ) {
+
+          // añadir la linea
+          if (dateDict[val.vehicle_license] != val.pos_date) {
+            addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);            
+          }
+
+         processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+
+         // comprobar eventos    
+         if (val.events.length>0) {
+          for (var i=0; i<val.events.length; i++) {
+            addTrackingPointEventSelected(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+          }
+         }        
+        });
+      });
+
+     }
   }  
+
+
+
 }
 
 function menuRealtime() {
@@ -147,7 +197,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
   if (vehicleLicense!='<%=vehicleLicense%>') {
     $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
       $.each( data, function( key, val ) {
-          processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
         });                           
     });    
   }
@@ -388,6 +438,8 @@ function addVehicleSelectedToMap(vehicleLicense) {
           $('#myModalMsg').modal('show');
         } 
         else {
+          document.getElementById('attr-graph-hist').style.display = 'block';
+
           $.each( data.result, function( key, val ) {
             var lat = val.location.coordinates[1];
             var lon = val.location.coordinates[0];
@@ -668,17 +720,14 @@ var mapPointSource = new ol.source.Vector({
   $.ajaxSetup({ cache: false });
  
 $('#tab_logic').on('click', '.clickable-row', function(event) {
-  console.log("click");
   if($(this).hasClass('highlight')){
-    //console.log("remove: " + $(this).attr('id'));
-    var index = selectedRecentVehicles.indexOf($(this).attr('id'));
+    var index = selectedRecentVehicles.indexOf($(this).attr('name'));
     if (index > -1) {
       selectedRecentVehicles.splice(index, 1);
     }
     $(this).removeClass('highlight'); 
   } else {
-    //console.log("add: " + $(this).attr('id'));
-    selectedRecentVehicles.push($(this).attr('id'));
+    selectedRecentVehicles.push($(this).attr('name'));
     $(this).addClass('highlight');
     //$(this).addClass('highlight').siblings().removeClass('highlight');
   }
@@ -749,7 +798,7 @@ $("#vehiclePhoto").fileinput({
 
     showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch);
 
-    document.getElementById('attr-graph-hist').style.display = 'block';
+    //document.getElementById('attr-graph-hist').style.display = 'block';
   });
 
   $('#okButtonFind').click(function(){

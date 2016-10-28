@@ -11,6 +11,7 @@ var iconCoverDict = {};
 var iconAlarmDict = {};
 var dateDict = {};
 var aliasDict = {};
+var trackingIdDict = {};
 var latitudeDict = {};
 var longitudeDict = {};
 var geocodingDict = {};
@@ -29,6 +30,7 @@ var dayHoursDict = {};
 var weekHoursDict = {};
 var monthHoursDict = {};
 var monitorDevices = {};
+var requestIconStatus = {};
 var monitorVehicleLicense = [];
 var greenFlagOverlay = null;
 var redFlagOverlay = null;
@@ -171,6 +173,7 @@ function showSelectedVehicles() {
     //addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
 
     for (var i=0; i<selectedVehicles.length; i++) {
+      loadVehicleIcon(selectedVehicles[i]);
       addVehicleSelectedToMap(selectedVehicles[i]);
     }    
 
@@ -179,7 +182,7 @@ function showSelectedVehicles() {
   function showSelectedRecentVehicles() {
     //clearMapHistoric();
     clearMap();
-    mapmode=2;
+    mapmode=22;
 
     for (var i=0; i<selectedRecentVehicles.length; i++) {
       addVehicleSelectedToMap(selectedRecentVehicles[i]);
@@ -199,6 +202,7 @@ function showSelectedVehicles() {
     clearMap();
     mapmode = 2;
 
+	loadVehicleIcon(vehicleLicense);
     addVehicleFindToMap(vehicleLicense);
 }
 
@@ -286,6 +290,30 @@ function showSelectedVehicles() {
       iconFeature.setStyle(iconStyle);
       
       vehiclesRealTimeSource.addFeature(iconFeature); 
+  }
+
+  function addTrackingPointEventSelected(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        vehicleLicense: vehicleLicense,
+        elementId: 'trackingPoint',
+        name: getEventDescription(eventType)
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.9,
+         rotation: 0,
+         src: getEventIconSmall(eventType)
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vehiclesSelectedSource.addFeature(iconFeature); 
   }
 
   function addTrackingHistPointEvent(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
@@ -536,6 +564,7 @@ $('#datetimepicker2').datetimepicker('update');
 // --------------------------------------------------------------
 
   function showRecentPos() {
+
       // Llamada a la api
       $.getJSON( '/api/tracking1', function( data ) {
         var i=1;
@@ -544,11 +573,15 @@ $('#datetimepicker2').datetimepicker('update');
           if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1 && i<20) {
 
             var icon = "";
-            if (iconBase64Dict[val.vehicle_icense]!=null && iconBase64Dict[val.vehicle_license]!='') {
+
+            if (iconBase64Dict[val.vehicle_license]!=null && iconBase64Dict[val.vehicle_license]!='') {
               icon = "<img src='data:image/png;base64," + iconBase64Dict[val.vehicle_license] + "'/>";      
             } else {
-              icon = "<img src='./images/" + iconRealTimeDict[val.vehicle_license] + "'/>";      
+              icon = "<img src='./images/" + iconRealTimeDict[val.vehicle_license] + "'/>";  
+              // pido el icono
+              loadVehicleIcon(val.vehicle_license);    
             }
+
 
             //var d = new Date(val.pos_date+date.getTimezoneOffset()*60*1000);
             var date = new Date(val.pos_date);
@@ -560,7 +593,6 @@ $('#datetimepicker2').datetimepicker('update');
 		    var seconds = pad(date.getSeconds());
 
    			var datestring = day + "/" + month + "/" + year + "<br>" + hours + ":" + minutes + ":" + seconds;
-
             //var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
 
             var check = "";
@@ -570,8 +602,8 @@ $('#datetimepicker2').datetimepicker('update');
               check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "'>";
             //$('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
 			$('#addr'+i).html("<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
-			$('#addr'+i).attr( 'id',val.vehicle_license);
-            $('#tab_logic').append('<tr id="addr'+(i+1)+'" class="clickable-row"></tr>');
+			$('#addr'+i).attr( 'name',val.vehicle_license);
+            $('#tab_logic').append('<tr id="addr'+(i+1)+'" name="" class="clickable-row"></tr>');
           }
           i++; 
         });
@@ -757,9 +789,14 @@ function loadVehicleIconSync(vehicleLicense) {
 }
 function loadVehicleIcon(vehicleLicense) {
   // Leer el icono de un vehiculo en modo asincrono
-  $.getJSON( "/api/icon/vehicle/"+vehicleLicense, function( data ) {
-    iconBase64Dict[vehicleLicense] = data; 
-  });
+  if (requestIconStatus[vehicleLicense]==null || requestIconStatus[vehicleLicense]==false){
+	  $.getJSON( "/api/icon/vehicle/"+vehicleLicense, function( data ) {
+	    iconBase64Dict[vehicleLicense] = data; 
+	  });  	
+  } else {
+  	requestIconStatus[vehicleLicense]=true;
+  }
+
 }
 
 function getVehicleIconSync(vehicleLicense) {
@@ -1006,7 +1043,7 @@ function addVehicleFindToMap(vehicleLicense) {
   //if (vehicleLicense!='<%=vehicleLicense%>') {
     $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
       $.each( data, function( key, val ) {
-          processDeviceSelected (val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
           // circulo animado?
           /*
@@ -1025,10 +1062,11 @@ function addVehicleFindToMap(vehicleLicense) {
   //}
 }
 
-function processDeviceSelected(vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {    
+function processDeviceSelected(trackingId,vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {    
   if (vehicleState==undefined)
     vehicleState = 0;
 
+  trackingIdDict[vehicleLicense]=trackingId;
   deviceIdDict[vehicleLicense]=deviceId;
   vehicleLicenseDict[vehicleLicense] = vehicleLicense;
   dateDict[vehicleLicense] = posDate;
@@ -1067,16 +1105,39 @@ function addSelected(vehicleLicense, alias, lon, lat, speed, heading, vehicleSta
     })];
     iconFeature.setStyle(iconStyle);
 
+    //vehiclesSelectedSource.removeFeatureById(vehicleLicense); 
+    
+    var features = vehiclesSelectedSource.getFeatures();
+    if (features != null && features.length > 0) {
+        for (x in features) {
+            var properties = features[x].getProperties();
+            console.log(properties);
+            var id = properties.id;
+            if (id == vehicleLicense) {
+              vehiclesSelectedSource.removeFeature(features[x]);
+              break;
+            }
+        }
+    }
+
     vehiclesSelectedSource.addFeature(iconFeature); 
 
     // centrar el mapa en la capa de vehiculos seleccionados
-    //if (mapmode==2) {
+    //if (mapmode==2) {  
       map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
       if(map.getView().getZoom()>16){
           map.getView().setZoom(16);
-      }      
+      }
+            
     //}
   }
+
+function centerSelectedVehicles() {
+ map.getView().fit(vehiclesSelectedSource.getExtent(), map.getSize());
+      if(map.getView().getZoom()>16){
+          map.getView().setZoom(16);
+      }   
+}
 
 function addEmptyFeatureSelected(lon, lat) {
     var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
