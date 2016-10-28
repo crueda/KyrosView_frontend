@@ -617,7 +617,26 @@ $('#datetimepicker2').datetimepicker('update');
     $('#myModalMenuKyros').modal('show');
   }
 
-
+  function backMenuFind() {
+    $('#myModalFind').modal('hide');
+    $('#myModalMenuKyros').modal('show');
+  }
+  
+  function backMenuDevices() {
+    $('#myModalMonitor').modal('hide');
+    $('#myModalMenuKyros').modal('show');
+  }
+  
+  function backMenuHistoric() {
+    $('#myModalCalendar').modal('hide');
+    $('#myModalMenuKyros').modal('show');
+  }
+  
+  function backMenuRecent() {
+    $('#myModalRecentPos').modal('hide');
+    $('#myModalMenuKyros').modal('show');
+  }
+  
 // --------------------------------------------------------------
 // Tooltip
 // --------------------------------------------------------------

@@ -421,3 +421,5 @@ table.tooltip-header-table td {
 .list-group-item > .badgeFleet {
   float: right;
 }
+
+.caja { float:left;margin-left:20px; }

@@ -939,10 +939,10 @@ $("#vehiclePhoto").fileinput({
     <table border="0" bgcolor="#bfbeb5">
     <tr>
       <td align="center">
-        <button type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
+        <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_realtime.png"/><br><%= __('real_time') %></button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
@@ -951,33 +951,33 @@ $("#vehiclePhoto").fileinput({
         <button onclick="javascript:menuFind();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_find.png"/><br><%= __('find') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_globe.png"/><br><%= __('graphs') %></button>
-      </td>
-      <td align="center">
         <button onclick="javascript:menuDevices();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br><%= __('all') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
-      <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('config') %></button>
+       <td align="center">
+        <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
       </td>
       <td align="center">
         <button onclick="javascript:menuRecentPos();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_recent.png"/><br><%= __('recent') %></button>
       </td>
+    </tr>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('logout') %></button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
       </td>
       <td align="center">
         <button onclick="javascript:menuPois('<%=user%>');" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
+      </td>
+    <tr><td>&nbsp;</td><td></td></tr>
+    <tr>
+      <td align="center">
+        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br><%= __('logout') %></button>
+      </td>
+      <td align="center">
+        <button onclick="javascript:menuAbout();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_about.png"/><br><%= __('about') %></button>
       </td>
     </tr>
     </table>
@@ -994,7 +994,13 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <div class="caja">        
+        <img onclick="javascript:backMenuDevices();" src="/img/back.png"/>
+        </div>
+        <div class="caja">
         <h4 class="modal-title" id="myModalLabel"><%= __('monitor_devices') %></h4>
+        </div>
+        <br>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body" id="treeBody">
@@ -1018,7 +1024,13 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <div class="caja">        
+        <img onclick="javascript:backMenuHistoric();" src="/img/back.png"/>
+        </div>
+        <div class="caja">
         <h4 class="modal-title" id="myModalLabel"><%= __('historic') %></h4>
+        </div>
+        <br>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
@@ -1086,7 +1098,13 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <div class="caja">        
+        <img onclick="javascript:backMenuFind();" src="/img/back.png"/>
+        </div>
+        <div class="caja">
         <h4 class="modal-title" id="myModalLabel"><%= __('find') %></h4>
+        </div>
+        <br>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
@@ -1118,7 +1136,14 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <div class="caja">        
+        <img onclick="javascript:backMenuRecent();" src="/img/back.png"/>
+        </div>
+        <div class="caja">
         <h4 class="modal-title" id="myModalLabel"><%= __('recent_pos') %></h4>
+        </div>
+        <br>
+
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
