@@ -783,12 +783,23 @@ $("#vehiclePhoto").fileinput({
   
   $('#okButtonCalendar').click(function(){
     var finit = document.getElementById('initDate').value; 
-    var finit_date = Date.parse(finit); 
-    var finit_epoch = finit_date.getTime();
+    //var finit_date = Date.parse(finit); 
+    //var finit_date = moment(finit).format('DD/MM/YYYY H:m A');
+    //var finit_date = moment(finit).format('DD/MM/YYYY H:m A');
+    //moment(moment("10/15/2014 9:00", "MM/DD/YYYY HH:mm").unix()*1000)
+    var epoch = moment("10/15/2014 9:00").unix();
+    var finit_moment = moment(finit, "DD/MM/YYYY H:m A");
+    var finit_epoch = moment(moment(finit, "MM/DD/YYYY H:m A").unix()*1000);
+    //console.log(a.valueOf());
+    //var finit_epoch = moment(finit_date).unix()*1000;
     var fend = document.getElementById('endDate').value; 
-    var fend_date = Date.parse(fend); 
-    var fend_epoch = fend_date.getTime();
+    //var fend_date = Date.parse(fend); 
+    //var fend_date = moment(fend).format('DD/MM/YYYY H:m A');
+    //var fend_epoch = fend_date.getTime();
+    var fend_epoch = moment(moment(fend, "MM/DD/YYYY H:m A").unix()*1000);
     
+    console.log("init:" + finit_epoch);
+    console.log("init:" + fend_epoch);
     var deviceIdHist = monitorDevices[$('#licenseHist').val()];
     var vehicleLicenseHist = $('#licenseHist').val();
 
