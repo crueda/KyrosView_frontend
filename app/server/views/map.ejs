@@ -37,6 +37,18 @@
 <!--script type="text/javascript" src="js/kyrosview_all.min.js"> </script-->
 
 
+<style>
+.table > thead > tr > td.active, .table > tbody > tr > td.active, .table > tfoot > tr > td.active, .table > thead > tr > th.active, .table > tbody > tr > th.active, .table > tfoot > tr > th.active, .table > thead > tr.active > td, .table > tbody > tr.active > td, .table > tfoot > tr.active > td, .table > thead > tr.active > th, .table > tbody > tr.active > th, .table > tfoot > tr.active > th {
+            background-color:#009900;
+
+        }
+.table > thead > tr > td.highlight, .table > tbody > tr > td.highlight, .table > tfoot > tr > td.highlight, .table > thead > tr > th.highlight, .table > tbody > tr > th.highlight, .table > tfoot > tr > th.active, .table > thead > tr.highlight > td, .table > tbody > tr.highlight > td, .table > tfoot > tr.highlight > td, .table > thead > tr.active > th, .table > tbody > tr.highlight > th, .table > tfoot > tr.highlight > th {
+            background-color:#009900;
+
+        }
+
+</style>
+
 <script type="text/javascript">    
 
 function initDefaultVehicleDataSync() {
@@ -649,10 +661,29 @@ var mapPointSource = new ol.source.Vector({
 
 
 
-// ------------------- READY
+// --------------------------------------------------
+// ------------------- READY ------------------------
+// --------------------------------------------------
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
-  
+ 
+$('#tab_logic').on('click', '.clickable-row', function(event) {
+  console.log("click");
+  if($(this).hasClass('highlight')){
+    //console.log("remove: " + $(this).attr('id'));
+    var index = selectedRecentVehicles.indexOf($(this).attr('id'));
+    if (index > -1) {
+      selectedRecentVehicles.splice(index, 1);
+    }
+    $(this).removeClass('highlight'); 
+  } else {
+    //console.log("add: " + $(this).attr('id'));
+    selectedRecentVehicles.push($(this).attr('id'));
+    $(this).addClass('highlight');
+    //$(this).addClass('highlight').siblings().removeClass('highlight');
+  }
+});
+
  $('.ckbox label').on('click', function () {
       $(this).parents('tr').toggleClass('selected');
     });
@@ -728,10 +759,13 @@ $("#vehiclePhoto").fileinput({
   });
 
   $('#okButtonRecentPos').click(function(){
+    showSelectedRecentVehicles();
+    /*
     //var vehicleLicenseFind = document.getElementById('selectRecent').value;
     var vehicleLicenseFind = document.recentPosForm.selectRecent.value;
     getVehicleIconSync(vehicleLicenseFind);
     showTrackingFind(vehicleLicenseFind);
+    */
   });
 
   $('#okButtonShare').click(function(){
@@ -1040,15 +1074,14 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-body">
 
-      <div class="container">
+      <div class="container monitorDiv" id="recentDiv">
           <div class="row">
               <div class="col-sm-6 column">
       <form id="recentPosForm" name="recentPosForm">
-      <table class="table table-bordered table-hover" id="tab_logic">
+      <!--table class="table table-bordered table-hover" id="tab_logic"-->
+      <table class="table table-bordered" data-click-to-select="true" id="tab_logic">
         <thead>
           <tr >
-            <th class="text-center">
-            </th>
             <th class="text-center">
               <%= __('icon') %>
             </th>
@@ -1062,7 +1095,7 @@ $("#vehiclePhoto").fileinput({
           </tr>
         </thead>
         <tbody>
-            <tr id='addr1'></tr>
+            <tr id='addr1' class="clickable-row"></tr>
         </tbody>
       </table>
       </form>

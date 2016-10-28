@@ -35,6 +35,7 @@ var redFlagOverlay = null;
 var actualPosOverlay = null;
 var tooltipSelectedVehicleLicense = "";
 var selectedVehicles = new Array();
+var selectedRecentVehicles = new Array();
 var defaultVehicleLastLat = 0;
 var defaultVehicleLastLon = 0;
 var defaultVehicleLastTrackingId = 0;
@@ -173,6 +174,16 @@ function showSelectedVehicles() {
       addVehicleSelectedToMap(selectedVehicles[i]);
     }    
 
+  }
+
+  function showSelectedRecentVehicles() {
+    //clearMapHistoric();
+    clearMap();
+    mapmode=2;
+
+    for (var i=0; i<selectedRecentVehicles.length; i++) {
+      addVehicleSelectedToMap(selectedRecentVehicles[i]);
+    }    
   }
 
   function loadSelectedVehicles() {
@@ -444,8 +455,28 @@ function showSelectedVehicles() {
   function openHist() {
     $('#myModal').modal('hide');
     $('#licenseHist').val(tooltipSelectedVehicleLicense);
-    //var lastPosDate = new Date(dateDict[tooltipSelectedVehicleLicense]);
-    //$("#datetimepicker2").datetimepicker("setDate", lastPosDate);
+    /*
+    var date = new Date(dateDict[tooltipSelectedVehicleLicense]);
+
+    var year = date.getFullYear();
+    var month = pad(date.getMonth() + 1);
+    var day = pad(date.getDate());
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    var seconds = pad(date.getSeconds());
+
+$('#datetimepicker2').datetimepicker('remove');
+ $('#datetimepicker2').datetimepicker({
+      locale: 'en',
+      defaultDate: date
+    });
+$('#datetimepicker2').datetimepicker('update');
+*/
+//$('#datetimepicker2').data("DateTimePicker").defaultDate("10/23/2016 3:21 PM");
+// $("#datetimepicker2").val("18:56:00");
+	//$("#datetimepicker2").data('DateTimePicker').setLocalDate(new Date(year, month, day, 00, 01));
+
+    //$("#datetimepicker2").datetimepicker("setDate", date);
 	//$('#datetimepicker2').datetimepicker('update', lastPosDate);
     
     $('#myModalCalendar').modal('show');
@@ -510,7 +541,7 @@ function showSelectedVehicles() {
         var i=1;
         $.each( data, function( key, val ) {
           // comprobar si monitorizo el vehiculo
-          if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1 && i<10) {
+          if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1 && i<20) {
 
             var icon = "";
             if (iconBase64Dict[val.vehicle_icense]!=null && iconBase64Dict[val.vehicle_license]!='') {
@@ -528,7 +559,7 @@ function showSelectedVehicles() {
 		    var minutes = pad(date.getMinutes());
 		    var seconds = pad(date.getSeconds());
 
-   			var datestring = day + "/" + month + "/" + year + " - " + hours + ":" + minutes + ":" + seconds;
+   			var datestring = day + "/" + month + "/" + year + "<br>" + hours + ":" + minutes + ":" + seconds;
 
             //var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
 
@@ -537,13 +568,15 @@ function showSelectedVehicles() {
               check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "' checked>";
             else
               check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "'>";
-            $('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
-
-            $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
+            //$('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
+			$('#addr'+i).html("<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
+			$('#addr'+i).attr( 'id',val.vehicle_license);
+            $('#tab_logic').append('<tr id="addr'+(i+1)+'" class="clickable-row"></tr>');
           }
           i++; 
         });
 
+		$('#recentDiv').height($(window).height()-200);
         $('#myModalRecentPos').modal('show'); 
       });
   }
