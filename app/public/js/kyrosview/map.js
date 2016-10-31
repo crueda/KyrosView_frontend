@@ -47,7 +47,7 @@ var vehicleLicenseToSelect = '';
 var encontradoChecked = false;
 var encontradoElementoName = false;
 var encontradoVehiculo = false;
-
+var eventIndex = 0;
 var realTimePoints = [];
 
 function isMobile(){
@@ -316,14 +316,15 @@ function showSelectedVehicles() {
       vehiclesSelectedSource.addFeature(iconFeature); 
   }
 
-  function addTrackingHistPointEvent(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
+  function addTrackingHistPointEvent(eventOrder, vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: trackingId,
+        //id: trackingId,
+        id: eventOrder,
         vehicleLicense: vehicleLicense,
-        elementId: 'trackingPoint',
+        elementId: 'eventPoint',
         name: getEventDescription(eventType)
       });
 
@@ -585,14 +586,14 @@ $('#datetimepicker2').datetimepicker('update');
 
             //var d = new Date(val.pos_date+date.getTimezoneOffset()*60*1000);
             var date = new Date(val.pos_date);
-		    var year = date.getFullYear();
-		    var month = pad(date.getMonth() + 1);
-		    var day = pad(date.getDate());
-		    var hours = pad(date.getHours());
-		    var minutes = pad(date.getMinutes());
-		    var seconds = pad(date.getSeconds());
+    		    var year = date.getFullYear();
+    		    var month = pad(date.getMonth() + 1);
+    		    var day = pad(date.getDate());
+    		    var hours = pad(date.getHours());
+    		    var minutes = pad(date.getMinutes());
+    		    var seconds = pad(date.getSeconds());
 
-   			var datestring = day + "/" + month + "/" + year + "<br>" + hours + ":" + minutes + ":" + seconds;
+       			var datestring = day + "/" + month + "/" + year + "<br>" + hours + ":" + minutes + ":" + seconds;
             //var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
 
             var check = "";
@@ -601,17 +602,104 @@ $('#datetimepicker2').datetimepicker('update');
             else
               check = "<input type='radio' id='selectRecent' name='selectRecent' value='" + val.vehicle_license + "'>";
             //$('#addr'+i).html("<td class='text-center'>" + check + "</td>" + "<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
-			$('#addr'+i).html("<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
-			$('#addr'+i).attr( 'name',val.vehicle_license);
+			     $('#addr'+i).html("<td class='text-center'>"+ icon +"</td><td>" + val.vehicle_license + "</td><td class='text-center'>" + datestring + "</td>");
+			      $('#addr'+i).attr( 'name',val.vehicle_license);
             $('#tab_logic').append('<tr id="addr'+(i+1)+'" name="" class="clickable-row"></tr>');
           }
           i++; 
         });
 
-		$('#recentDiv').height($(window).height()-200);
+		    $('#recentDiv').height($(window).height()-200);
         $('#myModalRecentPos').modal('show'); 
       });
   }
+
+  function addEvent2table(eventType, eventDate, lat, lon, geocoding, speed, altitude, heading){
+    if (geocoding=='' || geocoding==undefined) {
+      geocoding = "0";
+    }
+    var date = new Date(eventDate);
+    var year = date.getFullYear();
+    var month = pad(date.getMonth() + 1);
+    var day = pad(date.getDate());
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    var seconds = pad(date.getSeconds());
+    var datestring = day + "/" + month + "/" + year + " - " + hours + ":" + minutes + ":" + seconds;
+    var datestring_day = day + "/" + month + "/" + year;
+    var datestring_hour = hours + ":" + minutes + ":" + seconds;
+
+    var icon = getEventIcon(eventType);
+
+    $('#event'+eventIndex).html("<td class='text-center'><img src='"+ icon +"'/></td><td class='text-center'>" + datestring_day + "</td><td class='text-center'>" + datestring_hour + "</td><td class='text-center'><img onclick='javascript:openTooltipEvent(" + eventType + "," + eventDate + "," + lat + "," + lon + "," + geocoding + "," + speed + "," + altitude + "," + heading + ");' src='/img/info.png' /></td>");
+    $('#table_events').append('<tr id="event'+(eventIndex+1)+'" name="" class="clickable-row"></tr>');
+    eventIndex = eventIndex + 1;
+    
+  }
+
+  function showEvents(eventOrder) {
+    if ((eventIndex * 60 ) + 150 > $(window).height()-200) {
+      $('#eventsDiv').height($(window).height()-200);      
+    }
+
+    for (var i=0; i<eventIndex; i++)
+      $('#event'+i).removeClass('highlight'); 
+
+    $('#event'+eventOrder).addClass('highlight');
+
+
+/*    $('#eventsDiv').attr( 'maxHeight', $(window).height()-100);   
+    if ($('#eventsDiv').height() > $(window).height()-100) {
+      $('#eventsDiv').height($(window).height()-100);      
+    }*/
+    $('#myModalEvents').modal('show'); 
+  }
+
+  function initTableEvents() {
+    for (var i=0; i<eventIndex; i++) {
+      $('#event'+i).html("");
+    }
+    eventIndex=1;
+          
+  }
+
+  function openTooltipEvent(eventType, eventDate, lat, lon, geocoding, speed, altitude, heading) {
+      var icon = getEventIcon(eventType);
+      document.getElementById('tooltipEventIcon').innerHTML = "<img src='" + icon + "'/>";
+      document.getElementById('tooltipEventDescription').innerHTML = getEventDescription(eventType);
+
+      var date = new Date(eventDate);
+      var year = date.getFullYear();
+      var month = pad(date.getMonth() + 1);
+      var day = pad(date.getDate());
+      var hours = pad(date.getHours());
+      var minutes = pad(date.getMinutes());
+      var seconds = pad(date.getSeconds());
+
+      document.getElementById('tooltipEventDay').innerHTML = day + "/" + month + "/" + year;
+      document.getElementById('tooltipEventHour').innerHTML = hours + ":" + minutes + ":" + seconds;
+      document.getElementById('tooltipEventLatitude').innerHTML = lat.toFixed(4);
+      document.getElementById('tooltipEventLongitude').innerHTML = lon.toFixed(4);
+      if (geocoding=='0') {
+        $.getJSON('https://nominatim.openstreetmap.org/reverse', {
+        lat: lat,
+        lon: lon,
+        format: 'json',
+        }, function (result) {
+          document.getElementById('tooltipEventLocation').innerHTML = result.display_name;
+        }); 
+      } else {
+        document.getElementById('tooltipEventLocation').innerHTML = geocoding;        
+      }
+      document.getElementById('tooltipEventSpeed').innerHTML = speed.toFixed(1);
+      document.getElementById('tooltipEventAltitude').innerHTML = altitude.toFixed(1);
+      document.getElementById('tooltipEventHeading').innerHTML = heading.toFixed(1);
+
+      $('#tooltipEventHeader').css('background-color', '#009900');
+
+      $('#myModalTooltipEventPoint').modal('show');
+  }
+
 
   function openMenuKyros() {
     $('#myModalMenuKyros').modal('show');

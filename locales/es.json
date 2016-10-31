@@ -101,7 +101,12 @@
 	"share_nok": "share_nok",
 	"email_address_nok": "La dirección de correo es incorrecta",
 	"recent_pos": "Posiciones recientes",
-	"recent": "Últimas"
+	"recent": "Últimas",
+	"more_info": "Info",
+	"events": "Eventos",
+	"day": "Día",
+	"hour": "Hora"
+
 
 
 

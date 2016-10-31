@@ -102,7 +102,11 @@
 	"share_error": "Error in sending e-mail. Try again",
 	"email_address_nok": "e-mail address incorrect",
 	"recent_pos": "Recent positions",
-	"recent": "last"
+	"recent": "last",
+	"more_info": "Info",
+	"events": "Events",
+	"day": "Day",
+	"hour": "Hour"
 
 
 

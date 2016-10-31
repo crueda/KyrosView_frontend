@@ -109,7 +109,7 @@ function loadDefaultVehicleDataSync() {
   });
 }
 
-function reloadDefaultVehicleData() {
+function reloadVehiclesData() {
   if (mapmode==0) {
     $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
      $.each( data, function( key, val ) {
@@ -413,6 +413,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var eventLonHist = [];
     var eventTypeHist = [];
     var eventDateHist = [];
+    var eventOrderHist = [];
     var minLon=0;
     var minLat=0;
     var maxLon=0;
@@ -439,13 +440,18 @@ function addVehicleSelectedToMap(vehicleLicense) {
         } 
         else {
           document.getElementById('attr-graph-hist').style.display = 'block';
+          initTableEvents();
 
           $.each( data.result, function( key, val ) {
             var lat = val.location.coordinates[1];
             var lon = val.location.coordinates[0];
+            var speed = val.speed;
+            var altitude = val.altitude;
+            var heading = val.heading;
             var trackingId = val.tracking_id;
             var posDate = val.pos_date;
             var vehicleLicense = val.vehicle_license;
+            var geocoding = val.geocoding;
             if (initPos==true) {
               minLon=lon;
               minLat=lat;
@@ -478,7 +484,10 @@ function addVehicleSelectedToMap(vehicleLicense) {
                 eventLonHist.push(lon);
                 eventTypeHist.push(val.events[i].event_type);
                 eventDateHist.push(val.events[i].event_date);
+                eventOrderHist.push(eventIndex);
 
+                // añadir evento a al tabla de eventos
+                addEvent2table(val.events[i].event_type, val.events[i].event_date, lat, lon, geocoding, speed, altitude, heading);
               }
             }
 
@@ -530,7 +539,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
         // pintar los eventos
         for (i=0; i<eventLatHist.length;i++)
         {
-          addTrackingHistPointEvent(vehicleLicenseHist,eventTrackingIdHist[i],eventTypeHist[i], eventDateHist[i], eventLatHist[i], eventLonHist[i]);  
+          addTrackingHistPointEvent(eventOrderHist[i], vehicleLicenseHist,eventTrackingIdHist[i],eventTypeHist[i], eventDateHist[i], eventLatHist[i], eventLonHist[i]);  
         }
 
 
@@ -540,7 +549,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
 
 
 <script>
- window.onload = function() {setInterval(reloadDefaultVehicleData,5000);};
+ window.onload = function() {setInterval(reloadVehiclesData,5000);};
  
  // *******************************
  // Sources y Layers 
@@ -719,6 +728,14 @@ var mapPointSource = new ol.source.Vector({
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
  
+ /*$(window).on('resize', function(){
+     if ($(this).height() <= 800){
+          $('.content').css('max-height', '500px'); //set max height
+     } else{
+          $('.content').css('max-height', ''); 
+     }
+   }).resize()*/
+
 $('#tab_logic').on('click', '.clickable-row', function(event) {
   if($(this).hasClass('highlight')){
     var index = selectedRecentVehicles.indexOf($(this).attr('name'));
@@ -783,23 +800,10 @@ $("#vehiclePhoto").fileinput({
   
   $('#okButtonCalendar').click(function(){
     var finit = document.getElementById('initDate').value; 
-    //var finit_date = Date.parse(finit); 
-    //var finit_date = moment(finit).format('DD/MM/YYYY H:m A');
-    //var finit_date = moment(finit).format('DD/MM/YYYY H:m A');
-    //moment(moment("10/15/2014 9:00", "MM/DD/YYYY HH:mm").unix()*1000)
-    var epoch = moment("10/15/2014 9:00").unix();
-    var finit_moment = moment(finit, "DD/MM/YYYY H:m A");
     var finit_epoch = moment(moment(finit, "MM/DD/YYYY H:m A").unix()*1000);
-    //console.log(a.valueOf());
-    //var finit_epoch = moment(finit_date).unix()*1000;
     var fend = document.getElementById('endDate').value; 
-    //var fend_date = Date.parse(fend); 
-    //var fend_date = moment(fend).format('DD/MM/YYYY H:m A');
-    //var fend_epoch = fend_date.getTime();
     var fend_epoch = moment(moment(fend, "MM/DD/YYYY H:m A").unix()*1000);
     
-    console.log("init:" + finit_epoch);
-    console.log("init:" + fend_epoch);
     var deviceIdHist = monitorDevices[$('#licenseHist').val()];
     var vehicleLicenseHist = $('#licenseHist').val();
 
@@ -1198,6 +1202,55 @@ $("#vehiclePhoto").fileinput({
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade" id="myModalEvents" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel"><%= __('events') %></h4>
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+      <div class="container monitorDiv" id="eventsDiv">
+          <div class="row">
+              <div class="col-sm-6 column">
+      <form id="recentPosForm" name="recentPosForm">
+      <!--table class="table table-bordered table-hover" id="tab_logic"-->
+      <table class="table table-bordered table-hover" data-click-to-select="true" id="table_events">
+        <thead>
+          <tr >
+            <th class="text-center">
+              <%= __('icon') %>
+            </th>
+            <th class="text-center">
+              <%= __('day') %>
+            </th>
+            <th class="text-center">
+              <%= __('hour') %>
+            </th>
+            <th class="text-center">
+              <%= __('more_info') %>
+            </th>
+            
+          </tr>
+        </thead>
+        <tbody>
+            <tr id='event1' class="clickable-row"></tr>
+        </tbody>
+      </table>
+      </form>
+    </div>
+          
+          </div>
+      </div>
+
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="modal fade" id="myModalShare" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1460,6 +1513,66 @@ $("#vehiclePhoto").fileinput({
 
       </div> <!-- /.modal-footer -->
 
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div style="z-index: 10000;" class="modal fade" id="myModalTooltipEventPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header" id="tooltipEventHeader">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+         <table class="tooltip-header-table" border="0">
+            <tr>
+              <td id="tooltipEventIcon" width="100"></td>
+              <td><b><font color="black" id="tooltipEventDescription">---</font></b></td>
+            </tr>
+            </table>
+
+
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+          <div class="form-group">
+          
+            <table border="0">
+            <tr>
+              <td width="25%"><b><%= __('day') %></b>&nbsp;</td>
+              <td><font color="black" id="tooltipEventDay">---</font></td>
+            </tr>
+            <tr>
+              <td width="25%"><b><%= __('hour') %></b>&nbsp;</td>
+              <td><font color="black" id="tooltipEventHour">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('coordinates') %>&nbsp;</b></td>
+              <td><font color="black" id="tooltipEventLatitude">---</font>, <font color="black" id="tooltipEventLongitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('speed') %> (Km/h)&nbsp;</b></td>
+              <td><font color="black" id="tooltipEventSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('altitude') %> (m)&nbsp;</b></td>
+              <td><font color="black" id="tooltipEventAltitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('heading') %> (º)&nbsp;</b></td>
+              <td><font color="black" id="tooltipEventHeading">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('geocoding') %>&nbsp;</b></td>
+              <td valign="top"><font color="black" id="tooltipEventLocation">---</font></td>
+            </tr>
+          </table>
+            
+         </div> <!-- /.form-group -->
+
+      </div> <!-- /.modal-body -->
+
+      </div> <!-- /.modal-footer -->
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -2029,17 +2142,23 @@ var displayTooltipInfo = function(evt) {
     if (feature.get('elementId')=='trackingPoint') {
       openTooltipTrackingPoint(feature.get('vehicleLicense'), feature.get('id'));
     }
+    else if (feature.get('elementId')=='eventPoint') {
+      info.tooltip('hide');
+      showEvents(feature.get('id')); 
+    }
     else if (feature.get('elementId')=='device') {
+      info.tooltip('hide');
     //if (isMobile()) {
       openTooltip(feature.get('id'));
 
       // Muestro ultimos trackings solo si no es el dispositivo por defecto
       if (feature.get('id')!='<%=vehicleLicense%>')
+        info.tooltip('hide');
         showLastTrackings(feature.get('id'), 7);
     //} else {
-      info.tooltip('hide');
     }
     else if (feature.get('elementId')=='positionPoint') {
+      info.tooltip('hide');
       openTooltipMapPoint(feature.get('lat'), feature.get('lon'));
     }
   }

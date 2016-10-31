@@ -159,7 +159,7 @@
   	"MANUAL": {name: "manual", description: "Alarma manual"},
   	"LOW_BATTERY": {name: "low_battery", description: "Bateria baja"},
   	"MAX_SPEED": {name: "max_speed", description: "Velocidad máxima excedida"},
-  	"VEHICLE_STARTED": {name: "VEHICLE_STARTED", description: "Arranque"},
+  	"VEHICLE_STARTED": {name: "start", description: "Arranque"},
   	"VEHICLE_STOPPED": {name: "stop", description: "Parada"},
   	"SERVICE_STARTED": {name: "service_started", description: "Inicio de servicio"},
   	"SERVICE_STOPPED": {name: "service_stopped", description: "Parada de servicio"},
