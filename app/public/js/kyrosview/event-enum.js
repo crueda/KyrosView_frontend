@@ -1,4 +1,6 @@
  var EventEnum = {
+  0: "EVENTS",
+  902: "ALARM",
   902: "ALARM",
   903: "PANIC",
   904: "AXA_PANIC",
@@ -149,7 +151,8 @@
   1054: "BACK_DOOR_CLOSING",
   1055: "JAMMER",
   properties: {
-  	"ALARM": {name: "alarm", description: "Alarma"},
+    "EVENTS": {name: "info", description: "Eventos"},
+    "ALARM": {name: "alarm", description: "Alarma"},
   	"PANIC": {name: "panic", description: "Pánico"},
   	"AXA_PANIC": {name: "axa_panic", description: "Pánico"},
   	"THEFT": {name: "theft", description: "Robo"},

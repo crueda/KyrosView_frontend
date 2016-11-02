@@ -443,5 +443,5 @@ table {
 
 
 #monitorDiv{
-    overflow-y: auto;
+    overflow-y: scroll;
 }

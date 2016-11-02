@@ -401,8 +401,6 @@ function addVehicleSelectedToMap(vehicleLicense) {
  function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
     //clearMapHistoric();
     //clearMapSelected();
-    clearMap();
-    mapmode = 1;
 
     var latHist = [];
     var lonHist = [];
@@ -414,6 +412,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var eventTypeHist = [];
     var eventDateHist = [];
     var eventOrderHist = [];
+    var groupEvent = [];
     var minLon=0;
     var minLat=0;
     var maxLon=0;
@@ -424,6 +423,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var index = 0;
 
     var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
+    console.log (urlJson);
     document.getElementById('attr-loading').style.display = 'block';
       $.getJSON( urlJson, function( data ) {
         if (data.status == 'nok') {
@@ -439,6 +439,10 @@ function addVehicleSelectedToMap(vehicleLicense) {
           $('#myModalMsg').modal('show');
         } 
         else {
+
+          clearMap();
+          mapmode = 1;
+
           document.getElementById('attr-graph-hist').style.display = 'block';
           initTableEvents();
 
@@ -475,7 +479,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
             latHist.push(lat);
             lonHist.push(lon);
             posDateHist.push(posDate);
-
+            groupEvent = [];
             // comprobar eventos
             if (val.events.length>0) {
               for (var i=0; i<val.events.length; i++) {
@@ -484,10 +488,24 @@ function addVehicleSelectedToMap(vehicleLicense) {
                 eventLonHist.push(lon);
                 eventTypeHist.push(val.events[i].event_type);
                 eventDateHist.push(val.events[i].event_date);
-                eventOrderHist.push(eventIndex);
+                eventOrderHist.push([eventIndex]);
+                if (val.events.length>1) {
+                  groupEvent.push(eventIndex);
+                }
 
                 // añadir evento a al tabla de eventos
                 addEvent2table(val.events[i].event_type, val.events[i].event_date, lat, lon, geocoding, speed, altitude, heading);
+                eventIndex = eventIndex + 1;
+                console.log("eventIndex: " + eventIndex);
+              }
+              // Si hay mas de 1 evento, pinto encima el icono de multievento ("i")
+              if (val.events.length>1) {
+                eventTrackingIdHist.push(trackingId);
+                eventLatHist.push(lat);
+                eventLonHist.push(lon);
+                eventTypeHist.push(0);
+                eventDateHist.push(val.events[val.events.length-1].event_date);
+                eventOrderHist.push(groupEvent);
               }
             }
 
@@ -520,20 +538,14 @@ function addVehicleSelectedToMap(vehicleLicense) {
           map.setView(new_view);
         }
 
-        // pintar historico
-        for (i=0; i<latHist.length;i++)
+
+        // pintar los puntos de tracking
+        for (i=1; i<latHist.length-1;i++)
         {
-          //setTimeout(function() {
-          if (i == 0) {
-            addTrackingHistPointStart(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);            
-          } else if (i == latHist.length -1 ) {
-            addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i], posDateHist[i]);            
-          } else {
+
             addTrackingHistPoint(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
             //addTrackingHistPointEffect(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
             
-          }
-          //}, 100*i);
         }
 
         // pintar los eventos
@@ -542,6 +554,11 @@ function addVehicleSelectedToMap(vehicleLicense) {
           addTrackingHistPointEvent(eventOrderHist[i], vehicleLicenseHist,eventTrackingIdHist[i],eventTypeHist[i], eventDateHist[i], eventLatHist[i], eventLonHist[i]);  
         }
 
+        // Punto inicial
+        addTrackingHistPointStart(vehicleLicenseHist, trackingIdHist[0], latHist[0], lonHist[0]);        
+
+        //punto final
+        addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[eventLatHist.length-1], latHist[eventLatHist.length-1], lonHist[eventLatHist.length-1]);    
 
       });      
   }  
@@ -768,18 +785,18 @@ $("#vehiclePhoto").fileinput({
   var yesterdayDate = new Date();
   yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-  //var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
-  //var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
+  var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+  var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
   $('#datetimepicker1').datetimepicker({
-      locale: 'en',
+      locale: 'es',
       //maxDate: today,
-      //defaultDate: today
-      defaultDate: yesterdayDate
+      defaultDate: today
+      //defaultDate: yesterdayDate
     });
   $('#datetimepicker2').datetimepicker({
-      locale: 'en',
-      //defaultDate: today2
-      defaultDate: nowDate
+      locale: 'es',
+      defaultDate: today2
+      //defaultDate: nowDate
     });
 
   /*
@@ -800,9 +817,11 @@ $("#vehiclePhoto").fileinput({
   
   $('#okButtonCalendar').click(function(){
     var finit = document.getElementById('initDate').value; 
-    var finit_epoch = moment(moment(finit, "MM/DD/YYYY H:m A").unix()*1000);
+    //var finit_epoch = moment(moment(finit, "MM/DD/YYYY H:m A").unix()*1000);
+    var finit_epoch = moment(moment(finit, "DD/MM/YYYY H:m").unix()*1000);
     var fend = document.getElementById('endDate').value; 
-    var fend_epoch = moment(moment(fend, "MM/DD/YYYY H:m A").unix()*1000);
+    //var fend_epoch = moment(moment(fend, "MM/DD/YYYY H:m A").unix()*1000);
+    var fend_epoch = moment(moment(fend, "DD/MM/YYYY H:m").unix()*1000);
     
     var deviceIdHist = monitorDevices[$('#licenseHist').val()];
     var vehicleLicenseHist = $('#licenseHist').val();
@@ -957,7 +976,7 @@ $("#vehiclePhoto").fileinput({
         <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
@@ -1378,7 +1397,7 @@ $("#vehiclePhoto").fileinput({
           <br>
           <table class="tooltip-details-table" border="0">
             <tr>
-              <td width="20%"><b><%= __('distance') %>&nbsp;</b></td>
+              <td width="30%"><b><%= __('distance') %>&nbsp;</b></td>
               <td width="80%"><font color="black" id="tooltipTotalDistance">---</font></td>
             </tr>
             <tr>
@@ -1486,7 +1505,7 @@ $("#vehiclePhoto").fileinput({
           
             <table border="0">
             <tr>
-              <td><b><%= __('date') %></b></td>
+              <td width="25%"><b><%= __('date') %></b></td>
               <td><font color="black" id="tooltipTrackingDate">---</font></td>
             </tr>
             <tr>
@@ -1504,6 +1523,10 @@ $("#vehiclePhoto").fileinput({
             <tr>
               <td><b><%= __('heading') %> (º)</b></td>
               <td><font color="black" id="tooltipTrackingHeading">---</font></td>
+            </tr>
+            <tr>
+              <td><b><%= __('geocoding') %>&nbsp;</b></td>
+              <td><font color="black" id="tooltipTrackingLocation">---</font></td>
             </tr>
           </table>
             

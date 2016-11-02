@@ -329,6 +329,9 @@ table.tooltip-header-table td {
     vertical-align: center;
 }
 
+table td {
+    vertical-align: top;
+}
 
 
 .monitorDiv{
