@@ -405,7 +405,12 @@ function showSelectedVehicles() {
                     position: coordinate,
                     positioning: 'center-center'
       });
-      map.addOverlay(greenFlagOverlay);*/
+      map.addOverlay(greenFlagOverlay);
+
+      elem.click(function(evt) {
+        console.log('click');
+      });
+      */
   }
 
     function addTrackingHistPointEnd(vehicleLicense, trackingId, lat, lon, posDate) {
@@ -675,7 +680,7 @@ $('#datetimepicker2').datetimepicker('update');
       $('#event'+i).html("");
     }
     eventIndex=1;
-    console.log("eventIndex: " + eventIndex);
+    //console.log("eventIndex: " + eventIndex);
           
   }
 
@@ -833,8 +838,8 @@ function openTooltipTrackingPoint(vehicleLicense, trackingId) {
 function openTooltipMapPoint(latitude, longitude) {
     
 
-      document.getElementById('tooltipMapLatitude').innerHTML = latitude;
-      document.getElementById('tooltipMapLongitude').innerHTML = longitude;
+      document.getElementById('tooltipMapLatitude').innerHTML = latitude.toFixed(4);
+      document.getElementById('tooltipMapLongitude').innerHTML = longitude.toFixed(4);
 
       //$('#tooltipTrackingHeader').css('background-color', '#66c2ff');
 

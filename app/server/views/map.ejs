@@ -30,6 +30,7 @@
   <script type="text/javascript" src="/js/external/ol3-layerswitcher.js" type="text/javascript"></script>
     
 <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
+<script type="text/javascript" src="https://raw.githubusercontent.com/seiyria/bootstrap-slider/master/src/js/bootstrap-slider.js></script>
 
 
 <script type="text/javascript" src="js/kyrosview/event-enum.js"> </script>
@@ -496,7 +497,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
                 // añadir evento a al tabla de eventos
                 addEvent2table(val.events[i].event_type, val.events[i].event_date, lat, lon, geocoding, speed, altitude, heading);
                 eventIndex = eventIndex + 1;
-                console.log("eventIndex: " + eventIndex);
+                //console.log("eventIndex: " + eventIndex);
               }
               // Si hay mas de 1 evento, pinto encima el icono de multievento ("i")
               if (val.events.length>1) {
@@ -752,6 +753,12 @@ var mapPointSource = new ol.source.Vector({
           $('.content').css('max-height', ''); 
      }
    }).resize()*/
+
+$("#ex13").slider({
+    ticks: [0, 100, 200, 300, 400],
+    ticks_labels: ['$0', '$100', '$200', '$300', '$400'],
+    ticks_snap_bounds: 30
+});
 
 $('#tab_logic').on('click', '.clickable-row', function(event) {
   if($(this).hasClass('highlight')){
@@ -1395,10 +1402,11 @@ $("#vehiclePhoto").fileinput({
             </tbody>
           </table>
           <br>
+          <div class="table-responsive">
           <table class="tooltip-details-table" border="0">
             <tr>
-              <td width="30%"><b><%= __('distance') %>&nbsp;</b></td>
-              <td width="80%"><font color="black" id="tooltipTotalDistance">---</font></td>
+              <td><b><%= __('distance') %>&nbsp;</b></td>
+              <td><font color="black" id="tooltipTotalDistance">---</font></td>
             </tr>
             <tr>
               <td><b><%= __('average_speed') %>&nbsp;</b></td>
@@ -1409,6 +1417,7 @@ $("#vehiclePhoto").fileinput({
               <td><font color="black" id="tooltipTotalConsume">---</font></td>
             </tr>
           </table>
+          </div>
 
         </div> 
 
@@ -1622,6 +1631,8 @@ $("#vehiclePhoto").fileinput({
               <td><font color="black" id="tooltipMapLatitude">---</font>, <font color="black" id="tooltipMapLongitude">---</font></td>
             </tr>
           </table>
+
+          <input id="ex13" type="text" data-slider-ticks="[0, 100, 200, 300, 400]" data-slider-ticks-snap-bounds="30" data-slider-ticks-labels='["$0", "$100", "$200", "$300", "$400"]'/>
             
          </div> <!-- /.form-group -->
       </div> <!-- /.modal-body -->
@@ -2236,6 +2247,9 @@ $(map.getViewport()).on("click", function(e) {
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
+
+  <script type="text/javascript" src="https://raw.githubusercontent.com/seiyria/bootstrap-slider/master/src/js/bootstrap-slider.js></script>
+
 
      </body>
      </html>
