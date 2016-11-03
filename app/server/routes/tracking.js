@@ -307,6 +307,47 @@ router.get('/tracking1/vehicles', function(req, res)
     }
 });
 
+router.get('/tracking1radio', function(req, res)
+{
+    if (req.session.user == null){
+      res.redirect('/');
+    } 
+    else {
+      var latitude = req.query.latitude;
+      var longitude = req.query.longitude;
+      var radio = req.query.radio;
+      log.info("GET: /tracking1radio?latitude="+latitude+"&longitude="+longitude+"&radio="+radio);
+      if (latitude==null || longitude==null || radio==null) {
+        res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+      } 
+      else {
+        TrackingModel.getTracking1Radio(latitude, longitude, radio,function(error, data)
+        {
+          if (data == null)
+          {
+            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+          }
+          else
+          {
+            //si existe enviamos el json
+            if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json(data)
+            }
+            else if (typeof data == 'undefined' || data.length == 0)
+            {
+              res.status(200).json([])
+            }
+            //en otro caso mostramos un error
+            else
+            {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+          }
+        });    
+      }
+    }
+});
 
 /**
  * @api {get} /api/last-trackings/vehicle/:vehicleLicense Últimas posiciones de un vehiculo

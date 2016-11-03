@@ -1,7 +1,22 @@
-# KyrosView - Registro de cambios
+# Registro de cambios
 Todos los cambios importantes realizados en este proyecto será documentado en este fichero
 
-## [1.1.0] - 2016-10-xx
+## [2.0.0] - 2016-11-04
+### Funcionalidades añadidas
+- Busqueda de dispositivos cercanos:
+	- Se permite la busqueda de dispositivos cercanos desde un punto del mapa.
+- Busqueda de puntos de interes (PDI) cercanos:
+	- Se permite la busqueda de PDIs cercanos desde un punto del mapa.
+- Últimas posiciones:
+	- Lista de ultimos dispositivos que han enviado posición.
+- Gestión de eventos:
+	- Se muestran los eventos, tanto en tioempo real como en histórico.
+	- Ventana detallada de eventos, pulsando sobre el icono de algún evento.
+
+### Mejoras y funcionalidades menores
+- Acesso a histórico desde el tooltip.
+
+## [1.1.0] - 2016-10-30
 ### Funcionalidades añadidas
 - Icono para disositivo:
 	- Se permite la selección de un icono para el dispositivo.
@@ -13,6 +28,7 @@ Todos los cambios importantes realizados en este proyecto será documentado en e
 - Opción de búsqueda de dispositivo (en menú principal).
 - Compartir ubicación de un vehículo
 	- Se envia link por correo electrónico que permite el seguimiento del vehículo durante las siguientes 24 horas.
+
 ### Mejoras y funcionalidades menores
 - Eliminada precarga de iconos para evitar ralentizar las poticiones de usuario.
 

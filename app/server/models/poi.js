@@ -46,6 +46,15 @@ poiModel.getPoisFromBox = function(boxData,callback)
     });
 }
 
+poiModel.getPoisFromRadio = function(username,lat, lon, radio, callback)
+{
+    mongoose.connection.db.collection('POIS', function (err, collection) {
+        collection.find({'username': username, 'location': {$near: { $geometry: { type: "Point" , coordinates: [ parseFloat(lon) , parseFloat(lat) ]}, $maxDistance: parseInt(radio)}}}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });
+}
+
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = poiModel;
 

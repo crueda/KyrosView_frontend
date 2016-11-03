@@ -62,6 +62,18 @@ trackingModel.getTracking1 = function(callback)
     });
 }
 
+trackingModel.getTracking1Radio = function(lat, lon, radio, callback)
+{
+    //log.info("radio:" + radio);
+    mongoose.connection.db.collection('TRACKING1', function (err, collection) {
+        collection.find({'location': {$near: { $geometry: { type: "Point" , coordinates: [ parseFloat(lon) , parseFloat(lat) ]}, $maxDistance: parseInt(radio)}}}).toArray(function(err, docs) {
+        //collection.find({location:{ $near :{$geometry: { type: "Point",  coordinates: [ -3, 40.78 ] },$maxDistance: 50000}}}).toArray(function(err, docs) {
+            //log.info("docs:" + docs);
+            callback(null, docs);
+        });
+    });
+}
+
 trackingModel.getTracking1FromVehicle = function(vehicleLicense,callback)
 {
     mongoose.connection.db.collection('TRACKING_'+vehicleLicense, function (err, collection) {

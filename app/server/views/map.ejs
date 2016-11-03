@@ -21,6 +21,8 @@
 
 <link rel="stylesheet" href="./css/fileinput.min.css?1" type="text/css">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.4.0/css/bootstrap-slider.min.css" type="text/css">
+
 
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
@@ -30,7 +32,6 @@
   <script type="text/javascript" src="/js/external/ol3-layerswitcher.js" type="text/javascript"></script>
     
 <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
-<script type="text/javascript" src="https://raw.githubusercontent.com/seiyria/bootstrap-slider/master/src/js/bootstrap-slider.js></script>
 
 
 <script type="text/javascript" src="js/kyrosview/event-enum.js"> </script>
@@ -541,6 +542,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
 
 
         // pintar los puntos de tracking
+      
         for (i=1; i<latHist.length-1;i++)
         {
 
@@ -550,6 +552,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
         }
 
         // pintar los eventos
+        
         for (i=0; i<eventLatHist.length;i++)
         {
           addTrackingHistPointEvent(eventOrderHist[i], vehicleLicenseHist,eventTrackingIdHist[i],eventTypeHist[i], eventDateHist[i], eventLatHist[i], eventLonHist[i]);  
@@ -559,7 +562,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
         addTrackingHistPointStart(vehicleLicenseHist, trackingIdHist[0], latHist[0], lonHist[0]);        
 
         //punto final
-        addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[eventLatHist.length-1], latHist[eventLatHist.length-1], lonHist[eventLatHist.length-1]);    
+        addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[trackingIdHist.length-1], latHist[trackingIdHist.length-1], lonHist[trackingIdHist.length-1]);    
 
       });      
   }  
@@ -754,10 +757,51 @@ var mapPointSource = new ol.source.Vector({
      }
    }).resize()*/
 
-$("#ex13").slider({
-    ticks: [0, 100, 200, 300, 400],
-    ticks_labels: ['$0', '$100', '$200', '$300', '$400'],
-    ticks_snap_bounds: 30
+
+
+$('#aboutDiv').height($(window).height()-100); 
+$('#aboutTextDiv').height($(window).height()-100); 
+//$('#myModalAbout').width($(window).width()-200); 
+
+//$('#aboutDiv').width($(window).width()-200); 
+$('#aboutDiv').width(540); 
+//$('#aboutTextDiv').width($(window).width()-200); 
+$('#aboutTextDiv').width(540); 
+
+
+$("#slider_distance_devices").slider({
+    ticks: [10, 100, 200, 300, 400, 500, 600],
+    //ticks_labels: ['10', '100', '200', '300', '400', '500', '600'],
+    ticks_snap_bounds: 50,
+    value: 300,
+    tooltip: 'always'
+});
+$("#slider_distance_devices").slider("disable");
+
+$("#slider_check_devices").click(function() {
+  if(this.checked) {
+    $("#slider_distance_devices").slider("enable");
+  }
+  else {
+    $("#slider_distance_devices").slider("disable");
+  }
+});
+
+$("#slider_distance_pois").slider({
+    ticks: [25, 50, 75, 100, 125, 150, 175, 200],
+    ticks_snap_bounds: 50,
+    value: 100,
+    tooltip: 'always'
+});
+$("#slider_distance_pois").slider("disable");
+
+$("#slider_check_pois").click(function() {
+  if(this.checked) {
+    $("#slider_distance_pois").slider("enable");
+  }
+  else {
+    $("#slider_distance_pois").slider("disable");
+  }
 });
 
 $('#tab_logic').on('click', '.clickable-row', function(event) {
@@ -856,6 +900,21 @@ $("#vehiclePhoto").fileinput({
     getVehicleIconSync(vehicleLicenseFind);
     showTrackingFind(vehicleLicenseFind);
     */
+  });
+
+  $('#okButtonFindNear').click(function(){
+    if ($("#slider_check_devices").prop('checked')) {
+      var lat = document.getElementById('tooltipMapLatitude').innerHTML;
+      var lon = document.getElementById('tooltipMapLongitude').innerHTML;
+      var radio = document.getElementById('slider_distance_devices').value;
+      showVehiclesNear(lat, lon, radio*1000);
+    }
+    if ($("#slider_check_pois").prop('checked')) {
+      var lat = document.getElementById('tooltipMapLatitude').innerHTML;
+      var lon = document.getElementById('tooltipMapLongitude').innerHTML;
+      var radio = document.getElementById('slider_distance_pois').value;
+      showPoisNear('<%=user%>', lat, lon, radio*1000);
+    }
   });
 
   $('#okButtonShare').click(function(){
@@ -1166,6 +1225,36 @@ $("#vehiclePhoto").fileinput({
         <button class="form-control btn btn-primary"><%= __('consult') %></button>
       </div>
     </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="myModalAbout" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <div class="caja">        
+        <img onclick="javascript:backMenuAbout();" src="/img/back.png"/>
+        </div>
+        <div class="caja">
+        <h4 class="modal-title" id="myModalLabel"><%= __('about_kyros') %></h4>
+        </div>
+        <br>
+      </div> <!-- /.modal-header -->
+
+      <div class="container monitorDiv" id="aboutDiv">
+      <div class="modal-body">
+
+<object id="aboutTextDiv" data="./changelog/index.html" width="100" height="100" type="text/html">
+    KyrosView
+</object>
+
+
+    </div> <!-- /.modal-body -->
+    </div>
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1624,17 +1713,59 @@ $("#vehiclePhoto").fileinput({
 
       </div> <!-- /.modal-header -->
       <div class="modal-body">
-          <div class="form-group">          
-            <table border="0">
+          <div class="form-group table-responsive">          
+            <table>
             <tr>
-              <td><b><%= __('coordinates') %></b></td>
+              <td><b><%= __('coordinates') %>:&nbsp;</b></td>
               <td><font color="black" id="tooltipMapLatitude">---</font>, <font color="black" id="tooltipMapLongitude">---</font></td>
             </tr>
-          </table>
+            <tr>
+              <td><b><%= __('geocoding') %>:&nbsp;</b></td>
+              <td><font color="black" id="tooltipMapLocation">---</font></td>
+            </tr>
 
-          <input id="ex13" type="text" data-slider-ticks="[0, 100, 200, 300, 400]" data-slider-ticks-snap-bounds="30" data-slider-ticks-labels='["$0", "$100", "$200", "$300", "$400"]'/>
-            
+          </table>            
          </div> <!-- /.form-group -->
+         <br>
+         <br>
+
+          <div class="form-group">  
+              <div class='container-fluid'>        
+              <div class="row">
+                <div class='col-md-4'>
+                  <input id="slider_check_devices" type="checkbox"/>&nbsp;<%= __('nearby_devices') %>
+                </div>
+                <div class='col-md-4'>                
+                  <input id="slider_distance_devices" type="text"/>&nbsp;&nbsp;&nbsp;Kms.
+                </div>
+               </div>
+               </div>
+
+                     
+         </div> <!-- /.form-group -->
+
+         <br>
+
+          <div class="form-group">  
+              <div class='container-fluid'>        
+              <div class="row">
+                <div class='col-md-4'>
+                  <input id="slider_check_pois" type="checkbox"/>&nbsp;<%= __('nearby_pois') %>
+                </div>
+                <div class='col-md-4'>                
+                  <input id="slider_distance_pois" type="text"/>&nbsp;&nbsp;&nbsp;Kms.
+                </div>
+               </div>
+               </div>
+
+                     
+         </div> <!-- /.form-group -->
+                   
+      <div id="okButtonFindNear" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary"><%= __('Ok') %></button>
+      </div>
+
+
       </div> <!-- /.modal-body -->
       </div> <!-- /.modal-footer -->
     </div><!-- /.modal-content -->
@@ -2248,7 +2379,7 @@ $(map.getViewport()).on("click", function(e) {
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
   <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
 
-  <script type="text/javascript" src="https://raw.githubusercontent.com/seiyria/bootstrap-slider/master/src/js/bootstrap-slider.js></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.4.0/bootstrap-slider.min.js"></script>
 
 
      </body>

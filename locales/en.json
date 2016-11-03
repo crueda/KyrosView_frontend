@@ -93,6 +93,7 @@
 	"wait": "Wait a moment, please",
 	"find": "Find",
 	"about": "About",
+	"about_kyros": "About KyrosView",
 	"delete": "Delete",
 	"icon_updated": "Icon updated",
 	"share": "Share position",
@@ -106,7 +107,9 @@
 	"more_info": "Info",
 	"events": "Events",
 	"day": "Day",
-	"hour": "Hour"
+	"hour": "Hour",
+	"nearby_devices": "Nearby devices",
+	"nearby_pois": "Nearby POIs"
 
 
 

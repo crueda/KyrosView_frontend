@@ -576,6 +576,44 @@ $('#datetimepicker2').datetimepicker('update');
 // 
 // --------------------------------------------------------------
 
+  function showVehiclesNear(lat, lon, radio) {
+    var api_url = '/api/tracking1radio?latitude='+lat+'&longitude='+lon+'&radio='+radio;
+    //console.log(api_url);
+    $.getJSON( api_url, function( data ) {
+      $.each( data, function( key, val ) {
+        if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1) {
+          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+        }
+
+        mapmode=2;
+      });
+    });    
+  }
+
+  function showPoisNear(username, lat, lon, radio) {
+    vectorPoiSource.clear();
+
+      var extent = map.getView().calculateExtent(map.getSize());
+      extent = ol.proj.transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
+
+      var fileJson = "/api/poi/radio?longitude="+lon+"&latitude="+lat+"&radio="+radio+"&username=" + username;
+      console.log(fileJson);
+      document.getElementById('attr-loading').style.display = 'block';
+        $.getJSON( fileJson, function( data ) {
+          $.each( data, function( key, val ) {
+              var lat = val.location.coordinates[1];
+              var lon = val.location.coordinates[0];
+              var poiId = val.id;
+              var poiName = val.name;
+              var poiIcon = val.icon;
+
+              addPoiPoint(poiId, poiName, poiIcon, lat, lon);
+          });
+          document.getElementById('attr-loading').style.display = 'none';
+        });  
+  
+  }
+
   function showRecentPos() {
 
       // Llamada a la api
@@ -730,6 +768,16 @@ $('#datetimepicker2').datetimepicker('update');
     $('#myModalFind').modal('hide');
     $('#myModalMenuKyros').modal('show');
   }
+
+  function menuAbout() {
+    $('#myModalMenuKyros').modal('hide');
+    $('#myModalAbout').modal('show');
+  }
+  
+  function backMenuAbout() {
+    $('#myModalAbout').modal('hide');
+    $('#myModalMenuKyros').modal('show');
+  }
   
   function backMenuDevices() {
     $('#myModalMonitor').modal('hide');
@@ -840,6 +888,15 @@ function openTooltipMapPoint(latitude, longitude) {
 
       document.getElementById('tooltipMapLatitude').innerHTML = latitude.toFixed(4);
       document.getElementById('tooltipMapLongitude').innerHTML = longitude.toFixed(4);
+      $.getJSON('https://nominatim.openstreetmap.org/reverse', {
+        lat: latitude,
+        lon: longitude,
+        format: 'json',
+        }, function (result) {
+          document.getElementById('tooltipMapLocation').innerHTML = result.display_name;
+      }); 
+
+
 
       //$('#tooltipTrackingHeader').css('background-color', '#66c2ff');
 
@@ -1610,9 +1667,9 @@ function addFeaturePointAt(p) {
           side: false
         }),
         new ol.featureAnimation[
-        "Bounce"](
+        "Null"](
         { speed: Number(0.8), 
-          duration: Number(760),
+          duration: Number(560),
           horizontal: /Slide/.test("Shake")
         })
       ]);
