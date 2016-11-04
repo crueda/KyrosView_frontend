@@ -485,13 +485,15 @@ function addVehicleSelectedToMap(vehicleLicense) {
             // comprobar eventos
             if (val.events.length>0) {
               for (var i=0; i<val.events.length; i++) {
-                eventTrackingIdHist.push(trackingId);
-                eventLatHist.push(lat);
-                eventLonHist.push(lon);
-                eventTypeHist.push(val.events[i].event_type);
-                eventDateHist.push(val.events[i].event_date);
-                eventOrderHist.push([eventIndex]);
-                if (val.events.length>1) {
+                if (val.events.length==1) {
+                  eventTrackingIdHist.push(trackingId);
+                  eventLatHist.push(lat);
+                  eventLonHist.push(lon);
+                  eventTypeHist.push(val.events[i].event_type);
+                  eventDateHist.push(val.events[i].event_date);
+                  eventOrderHist.push([eventIndex]);
+                }
+                else {
                   groupEvent.push(eventIndex);
                 }
 
@@ -545,8 +547,8 @@ function addVehicleSelectedToMap(vehicleLicense) {
       
         for (i=1; i<latHist.length-1;i++)
         {
-
-            addTrackingHistPoint(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
+          var bearing = getBearing(latHist[i-1], lonHist[i-1], latHist[i], lonHist[i]);
+            addTrackingHistPoint(vehicleLicenseHist, posDateHist[i], trackingIdHist[i], latHist[i], lonHist[i],bearing);    
             //addTrackingHistPointEffect(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);    
             
         }
@@ -689,7 +691,7 @@ var style2 =
   var lineStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
         //color: '#0000ff',
-        color: '#66c2ff',        
+        color: '#6675ff',        
         //color: '#'+Math.floor(Math.random()*16777215).toString(16),
         width: 4
     })
@@ -728,7 +730,7 @@ var mapPointSource = new ol.source.Vector({
   var lineStyleHist = new ol.style.Style({
     stroke: new ol.style.Stroke({
         //color: '#0000ff',
-        color: '#66c2ff',        
+        color: '#6675ff',        
         width: 3
     })
   });
@@ -1494,7 +1496,7 @@ $("#vehiclePhoto").fileinput({
           <div class="table-responsive">
           <table class="tooltip-details-table" border="0">
             <tr>
-              <td><b><%= __('distance') %>&nbsp;</b></td>
+              <td width="30%"><b><%= __('distance') %>&nbsp;</b></td>
               <td><font color="black" id="tooltipTotalDistance">---</font></td>
             </tr>
             <tr>

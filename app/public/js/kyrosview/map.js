@@ -68,6 +68,32 @@ function validarEmail( email ) {
         return true;
 }
 
+function radians(n) {
+  return n * (Math.PI / 180);
+}
+function degrees(n) {
+  return n * (180 / Math.PI);
+}
+
+function getBearing(startLat,startLong,endLat,endLong){
+  startLat = radians(startLat);
+  startLong = radians(startLong);
+  endLat = radians(endLat);
+  endLong = radians(endLong);
+
+  var dLong = endLong - startLong;
+
+  var dPhi = Math.log(Math.tan(endLat/2.0+Math.PI/4.0)/Math.tan(startLat/2.0+Math.PI/4.0));
+  if (Math.abs(dLong) > Math.PI){
+    if (dLong > 0.0)
+       dLong = -(2.0 * Math.PI - dLong);
+    else
+       dLong = (2.0 * Math.PI + dLong);
+  }
+
+  return (degrees(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
+}
+
 function clearMap() {
     document.getElementById('attr-graph-hist').style.display = 'none';
 
@@ -243,8 +269,13 @@ function showSelectedVehicles() {
       map.addOverlay(actualPosOverlay);
   }
 
-  function addTrackingHistPoint(vehicleLicense, trackingId, lat, lon) {
+  function addTrackingHistPoint(vehicleLicense, posDate, trackingId, lat, lon, bearing) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var date = new Date(posDate);
+      var hours = pad(date.getHours());
+      var minutes = pad(date.getMinutes());
+      var seconds = pad(date.getSeconds());
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
@@ -252,14 +283,17 @@ function showSelectedVehicles() {
         elementId: 'trackingPoint',
         vehicleLicense: vehicleLicense,
         //name: "<%= __('tracking_point') %>"
-        name: "Tracking"
+        //name: "Tracking"
+        name: hours+":"+minutes+":"+seconds
       });
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
          scale: 0.6,
-         rotation: 0,
-         src: './img/points/beacon_ball_blue.gif'
+         rotation: radians(bearing),
+         //src: './img/points/beacon_ball_blue.gif'
+         //src: './img/points/routePoint.png'
+         src: './img/points/arrow2.png'
         }))
       })];
 
@@ -273,17 +307,17 @@ function showSelectedVehicles() {
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: trackingId,
+        id: vehicleLicense,
         vehicleLicense: vehicleLicense,
-        elementId: 'trackingPoint',
+        elementId: 'device',
         name: getEventDescription(eventType)
       });
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         scale: 0.9,
+         scale: 0.6,
          rotation: 0,
-         src: getEventIconSmall(eventType)
+         src: getEventIcon(eventType)
         }))
       })];
 
@@ -297,17 +331,19 @@ function showSelectedVehicles() {
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: trackingId,
+        //id: trackingId,
+        id: vehicleLicense,
         vehicleLicense: vehicleLicense,
-        elementId: 'trackingPoint',
+        //elementId: 'trackingPoint',
+        elementId: 'device',
         name: getEventDescription(eventType)
       });
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         scale: 0.9,
+         scale: 0.6,
          rotation: 0,
-         src: getEventIconSmall(eventType)
+         src: getEventIcon(eventType)
         }))
       })];
 
@@ -351,25 +387,20 @@ function showSelectedVehicles() {
     return "";
   }
 
-  function getEventName(eventType) {
-    var evento = EventEnum[eventType];
-    if (evento!=undefined) {
-      return EventEnum.properties[evento].name;      
-    }
-    return "";
-  }
-
   function getEventIcon(eventType) {
     if (eventType==0) {
       return './images/multiEvent_40.png'; 
     } else {
-      return './images/' + getEventName(eventType) + '_info_40.png'; 
+       var evento = EventEnum[eventType];
+       if (evento!=undefined) {
+        return './images/' + EventEnum.properties[evento].icon; 
+      } else {
+        return "";
+      }
+
     }
   }
 
-  function getEventIconSmall(eventType) {
-    return './images/' + getEventName(eventType) + '_info_16.png'; 
-  }
 
     function addTrackingHistPointStart(vehicleLicense, trackingId, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
@@ -1465,6 +1496,7 @@ function addEmptyFeatureSelected(lon, lat) {
           image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
            scale: 0.8,
            src: './img/points/beacon_ball_blue.gif'
+           //src: './img/points/routePoint.png'
          }))
         }));
         vehiclesLineSource.addFeature(iconFeature); 
