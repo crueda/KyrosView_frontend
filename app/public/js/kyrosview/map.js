@@ -375,6 +375,38 @@ function showSelectedVehicles() {
       iconFeature.setStyle(iconStyle);
       
       vehiclesHistSource.addFeature(iconFeature); 
+
+
+  /*
+  var f, r = map.getView().getResolution() *10;
+  var f = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        vehicleLicense: vehicleLicense,
+        elementId: 'trackingPoint',
+        lon: lon,
+        lat: lat,
+        //name: "<%= __('position_map') %>"  
+        name: "Posición"
+  });
+  f.setStyle(iconStyle);
+vehiclesHistLayer.animateFeature (f, 
+      [ new ol.featureAnimation["Drop"](
+        { speed: Number(1.4), 
+          duration: Number(260),
+          side: false
+        }),
+        new ol.featureAnimation[
+        "Bounce"](
+        { speed: Number(0.8), 
+          duration: Number(760),
+          horizontal: /Slide/.test("Shake")
+        })
+      ]);
+  */
+
+
+
   }
 
 

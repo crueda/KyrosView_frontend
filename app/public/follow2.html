@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kyros View</title>
+  <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+  
+  <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+
+  <link rel="stylesheet" href="./css/build/kyrosview.min.css?1" type="text/css">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+  
+
+<link rel="stylesheet" href="http://viglino.github.io/ol3-ext/control/swipecontrol.css" />
+
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://openlayers.org/en/v3.18.2/build/ol.js"></script>
+  
+  <script src="/js/external/bootstrap-treeview.js"></script>
+  <script src="/js/external/ol3-layerswitcher.js" type="text/javascript"></script>
+  <script src="/js/external/bootstrap3-typeahead.min.js" type="text/javascript"></script>
+
+
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  
+  <!--script type="text/javascript" src="http://openlayers.org/en/master/build/ol.js"></script-->
+  <!--script type="text/javascript" src="/js/external/ol.js"></script-->
+    <!--script src="http://openlayers.org/en/v3.18.2/build/ol.js"></script-->
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+  <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/featureanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/dropanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
+  <script type="text/javascript" src="http://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
+
+  <script type="text/javascript" src="js/event-enum.js"> </script>
+
+
+<script type="text/javascript" src="http://viglino.github.io/ol3-ext/control/swipecontrol.js"></script>
+
+<style>
+
+table.tooltip-details-table td {
+    vertical-align: top;
+}
+table.tooltip-header-table td {
+    vertical-align: center;
+}
+
+#attr-logo
+  {
+    position:absolute; 
+    z-index:100; 
+    top: 10px;
+    left: 5px;
+    width:230px; 
+    height:106px; 
+    background-image: url("./img/kyroslbs.png");
+    background-size: 100% 100%;
+    //background-size: cover;
+  }
+
+#attr-loading
+{
+    position:absolute; 
+    top: 0; left: 0; bottom: 0; right: 0;
+    margin: auto;
+    z-index:100; 
+    width:128px; 
+    height:128px; 
+    display: none;
+    background-image: url("./img/loading.gif");
+}
+#imageVehicle
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 600px;
+  height: auto;
+}
+
+#iconVehicle
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100px;
+  height: auto;
+}
+
+</style>
+
+<script type="text/javascript">    
+ var uuid = null;
+ var username = null;
+ var actualPosOverlay = null;
+ var defaultVehicleLastLat = 0;
+ var defaultVehicleLastLon = 0;
+ var defaultVehicleLastTrackingId = 0;
+
+ var realTimePoints = [];
+
+ var vehicleLicense = "";
+ var deviceId = 0;
+ var dateVehicle = 0;
+ var aliasVehicle = "";
+ var latitudeVehicle = 0;
+ var longitudeVehicle = 0;
+ var geocodingVehicle = "";
+ var speedVehicle = 0;
+ var headingVehicle = 0;
+ var iconBase64Vehicle = "";
+ var iconVehicle = "";
+ var iconCoverVehicle = "";
+ var iconRealTimeVehicle = "";
+ var iconAlarmVehicle = "";
+
+</script>
+
+<script type="text/javascript">    
+  function getUUID() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
+
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        if (unescape(decodeURI(tmp[0])) == 'uuid')
+          return unescape(decodeURI(tmp[1]));
+      }
+      return null;
+    }
+  }
+
+  function reloadVehicleData() {
+      $.getJSON( '/api/watch/'+uuid, function( data ) {
+       if (data.result=='nok') {
+        $('#myModalMsgLabel').text("Error al recuperar los datos del vehículo");
+        $('#myModalMsgLabel2').text("Por favor, informe del problema a logistica@kyroslbs.com");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsg').modal('show'); 
+        document.getElementById('attr-loading').style.display = 'none';
+      } else {
+
+        var trackingId = data.data.tracking[0].tracking_id;
+        var longitude = data.data.tracking[0].location.coordinates[0];
+        var latitude = data.data.tracking[0].location.coordinates[1];
+        var geocoding = data.data.tracking[0].geocoding;
+        var heading = data.data.tracking[0].heading;
+        var speed = data.data.tracking[0].speed;
+        var alarmActivated = data.data.tracking[0].alarm_activated;
+        var posDate = data.data.tracking[0].pos_date;
+        var deviceId = data.data.tracking[0].deviceId;
+
+        processDevice (trackingId,vehicleLicense,aliasVehicle,longitude,latitude,geocoding,speed,heading,alarmActivated, posDate, deviceId);
+
+
+         // comprobar eventos    
+         if (data.data.tracking[0].events.length>0) {
+          for (var i=0; i<data.data.tracking[0].events.length; i++) {
+            addTrackingPointEvent(vehicleLicense,trackingId,data.data.tracking[0].events[i].event_type, data.data.tracking[0].events[i].event_date,latitude,longitude);
+          }
+         }
+
+          moveMap2Vehicle(vehicleLicense);    
+          
+       }
+      }); 
+  }
+
+  function isMobile(){
+  //return true;
+    return (
+        (navigator.userAgent.match(/Android/i)) ||
+        (navigator.userAgent.match(/webOS/i)) ||
+        (navigator.userAgent.match(/iPhone/i)) ||
+        (navigator.userAgent.match(/iPod/i)) ||
+        (navigator.userAgent.match(/iPad/i)) ||
+        (navigator.userAgent.match(/BlackBerry/))
+    );
+  }
+
+function loadVehicleIconSync(vehicleLicense) {
+  // Leer el icono de un vehiculo en modo sincrono
+  $.ajax({ 
+    url: "/api/icon/vehicle/"+vehicleLicense, 
+    dataType: 'json', 
+    async: false, 
+    success: function(data){ 
+        iconBase64Vehicle = data;
+    } 
+  });
+}
+
+
+  function initVehicleData() {
+
+   $.getJSON( '/api/watch/'+uuid, function( data ) {
+     if (data.result=='nok') {
+        $('#myModalMsgLabel').text("Error al recuperar los datos del vehículo");
+        $('#myModalMsgLabel2').text("Por favor, informe del problema a logistica@kyroslbs.com");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsg').modal('show'); 
+        document.getElementById('attr-loading').style.display = 'none';
+     } else {
+        vehicleLicense=data.data.tracking[0].vehicle_license;
+        loadVehicleIconSync(vehicleLicense);
+        var trackingId = data.data.tracking[0].tracking_id;
+        var longitude = data.data.tracking[0].location.coordinates[0];
+        var latitude = data.data.tracking[0].location.coordinates[1];
+        var geocoding = data.data.tracking[0].geocoding;
+        var heading = data.data.tracking[0].heading;
+        var speed = data.data.tracking[0].speed;
+        var alarmActivated = data.data.tracking[0].alarm_activated;
+        var posDate = data.data.tracking[0].pos_date;
+        var deviceId = data.data.tracking[0].deviceId;
+
+        iconRealTimeVehicle = data.data.vehicle[0].icon_real_time;
+        iconCoverVehicle = data.data.vehicle[0].icon_cover;
+        iconAlarmVehicle = data.data.vehicle[0].icon_alarm;
+
+       processDevice (trackingId,vehicleLicense,aliasVehicle,longitude,latitude,geocoding,speed,heading,alarmActivated, posDate, deviceId);
+
+       // comprobar eventos
+       if (data.data.tracking[0].events.length>0) {
+        for (var i=0; i<data.data.tracking[0].events.length; i++) {
+          addTrackingPointEvent(vehicleLicense,trackingId,data.data.tracking[0].events[i].event_type, data.data.tracking[0].events[i].event_date,latitude,longitude);
+        }
+       }
+       
+       centerMap(longitude, latitude);
+
+       document.getElementById('attr-loading').style.display = 'none';
+      }
+    });
+   
+  }
+
+  function addTrackingPointEvent(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
+      var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+      var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: trackingId,
+        vehicleLicense: vehicleLicense,
+        elementId: 'trackingPoint',
+        name: "Evento: " + getEventDescription(eventType)
+      });
+
+      iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.9,
+         rotation: 0,
+         src: getEventIconSmall(eventType)
+        }))
+      })];
+
+      iconFeature.setStyle(iconStyle);
+      
+      vehiclesRealTimeSource.addFeature(iconFeature); 
+  }
+
+</script>
+
+<script>
+ window.onload = function() { setInterval(reloadVehicleData,5000);};
+ 
+ $(document).ready(function() {
+    $.ajaxSetup({ cache: false });
+
+    if (isMobile()) {
+      document.getElementById('attr-logo').style.display = 'none';
+    } else {
+      var width_window = $(window).width();  //getting windows width
+      var height_window = $(window).height();  //getting windows height
+      $("#attr-logo").css({ width: width_window*0.12279 + 'px' });
+      $("#attr-logo").css({ height: (width_window*0.12279)*0.46+ 'px' });
+
+    }
+
+    document.getElementById('attr-loading').style.display = 'block';
+
+    uuid=getUUID(); 
+    initVehicleData();
+
+    $('#tooltipHeader').css('background-color', '#F7BE81');
+  });  //ready
+
+</script>
+
+<script>
+
+  function closeTooltip() {
+    
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op <= 0.1){
+            clearInterval(timer);
+            document.getElementById('tooltip').style.display = 'none';
+        }
+        document.getElementById('tooltip').style.opacity = op;
+        document.getElementById('tooltip').style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.5;
+    }, 50);
+
+    document.getElementById('attr-logo').style.display = 'block';    
+  }
+
+
+  function getEventDescription(eventType) {
+    //var evento = EVENT_ENUM.getByValue('value', eventType);
+    var evento = EventEnum[eventType];
+    if (evento!=undefined) {
+      return EventEnum.properties[evento].description;      
+    }
+    return "";
+  }
+
+  function getEventName(eventType) {
+    var evento = EventEnum[eventType];
+    if (evento!=undefined) {
+      return EventEnum.properties[evento].name;      
+    }
+    return "";
+  }
+
+  function getEventIcon(eventType) {
+    return './images/' + getEventName(eventType) + '_info_40.png'; 
+  }
+
+  function getEventIconSmall(eventType) {
+    return './images/' + getEventName(eventType) + '_info_16.png'; 
+  }
+    
+  function updateTooltipData() {
+    var date = new Date(dateVehicle);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    var seconds = pad(date.getSeconds());
+    document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
+
+    document.getElementById('tooltipAlias').innerHTML = aliasVehicle;
+    document.getElementById('tooltipLatitude').innerHTML = latitudeVehicle.toFixed(4);
+    document.getElementById('tooltipLongitude').innerHTML = longitudeVehicle.toFixed(4);
+    document.getElementById('tooltipLocation').innerHTML = geocodingVehicle;
+    document.getElementById('tooltipSpeed').innerHTML = speedVehicle;
+    document.getElementById('tooltipHeading').innerHTML = headingVehicle;
+    if (geocodingVehicle=='' || geocodingVehicle==undefined) {      
+      $.getJSON('https://nominatim.openstreetmap.org/reverse', {
+      lat: latitudeVehicle,
+      lon: longitudeVehicle,
+      format: 'json',
+      }, function (result) {
+        document.getElementById('tooltipLocation').innerHTML = result.display_name;
+      }); 
+    }
+  }
+
+  function openTooltip(vehicleLicense) {
+    
+    if (iconBase64Vehicle!=null && iconBase64Vehicle!='') {
+      document.getElementById('tooltipIcon').innerHTML = "<img src='data:image/png;base64," + iconBase64Vehicle + "'/>";      
+    } else {
+      document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconVehicle + "'/>";      
+    }
+    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicense;
+
+    var date = new Date(dateVehicle);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hours = pad(date.getHours());
+    var minutes = pad(date.getMinutes());
+    var seconds = pad(date.getSeconds());
+
+      document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
+
+    document.getElementById('tooltipAlias').innerHTML = aliasVehicle;
+    document.getElementById('tooltipLatitude').innerHTML = latitudeVehicle.toFixed(4);
+    document.getElementById('tooltipLongitude').innerHTML = longitudeVehicle.toFixed(4);
+    document.getElementById('tooltipLocation').innerHTML = geocodingVehicle;
+    document.getElementById('tooltipSpeed').innerHTML = speedVehicle;
+    document.getElementById('tooltipHeading').innerHTML = headingVehicle;
+
+    
+    if (geocodingVehicle=='' || geocodingVehicle==undefined) {
+      $.getJSON('https://nominatim.openstreetmap.org/reverse', {
+      lat: latitudeVehicle,
+      lon: longitudeVehicle,
+      format: 'json',
+      }, function (result) {
+        document.getElementById('tooltipLocation').innerHTML = result.display_name;
+      }); 
+
+    }
+
+    
+    // Cargar el icono del vehiculo
+    var urlPostIconDevice = "/api/icon/vehicle/"+vehicleLicense;
+    $.getJSON( urlPostIconDevice, function( data ) {
+      if (data!='')
+        document.getElementById('iconVehicle').setAttribute( 'src', 'data:image/png;base64,'+data);
+      else
+        document.getElementById('iconVehicle').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
+
+    });
+
+    // Cargar la foto del vehiculo
+    var urlPostImageDevice = "/api/image/vehicle/"+vehicleLicense;
+    $.getJSON( urlPostImageDevice, function( data ) {
+      if (data!='')
+        document.getElementById('imageVehicle').setAttribute( 'src', 'data:image/png;base64,'+data);
+      else
+        document.getElementById('imageVehicle').setAttribute( 'src', 'data:image/png;base64,'+'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkeChAkHBCAqQAAACZpVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVAgb24gYSBNYWOV5F9bAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC');
+
+    });
+
+    $('#myModal').modal('show');
+  }
+
+function pad(value) {
+    if(value < 10) {
+        return '0' + value;
+    } else {
+        return value;
+    }
+}
+
+</script>
+
+</head>
+<body>
+ 
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="myModalLabel">Mensaje</h4>
+      </div> <!-- /.modal-header -->
+
+    <div class="modal-body">
+      <div class="form-group">
+        <h4 class="modal-title" id="myModalMsgLabel"></h4>
+      </div> 
+      <div class="form-group">
+        <h5 class="modal-title" id="myModalMsgLabel2"></h5>
+      </div> 
+
+      <div id="okButton" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+        <button class="form-control btn btn-primary">Ok</button>
+      </div>
+    </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div style="z-index: 10000;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" id="tooltipHeader">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true"><img src="./img/close.png"/></button-->
+        <!--h4 class="modal-title" id="myModalLabel">Log in</h4-->
+            <table class="tooltip-header-table" border="0">
+            <tr>
+              <td id="tooltipIcon" width="100"></td>
+              <td><b><font color="black" id="tooltipVehicleLicense">---</font></b></td>
+
+            </tr>
+            </table>
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+        <ul class="nav nav-tabs" id="tabContent">
+          <li class="active"><a href="#details" data-toggle="tab">Detalles</a></li>
+          <li><a href="#photo" data-toggle="tab">Foto</a></li>
+        </ul>
+  
+        <div class="tab-content">
+        <br>
+          <div id="details" class="tab-pane fade in active">
+          <table class="tooltip-details-table" border="0">
+            <tr>
+              <td width="20%"><b>Fecha&nbsp;</b></td>
+              <td width="80%"><font color="black" id="tooltipDate">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Alias&nbsp;</b></td>
+              <td><font color="black" id="tooltipAlias">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Coordenadas&nbsp;</b></td>
+              <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Velocidad&nbsp;</b></td>
+              <td><font color="black" id="tooltipSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Heading&nbsp;</b></td>
+              <td><font color="black" id="tooltipHeading">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Geocoding&nbsp;</b></td>
+              <td valign="top"><font color="black" id="tooltipLocation">---</font></td>
+            </tr>
+          </table>
+        </div>
+        
+       
+
+
+         <div id="photo" class="tab-pane fade">
+            <br>
+            <img id="imageVehicle" src=""/>
+            <br>
+         </div> 
+
+        <br>
+      </div> <!-- /.modal-body -->
+
+    </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div style="z-index: 10000;" class="modal fade" id="myModalTooltipTrackingPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header" id="tooltipTrackingHeader">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+            <table border="0">
+            <tr>
+              <td><b>Identificador: </b><font color="black" id="tooltipTrackingTrackingId">---</font></td>
+            </tr>
+            </table>
+
+      </div> <!-- /.modal-header -->
+
+      <div class="modal-body">
+
+          <div class="form-group">
+          
+            <table border="0">
+            <tr>
+              <td><b>Fecha</b></td>
+              <td><font color="black" id="tooltipTrackingDate">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Coordenadas</b></td>
+              <td><font color="black" id="tooltipTrackingLatitude">---</font>, <font color="black" id="tooltipTrackingLongitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Velocidad (Km/h)</b></td>
+              <td><font color="black" id="tooltipTrackingSpeed">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Altitud (m)</b></td>
+              <td><font color="black" id="tooltipTrackingAltitude">---</font></td>
+            </tr>
+            <tr>
+              <td><b>Heading (º)</b></td>
+              <td><font color="black" id="tooltipTrackingHeading">---</font></td>
+            </tr>
+          </table>
+            
+         </div> <!-- /.form-group -->
+
+      </div> <!-- /.modal-body -->
+
+      </div> <!-- /.modal-footer -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+  <div class="container-fluid">
+   <div class="row-fluid">
+    <div class="span12">
+     <div id="map" class="map">
+       <div id="attr-logo"></div>
+       <div id="attr-loading"></div>
+       <div id="info"></div>
+     </div>
+   </div>
+ </div>
+</div>
+
+<script>
+
+
+
+ // *******************************
+ // Sources y Layers 
+ // *******************************
+
+var style = 
+  [ new ol.style.Style(
+      { image: new ol.style.Shadow(
+        { radius: 6,
+        }),
+        stroke: new ol.style.Stroke(
+        { color: [0,0,0,0.3],
+          width: 1
+        }),
+        fill: new ol.style.Fill(
+          { color: [0,0,0,0.3]
+          }),
+        zIndex: -1
+      }),
+    new ol.style.Style(
+      { 
+
+      image: new ol.style.RegularShape(
+        { radius: 7,
+          radius2: 7,
+          points: 12,
+          //fill: new ol.style.Fill({ color: '#0052cc' })
+          fill: new ol.style.Fill({ color: '#008000' })
+        }),
+      stroke: new ol.style.Stroke(
+        { 
+        //color: '#66c2ff',        
+        color: '#00cc00',        
+        //color: '#'+Math.floor(Math.random()*16777215).toString(16),
+        width: 6
+        }),
+      fill: new ol.style.Fill(
+        { color: [0,0,255,0.3]
+        })
+      })
+  ];
+  style[1].getImage().getAnchor()[1] += 10;
+
+  var vehiclesRealTimeSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesRealTimeLayer = new ol.layer.Vector({
+   title: 'Última posición',   
+   style: style,
+   visible: true,
+   source: vehiclesRealTimeSource
+  });
+
+  var vehiclesPointSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesPointLayer = new ol.layer.Vector({
+   title: 'Puntos de tracking',   
+   style: style,
+   visible: true,
+   source: vehiclesPointSource
+  });
+
+  var vehiclesLineSource = new ol.source.Vector({
+   features: []
+  });
+  var vehiclesLineLayer = new ol.layer.Vector({
+    title: 'Línea de tracking',
+    visible: true,
+    style: style,
+    source: vehiclesLineSource
+  });
+ 
+  var projection = ol.proj.get('EPSG:3857');
+
+
+    function getVehicleIcon(vehicleLicense, vehicleState, posDate) 
+    {
+      if (iconBase64Vehicle!=null && iconBase64Vehicle!='')
+        return "data:image/png;base64,"+iconBase64Vehicle;
+
+      var now = new Date();
+      if (vehicleState==0)
+        if (posDate < now.getTime() - 600000) 
+          iconVehicle = iconCoverVehicle; // posicion antigua: 10 minutos
+        else
+            iconVehicle = iconRealTimeVehicle;  
+      else
+       iconVehicle = iconAlarmVehicle;
+
+      return './images/' + iconVehicle
+    }
+
+    function moveMap2Vehicle(vehicleLicense) {
+        var new_view = new ol.View({
+          center: ol.proj.transform([longitudeVehicle, latitudeVehicle], 'EPSG:4326', 'EPSG:3857'),
+          zoom: map.getView().getZoom(),
+          maxZoom:22,
+          minZoom:3
+        });
+        
+        var pan = ol.animation.pan({
+          duration: 3000,
+          source:  (map.getView().getCenter()),
+        });
+
+        map.beforeRender(pan);
+        map.setView(new_view);
+    }
+
+
+
+function drawNavigationPosition() {
+  // posicion actual
+  navigator.geolocation.getCurrentPosition(function(location) {
+    addActualPosition(location.coords.latitude,location.coords.longitude,location.coords.accuracy);
+  });
+}
+
+
+function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {             
+  if (vehicleState==undefined)
+    vehicleState = 0;
+
+  latitudeVehicle = lat;
+  longitudeVehicle = lon;
+  if (geocoding!=null && geocoding!=undefined)
+    geocodingVehicle = geocoding;
+  else
+    geocodingVehicle = "Dirección desconocida";
+
+  speedVehicle = speed;
+  headingVehicle = heading;
+
+  if ( (dateVehicle==null) || (dateVehicle<posDate) )
+  {  
+
+    // añadir la linea
+    addLineTracking(vehicleLicense, defaultVehicleLastTrackingId, defaultVehicleLastLat,defaultVehicleLastLon, trackingId, lat, lon);
+
+    // añadir el icono
+    add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
+
+    defaultVehicleLastLat = lat;
+    defaultVehicleLastLon = lon;
+    defaultVehicleLastTrackingId = trackingId;
+
+    updateTooltipData(vehicleLicense);   
+
+  }
+  dateVehicle = posDate;
+}
+
+function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
+  var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+  var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        id: vehicleLicense,
+        elementId: 'device',
+        name: alias
+  });
+
+  var image_src = getVehicleIcon(vehicleLicense, vehicleState, posDate); 
+  iconStyle = [new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+         scale: 0.8,
+         //rotation: heading,
+         src: image_src,
+         // size: [50, 50]
+       }))
+      })];
+  iconFeature.setStyle(iconStyle);
+
+  vehiclesRealTimeSource.clear();
+  vehiclesRealTimeSource.addFeature(iconFeature); 
+}
+
+
+
+  function addLineTracking(vehicleLicense, trackingId1, lat1, lon1, trackingId2, lat2, lon2)
+    {
+      var coords = [];
+      if (lat1!=0) {
+
+      coords.push([lon1, lat1]);
+
+     }
+     if (lat2!=0) {
+      coords.push([lon2, lat2]);
+
+      var lineString = new ol.geom.LineString(coords);
+      // transform to EPSG:3857
+      lineString.transform('EPSG:4326', 'EPSG:3857');
+
+      var lineStyle = new ol.style.Style({
+      stroke: new ol.style.Stroke({
+          color: '#66c2ff',        
+          width: 3
+        })
+      });
+
+  }
+
+  // create the feature
+  var featureLine = new ol.Feature({
+    geometry: lineString,
+    style: lineStyle,
+    name: "Línea de tracking"
+  });
+  vehiclesLineSource.addFeature(featureLine);
+
+  addTrackingPointEffect(vehicleLicense, trackingId1, lat1, lon1);
+
+  // Borrar las ultimas
+  /*var features = vehiclesLineSource.getFeatures();
+  if (features.length > 10) {
+    vehiclesLineSource.removeFeature(features[0]);
+  }*/
+
+  //realTimePoints.push(trackingId1);
+
+  //console.log(realTimePoints);
+
+  /*var features = vehiclesPointSource.getFeatures();
+  if (features.length > 10) {
+    vehiclesPointSource.removeFeature(features[0]);
+  }*/
+ 
+  }
+
+
+ function centerMap(lon, lat) {
+    map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+    map.getView().setZoom(14);
+
+ }
+
+ function moveMap(lon, lat) {
+    map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));   
+ }
+
+
+var toner = new ol.layer.Tile({
+ title: 'Toner',
+ type: 'base',
+ visible: false,
+ source: new ol.source.Stamen({
+   layer: 'toner'
+ })
+});
+
+var roads = new ol.layer.Tile({
+ title: 'Roads',
+ type: 'base',
+ visible: true,
+ source: new ol.source.XYZ({
+   url: 'http://1.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=es&app_id=XauXjbuily9soJuafQ8d&token=qg4GasqCW0lTKZbyeID3_A'
+ })
+});
+
+
+var osm = new ol.layer.Tile({
+ title: 'OpenStreetMap',
+ type: 'base',
+ visible: true,
+ source: new ol.source.OSM()
+});
+ 
+ var stamen = new ol.layer.Tile(
+      { source: new ol.source.Stamen({ layer: 'watercolor' }) 
+      });
+
+
+var kyrosGroup = new ol.layer.Group({
+    'title': 'Tracking',
+    layers: [vehiclesLineLayer, vehiclesPointLayer, vehiclesRealTimeLayer]
+  });
+
+var map = new ol.Map({
+  layers: [
+  new ol.layer.Group({
+   'title': 'Mapas',
+   //layers: [toner, roads, osm]
+   layers: [stamen, osm]
+ }),
+
+kyrosGroup,
+
+  ],
+  target: 'map',
+  view: new ol.View({
+    center: ol.proj.transform([-3.75, 40.24], 'EPSG:4326', 'EPSG:3857'),
+    zoom: 7,
+    maxZoom:22,
+    minZoom:3
+  })
+});
+
+
+if (!isMobile()) {
+var layerSwitcher = new ol.control.LayerSwitcher({
+    tipLabel: 'Capas' // Optional label for button
+  });
+  map.addControl(layerSwitcher);
+}
+
+if (!isMobile()) {
+map.addControl(new ol.control.FullScreen());
+}
+
+if (!isMobile()) {
+map.addControl(new ol.control.ZoomSlider({
+  maxResolution: 0.5972,
+  minResolution: 39135.76
+}));  
+}
+
+var scaleLineControl = new ol.control.ScaleLine();
+
+map.addControl(scaleLineControl);
+
+map.addControl(new ol.control.MousePosition({
+  undefinedHTML: '',
+  projection: 'EPSG:4326',
+  coordinateFormat: function(coordinate) {
+    return ol.coordinate.format(coordinate, '{x}, {y}', 4);
+  }
+}));
+
+
+// Control
+
+    var ctrl = new ol.control.Swipe();
+    map.addControl(ctrl);
+    // Set stamen on left
+    ctrl.addLayer(stamen);
+    // OSM on right
+    ctrl.addLayer(osm, true);
+
+ctrl.set('position',0.1);
+
+//*****************
+
+
+function addFeaturePointAt(p) { 
+  mapPointSource.clear();
+
+  var f, r = map.getView().getResolution() *10;
+       
+  var geo_point = new ol.geom.Point(ol.proj.transform([p[0], p[1]], 'EPSG:4326', 'EPSG:3857'));
+  var f = new ol.Feature({
+        geometry: geo_point,
+        id: 0,
+        elementId: 'positionPoint',
+        lon: p[0],
+        lat: p[1],
+        name: "Posición sobre el mapa"  
+  });
+
+
+  mapPointSource.addFeature(f);
+
+  mapPointLayer.animateFeature (f, 
+      [ new ol.featureAnimation["Drop"](
+        { speed: Number(1.4), 
+          duration: Number(260),
+          side: false
+        }),
+        new ol.featureAnimation[
+        "Bounce"](
+        { speed: Number(0.8), 
+          duration: Number(760),
+          horizontal: /Slide/.test("Shake")
+        })
+      ]);
+  }
+
+
+  function addTrackingPointEffect(vehicleLicense, trackingId, lat, lon) { 
+    if (lat!=0) {
+
+    var f, r = map.getView().getResolution() *10;
+         
+    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+    var f = new ol.Feature({
+          geometry: geo_point,
+          id: trackingId,
+          vehicleLicense: vehicleLicense,
+          elementId: 'trackingPoint',
+          lon: lon,
+          lat: lat,
+          name: "Posición sobre el mapa"  
+    });
+
+    vehiclesPointSource.addFeature(f);
+
+    vehiclesPointLayer.animateFeature (f, 
+        [ new ol.featureAnimation["Drop"](
+          { speed: Number(1.4), 
+            duration: Number(260),
+            side: false
+          }),
+          new ol.featureAnimation[
+          "Bounce"](
+          { speed: Number(0.8), 
+            duration: Number(760),
+            horizontal: /Slide/.test("Shake")
+            //horizontal: /Slide/.test("Drop")
+          })
+        ]);
+    }
+  }
+
+//***
+
+var info = $('#info');
+info.tooltip({
+ animation: false,
+ trigger: 'manual'
+});
+
+var displayFeatureInfo = function(pixel) {
+ info.css({
+   left: pixel[0] + 'px',
+   top: (pixel[1] - 15) + 'px'
+ });
+ var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+   return feature;
+ });
+ if (feature) {
+             info.tooltip('hide')
+             .attr('data-original-title', feature.get('name'))
+             .tooltip('fixTitle')
+             .tooltip('show');
+
+             //info.tooltip('show');
+
+           } else {
+             info.tooltip('hide');
+             //closeTooltip();
+           }
+         };
+
+var displayTooltipInfo = function(evt) {
+  info.css({
+   left: evt.pixel[0] + 'px',
+   top: (evt.pixel[1] - 15) + 'px'
+  });
+  var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+    return feature;
+  });
+  if (feature) {
+    if (feature.get('elementId')=='device') {
+    //if (isMobile()) {
+      openTooltip(feature.get('id'));
+    //} else {
+      info.tooltip('hide');
+    }
+    else if (feature.get('elementId')=='positionPoint') {
+      openTooltipMapPoint(feature.get('lat'), feature.get('lon'));
+    }
+  }
+  else {
+    var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+    var lon = lonlat[0];
+    var lat = lonlat[1];
+    addFeaturePointAt (lonlat);
+  }
+};
+
+  map.on('pointermove', function(evt) {
+    if (evt.dragging) {
+      info.tooltip('hide');
+      return;
+    }
+    displayFeatureInfo(map.getEventPixel(evt.originalEvent));
+  });        
+         
+  map.on('singleclick', function(evt) {
+    displayTooltipInfo(evt);
+    //if (!isMobile()) {
+    //   closeTooltip();
+    //}
+  });
+         
+       </script>
+     </body>
+     </html>
