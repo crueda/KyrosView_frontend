@@ -338,6 +338,8 @@ table td {
     overflow-y: auto;
 }
 
+
+
 .attr-button-menu
 {
     position:absolute;
@@ -347,6 +349,29 @@ table td {
     width:48px; 
     height:48px; 
     background-image: url("/img/buttons/button_menu.png");
+}
+
+.attr-button-close-chart
+{
+    position:absolute;
+    bottom: 0px;
+    display: none;
+    left: 15%; 
+    z-index:301; 
+    width:18px; 
+    height:18px; 
+    background-image: url("/img/close.png");
+}
+.attr-button-open-chart
+{
+    position:absolute;
+    bottom: 0px;
+    display: none;
+    left: 15%; 
+    z-index:300; 
+    width:18px; 
+    height:18px; 
+    background-image: url("/img/open.png");
 }
 
 .attr-graph-hist

@@ -413,6 +413,19 @@ table {
     background-image: url("./img/button_update.png");
 }
 
+
+  .attr-chart
+  {
+    height: 100px;
+    margin: 0 auto;
+  }
+
+.highcharts-background {
+  fill: #efefef;
+  stroke: #a4edba;
+  stroke-width: 2px;
+}
+
   #attr-logo
   {
     position:absolute; 

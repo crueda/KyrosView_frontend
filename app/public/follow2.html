@@ -890,6 +890,15 @@ var osm = new ol.layer.Tile({
       });
 
 
+var esri = new ol.layer.Tile ({ source: new ol.source.XYZ(
+    {   url: "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpg",
+        attributions: [ new ol.Attribution({ html: '&copy; <a href="http://www.arcgis.com/home/">Esri</a> ' }),
+          new ol.Attribution({ html: '&copy; <a href="http://www.arcgis.com/home/">DigitalGlobe, Earthstar Geographics, CNES/Airbus DS, GeoEye, USDA FSA, USGS, Getmapping, Aerogrid, IGN, IGP, swisstopo</a> ' })
+        ]
+      })
+    });
+
+
 var kyrosGroup = new ol.layer.Group({
     'title': 'Tracking',
     layers: [vehiclesLineLayer, vehiclesPointLayer, vehiclesRealTimeLayer]
@@ -900,7 +909,7 @@ var map = new ol.Map({
   new ol.layer.Group({
    'title': 'Mapas',
    //layers: [toner, roads, osm]
-   layers: [stamen, osm]
+   layers: [esri, osm]
  }),
 
 kyrosGroup,
@@ -952,7 +961,7 @@ map.addControl(new ol.control.MousePosition({
     var ctrl = new ol.control.Swipe();
     map.addControl(ctrl);
     // Set stamen on left
-    ctrl.addLayer(stamen);
+    ctrl.addLayer(esri);
     // OSM on right
     ctrl.addLayer(osm, true);
 

@@ -142,8 +142,9 @@
     }
 
     // Grafica 1: actividad
-    //alert('/api/activity/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>');
-    $.getJSON('/api/activity/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>', function (activity) {
+    var urlJson = '/api/activity/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>';
+    console.log(urlJson);
+    $.getJSON(urlJson, function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
             // Add X values
