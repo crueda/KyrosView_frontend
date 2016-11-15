@@ -22,6 +22,7 @@ var api_vehicle = require('./app/server/routes/vehicle');
 var api_share = require('./app/server/routes/share');
 var api_watch = require('./app/server/routes/watch');
 var api_login = require('./app/server/routes/login');
+var api_notification = require('./app/server/routes/notification');
 
 var i18n = require("i18n");
 
@@ -125,6 +126,7 @@ app.use('/api', api_vehicle);
 app.use('/api', api_share);
 app.use('/api', api_watch);
 app.use('/api', api_login);
+app.use('/api', api_notification);
 
 require('./app/server/routes/routes')(app);
 

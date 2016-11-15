@@ -60,7 +60,7 @@ router.get('/tracking1/user/:username', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var username = req.params.username;
       log.info("GET: /tracking1/user/"+username);
@@ -88,7 +88,7 @@ router.get('/tracking1/user/:username', function(req, res)
             res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
           }
         }
-      });    
+      });
     }
 });
 
@@ -114,8 +114,8 @@ router.get('/tracking1/user/:username', function(req, res)
  *      "heading" : 306,
  *      "location" : {
  *        "type" : "Point",
- *        "coordinates" : [ 
- *           -4.713148, 
+ *        "coordinates" : [
+ *           -4.713148,
  *           41.655135
  *        ]
  *      },
@@ -130,7 +130,7 @@ router.get('/tracking1/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var vehicleLicense = req.params.vehicleLicense;
       log.info("GET: /tracking1/vehicle/"+vehicleLicense);
@@ -158,13 +158,44 @@ router.get('/tracking1/vehicle/:vehicleLicense', function(req, res)
             res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
           }
         }
-      });    
+      });
     }
+});
+
+router.get('/app/tracking1/vehicle/:vehicleLicense', function(req, res)
+{
+      var vehicleLicense = req.params.vehicleLicense;
+      log.info("GET: /tracking1/vehicle/"+vehicleLicense);
+
+      TrackingModel.getTracking1AndIconFromVehicle(vehicleLicense,function(error, data)
+      {
+        if (data == null)
+        {
+          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+        }
+        else
+        {
+          //si existe enviamos el json
+          if (typeof data !== 'undefined' && data.length > 0)
+          {
+            res.status(200).json(data)
+          }
+          else if (typeof data == 'undefined' || data.length == 0)
+          {
+            res.status(200).json([])
+          }
+          //en otro caso mostramos un error
+          else
+          {
+            res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+          }
+        }
+      });
 });
 
 /**
  * @api {get} /api/tracking1 Últimas posiciones de los vehiculos (ordenadas por fecha)
- * @apiName GetTracking1 Obtener información de último tracking de todos los vehiculos 
+ * @apiName GetTracking1 Obtener información de último tracking de todos los vehiculos
  * @apiGroup Tracking
  * @apiDescription Datos del último tracking para todos los vehiculos
  * @apiVersion 1.0.2
@@ -183,8 +214,8 @@ router.get('/tracking1/vehicle/:vehicleLicense', function(req, res)
  *      "heading" : 306,
  *      "location" : {
  *        "type" : "Point",
- *        "coordinates" : [ 
- *           -4.713148, 
+ *        "coordinates" : [
+ *           -4.713148,
  *           41.655135
  *        ]
  *      },
@@ -200,7 +231,7 @@ router.get('/tracking1', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
         TrackingModel.getTracking1(function(error, data)
         {
@@ -225,7 +256,7 @@ router.get('/tracking1', function(req, res)
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
-        });    
+        });
 
     }
 });
@@ -254,8 +285,8 @@ router.get('/tracking1', function(req, res)
  *      "heading" : 306,
  *      "location" : {
  *        "type" : "Point",
- *        "coordinates" : [ 
- *           -4.713148, 
+ *        "coordinates" : [
+ *           -4.713148,
  *           41.655135
  *        ]
  *      },
@@ -271,13 +302,13 @@ router.get('/tracking1/vehicles', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var vehicleLicenseList = req.query.vehicleLicenseList;
       log.info("GET: /tracking1/vehicles?vehicleLicenseList="+vehicleLicenseList);
       if (vehicleLicenseList==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
-      } 
+      }
       else {
         TrackingModel.getTracking1FromVehicles(vehicleLicenseList,function(error, data)
         {
@@ -302,7 +333,7 @@ router.get('/tracking1/vehicles', function(req, res)
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
-        });    
+        });
       }
     }
 });
@@ -311,7 +342,7 @@ router.get('/tracking1radio', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var latitude = req.query.latitude;
       var longitude = req.query.longitude;
@@ -319,7 +350,7 @@ router.get('/tracking1radio', function(req, res)
       log.info("GET: /tracking1radio?latitude="+latitude+"&longitude="+longitude+"&radio="+radio);
       if (latitude==null || longitude==null || radio==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
-      } 
+      }
       else {
         TrackingModel.getTracking1Radio(latitude, longitude, radio,function(error, data)
         {
@@ -344,7 +375,7 @@ router.get('/tracking1radio', function(req, res)
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
-        });    
+        });
       }
     }
 });
@@ -373,8 +404,8 @@ router.get('/tracking1radio', function(req, res)
  *      "heading" : 306,
  *      "location" : {
  *        "type" : "Point",
- *        "coordinates" : [ 
- *           -4.713148, 
+ *        "coordinates" : [
+ *           -4.713148,
  *           41.655135
  *        ]
  *      },
@@ -390,7 +421,7 @@ router.get('/last-trackings/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var vehicleLicense = req.params.vehicleLicense;
 
@@ -398,7 +429,7 @@ router.get('/last-trackings/vehicle/:vehicleLicense', function(req, res)
 
       if (ntrackings==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
-      } 
+      }
       else {
         log.info("GET: /last-trackings/vehicle/?ntrackings="+ntrackings);
 
@@ -429,7 +460,7 @@ router.get('/last-trackings/vehicle/:vehicleLicense', function(req, res)
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
-        });    
+        });
       }
     }
 });
@@ -459,8 +490,8 @@ router.get('/last-trackings/vehicle/:vehicleLicense', function(req, res)
  *      "heading" : 306,
  *      "location" : {
  *        "type" : "Point",
- *        "coordinates" : [ 
- *           -4.713148, 
+ *        "coordinates" : [
+ *           -4.713148,
  *           41.655135
  *        ]
  *      },
@@ -476,7 +507,7 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var vehicleLicense = req.params.vehicleLicense;
       var initDate = req.query.initDate;
@@ -486,7 +517,7 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
 
       if (initDate==null || endDate==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
-      } 
+      }
       else {
         var requestData = {
           vehicleLicense : vehicleLicense,
@@ -521,8 +552,8 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
-        }); 
-      }   
+        });
+      }
     }
 });
 
@@ -549,8 +580,8 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
  *      "heading" : 306,
  *      "location" : {
  *        "type" : "Point",
- *        "coordinates" : [ 
- *           -4.713148, 
+ *        "coordinates" : [
+ *           -4.713148,
  *           41.655135
  *        ]
  *      },
@@ -565,14 +596,14 @@ router.get('/tracking', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var vehicleLicense = req.query.vehicleLicense;
       var trackingId = req.query.trackingId;
 
       if (vehicleLicense==null || trackingId==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
-      } 
+      }
       else {
         log.info("GET: /tracking?vehicleLicense="+vehicleLicense+"&trackingId="+trackingId);
         var requestData = {
@@ -602,8 +633,8 @@ router.get('/tracking', function(req, res)
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
-        }); 
-      }   
+        });
+      }
     }
 });
 

@@ -39,14 +39,14 @@ var log = require('tracer').console({
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *      
+ *
  *     }
  */
 router.get('/monitor/:username', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var username = req.params.username;
       log.info("GET: /monitor/"+username);
@@ -62,7 +62,44 @@ router.get('/monitor/:username', function(req, res)
           //si existe enviamos el json
           if (typeof data !== 'undefined' && data.length > 0)
           {
-            res.status(200).json(data)
+            res.status(200).json(data);
+          }
+          else if (typeof data == 'undefined' || data.length == 0)
+          {
+            res.status(200).json([])
+          }
+          //en otro caso mostramos un error
+          else
+          {
+            res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+          }
+        }
+      });
+    }
+});
+
+router.get('/app/monitor/:username', function(req, res)
+{
+      var username = req.params.username;
+      log.info("GET: /monitor/"+username);
+
+      MonitorModel.getMonitorFromUser(username,function(error, data)
+      {
+        if (data == null)
+        {
+          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+        }
+        else
+        {
+          //si existe enviamos el json
+          if (typeof data !== 'undefined' && data.length > 0)
+          {
+            //log.info (data[0]['monitor']);
+            data2 = JSON.stringify(data);
+            //data2 = data2.replace("childs","tree");
+            data2 = data2.split("childs").join("tree");
+
+            res.status(200).json(JSON.parse (data2));
           }
           else if (typeof data == 'undefined' || data.length == 0)
           {
@@ -75,14 +112,13 @@ router.get('/monitor/:username', function(req, res)
           }
         }
       });    
-    }
 });
 
 router.get('/monitor/checked/:username', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
-    } 
+    }
     else {
       var username = req.params.username;
       var vehicleLicenseList = req.query.vehicleLicenseList;
@@ -90,7 +126,7 @@ router.get('/monitor/checked/:username', function(req, res)
 
       if (vehicleLicenseList==null) {
         vehicleLicenseList = "";
-      } 
+      }
       var requestData = {
           username : username,
           vehicleLicenseList : vehicleLicenseList
@@ -119,7 +155,7 @@ router.get('/monitor/checked/:username', function(req, res)
             res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
           }
         }
-      });    
+      });
     }
 });
 module.exports = router;

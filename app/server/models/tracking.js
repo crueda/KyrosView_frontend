@@ -95,6 +95,28 @@ trackingModel.getTracking1FromVehicle = function(vehicleLicense,callback)
   });*/
 }
 
+trackingModel.getTracking1AndIconFromVehicle = function(vehicleLicense,callback)
+{
+    mongoose.connection.db.collection('TRACKING_'+vehicleLicense, function (err, collection) {
+        collection.find().sort({'pos_date': -1}).limit(1).toArray(function(err, docs) {
+          mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+              collection.find({"vehicle_license": vehicleLicense}).toArray(function(err, docs2) {
+                if (docs[0]!=undefined) {
+                  if (docs2[0]!=undefined) {
+                    docs[0].icon = docs2[0].icon_real_time;
+                    docs[0].alias = docs2[0].alias;
+                  } else {
+                    docs[0].icon = "car.png";
+                    docs[0].alias = vehicleLicense;
+                  }
+                }
+                callback(null, docs);
+              });
+            });
+          });
+    });
+}
+
 //TODO. MODIFICAR!
 trackingModel.getTracking1FromVehicles = function(vehicleLicenseList,callback)
 {
@@ -162,4 +184,3 @@ trackingModel.getTrackingFromVehicle = function(requestData,callback)
 
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = trackingModel;
-
