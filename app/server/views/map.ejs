@@ -586,6 +586,14 @@ function addVehicleSelectedToMap(vehicleLicense) {
                   eventTypeHist.push(val.events[i].event_type);
                   eventDateHist.push(val.events[i].event_date);
                   eventOrderHist.push([eventIndex]);
+
+                  eventTypeDict[eventIndex] = val.events[i].event_type;
+                  eventDateDict[eventIndex] = val.events[i].event_date;
+                  eventLatDict[eventIndex] = lat;
+                  eventLonDict[eventIndex] = lon;
+                  eventSpeedDict[eventIndex] = speed;
+                  eventAltitudeDict[eventIndex] = altitude;
+                  eventHeadingDict[eventIndex] = heading;
                 }
                 else {
                   groupEvent.push(eventIndex);

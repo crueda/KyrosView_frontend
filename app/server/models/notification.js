@@ -37,7 +37,7 @@ notificationModel.getLastNotifications = function(username, callback)
 {
     mongoose.connection.db.collection('NOTIFICATION_' + username, function (err, collection) {
         //collection.find( { 'username': username}).sort({'date': -1}).limit(10).toArray(function(err, docs) {
-        collection.find({'archive':0}).sort({'date': -1}).limit(10).toArray(function(err, docs) {
+        collection.find({'archive':0}).sort({'date': -1}).toArray(function(err, docs) {
             callback(null, docs);
         });
     });
