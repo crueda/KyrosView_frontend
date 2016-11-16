@@ -40,7 +40,7 @@ notificationModel.getLastNotifications = function(username, callback)
 {
     mongoose.connection.db.collection('NOTIFICATION_' + username, function (err, collection) {
         //collection.find( { 'username': username}).sort({'date': -1}).limit(10).toArray(function(err, docs) {
-        collection.find({'archive':0}).sort({'date': -1}).toArray(function(err, docs) {
+        collection.find({'archive':0}).sort({'timestamp': -1}).toArray(function(err, docs) {
             callback(null, docs);
         });
     });
@@ -74,7 +74,7 @@ notificationModel.archiveAllNotifications = function(username, callback)
         collection.update({}, {$set: {archive: 1}},{multi: true},function(err, result) {
             log.info(result);
              if (err) {
-               callback(err, null);                              
+               callback(err, null);
              } else {
                callback(null, []);
              }
@@ -115,7 +115,7 @@ notificationModel.configNotificationAdd = function(username, vehicleLicense, eve
           var element = {
             username: username,
             vehicle_license: vehicleLicense,
-            event_id: parseInt(eventArray[i])
+            event_type: parseInt(eventArray[i])
           };
           collection.findOneAndUpdate(element, element, {upsert:true}, function(err, doc){
           });
@@ -135,7 +135,7 @@ notificationModel.configNotificationRemove = function(username, vehicleLicense, 
           var element = {
             username: username,
             vehicle_license: vehicleLicense,
-            event_id: parseInt(eventArray[i])
+            event_type: parseInt(eventArray[i])
           };
           eventsToRemove.push(parseInt(eventArray[i]));
           result.push(element);
@@ -195,22 +195,22 @@ notificationModel.statusUserVehicleNotifications = function(username, vehicleLic
         collection.find({'username': username, 'vehicle_license': vehicleLicense}).toArray(function(err, docs) {
           result = {'panic': false, 'start_stop': false, 'zone': false, 'route': false, 'poi': false, 'other': false}
           for (var i=0; i<docs.length; i++) {
-            if (docs[i].event_id==902) {
+            if (docs[i].event_type==902) {
               result.panic = true;
             }
-            else if (docs[i].event_id==912) {
+            else if (docs[i].event_type==912) {
               result.start_stop = true;
             }
-            else if (docs[i].event_id==962) {
+            else if (docs[i].event_type==962) {
               result.route = true;
             }
-            else if (docs[i].event_id==948) {
+            else if (docs[i].event_type==948) {
               result.zone = true;
             }
-            else if (docs[i].event_id==990) {
+            else if (docs[i].event_type==990) {
               result.poi = true;
             }
-            else if (docs[i].event_id==910) {
+            else if (docs[i].event_type==910) {
               result.other = true;
             }
           }
