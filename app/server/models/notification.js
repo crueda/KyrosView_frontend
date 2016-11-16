@@ -1,5 +1,6 @@
 var server = require('mongodb').Server;
 var mongoose = require('mongoose');
+var Db = require('mongodb').Db;
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
@@ -23,6 +24,8 @@ var log = require('tracer').console({
 var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
 var dbMongoPort = properties.get('bbdd.mongo.port');
+
+var db = new Db(dbMongoName, new server(dbMongoHost, dbMongoPort));
 
 mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
     if (error) {
@@ -57,6 +60,35 @@ notificationModel.archiveNotification = function(username, notificationId, callb
             }
         });
     });
+}
+
+notificationModel.archiveAllNotifications = function(username, callback)
+{
+  db.open(function(err, db) {
+    if(err) {
+        callback(err, null);
+    }
+    else {
+        var collection = db.collection('NOTIFICATION_' + username);
+        //collection.update({}, {$set: {archive: 1}},{multi: true});//.toArray(function(err, docs) {
+        collection.update({}, {$set: {archive: 1}},{multi: true},function(err, result) {
+            log.info(result);
+             if (err) {
+               callback(err, null);                              
+             } else {
+               callback(null, []);
+             }
+        });
+    }
+  });
+  /*
+    mongoose.connection.db.collection('NOTIFICATION_' + username, function (err, collection) {
+      //collection.update({}, {$set: {archive: 0}}, {multi: true}).toArray(function(err, docs) {
+        collection.updateMany({}, {$set: {archive: 0}}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });
+    */
 }
 
 notificationModel.saveToken = function(username, token, callback)
