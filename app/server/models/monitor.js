@@ -80,11 +80,13 @@ monitorModel.getMonitorFromUser = function(username,callback)
 
 monitorModel.getMonitorListFromUser = function(username,callback)
 {
-    /*mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+  /*
+    mongoose.connection.db.collection('VEHICLE', function (err, collection) {
         collection.find().toArray(function(err, docs) {
             callback(null, docs);
         });
-    });*/
+    });
+*/
 
     mongoose.connection.db.collection('MONITOR', function (err, collection) {
         collection.find({'username': username}).toArray(function(err, docs) {
@@ -93,10 +95,18 @@ monitorModel.getMonitorListFromUser = function(username,callback)
           fdocs = flatten(docs);
           for (var k in fdocs) {
             if (k.indexOf("vehicle_license")!=-1) {
-              list.push({"vehicle_license":fdocs[k]});
+              //list.push({"vehicle_license":fdocs[k]});
+              list.push(fdocs[k]);
             }
           }
-            callback(null, list);
+
+          mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+              collection.find({"vehicle_license": {$in: list}}).toArray(function(err, docs) {
+                  callback(null, docs);
+              });
+          });
+
+            //callback(null, list);
         });
     });
 
