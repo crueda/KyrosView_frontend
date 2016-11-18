@@ -26,12 +26,19 @@ var log = require('tracer').console({
 
 router.get('/app/login/', function(req, res)
 {
-      log.info("GET: /login");
-      var username = req.query.username;
-      var password = req.query.password;
+    log.info("GET: /login");
+    var version = req.query.version;
+    var username = req.query.username;
+    var password = req.query.password;
 
+    if (version==undefined) {
+      version = 1;
+    }
       if (username==null || password==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+      }
+      else if (version < 1) {
+        res.status(202).json({"status": "msg", "title": "Versión incorrecta", "message": "Por favor, consulte con logistica@kyroslbs.com para actualizar su aplicación"});
       }
       else {
         LoginModel.login(username, password, function(error, data)
@@ -43,13 +50,9 @@ router.get('/app/login/', function(req, res)
           else
           {
             //si existe enviamos el json
-            if (typeof data !== 'undefined' && data.length > 0)
+            if (typeof data !== 'undefined')
             {
-              res.status(200).json(data)
-            }
-            else if (typeof data == 'undefined' || data.length == 0)
-            {
-              res.status(200).json("nok")
+              res.status(200).json(data);
             }
             //en otro caso mostramos un error
             else

@@ -38,9 +38,11 @@ var notificationModel = {};
 
 notificationModel.getLastNotifications = function(username, callback)
 {
-    mongoose.connection.db.collection('NOTIFICATION_' + username, function (err, collection) {
+    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
         //collection.find( { 'username': username}).sort({'date': -1}).limit(10).toArray(function(err, docs) {
-        collection.find({'archive':0}).sort({'timestamp': -1}).toArray(function(err, docs) {
+        collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
+          log.info(username);
+          log.info(docs);
             callback(null, docs);
         });
     });
@@ -48,9 +50,8 @@ notificationModel.getLastNotifications = function(username, callback)
 
 notificationModel.archiveNotification = function(username, notificationId, callback)
 {
-    mongoose.connection.db.collection('NOTIFICATION_' + username, function (err, collection) {
-        //collection.find({'id': parseInt(notificationId)}).limit(1).toArray(function(err, docs) {
-        collection.find({'_id': new ObjectId(notificationId)}).toArray(function(err, docs) {
+    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
+        /*collection.find({'_id': new ObjectId(notificationId)}).toArray(function(err, docs) {
             if (docs[0]!=undefined) {
                 docs[0].archive = 1;
                 collection.save(docs[0]);
@@ -58,6 +59,13 @@ notificationModel.archiveNotification = function(username, notificationId, callb
             } else {
                 callback(null, []);
             }
+        });*/
+        collection.remove({'_id': new ObjectId(notificationId)}, function(err, doc){
+             if (err) {
+               callback(err, null);
+             } else {
+               callback(null, []);
+             }
         });
     });
 }
@@ -69,10 +77,9 @@ notificationModel.archiveAllNotifications = function(username, callback)
         callback(err, null);
     }
     else {
-        var collection = db.collection('NOTIFICATION_' + username);
-        //collection.update({}, {$set: {archive: 1}},{multi: true});//.toArray(function(err, docs) {
-        collection.update({}, {$set: {archive: 1}},{multi: true},function(err, result) {
-            log.info(result);
+        var collection = db.collection('APP_NOTIFICATIONS');
+        //collection.update({}, {$set: {archive: 1}},{multi: true},function(err, result) {
+        collection.remove({'username':username } , function(err, doc){
              if (err) {
                callback(err, null);
              } else {
@@ -140,7 +147,7 @@ notificationModel.configNotificationRemove = function(username, vehicleLicense, 
           eventsToRemove.push(parseInt(eventArray[i]));
           result.push(element);
         }
-        collection.remove({'username':username, 'vehicle_license':vehicleLicense, 'event_id': { $in: eventsToRemove } } , function(err, doc){
+        collection.remove({'username':username, 'vehicle_license':vehicleLicense, 'event_type': { $in: eventsToRemove } } , function(err, doc){
         });
         callback(null, result);
     });

@@ -38,16 +38,16 @@ loginModel.login = function(username, password, callback)
         collection.find( { 'username': username}).toArray(function(err, docs) {
             if (docs!=undefined && docs.length>=0) {
                 if (docs[0]== undefined) {
-                    callback(null, "nok");
+                    callback(null, {"status": "nok"});
                 } else {
                     if( crypt(password, docs[0]['password']) !== docs[0]['password']) {
-                        callback(null, "nok");
+                        callback(null, {"status": "nok"});
                     } else {
-                        callback(null, docs);       
+                        callback(null, {"status": "ok", "result": docs});
                     }
                 }
             } else {
-                callback(null, "nok");
+                callback(null, {"status": "nok"});
             }
         });
     });

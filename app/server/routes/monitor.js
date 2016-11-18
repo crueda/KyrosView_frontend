@@ -81,7 +81,7 @@ router.get('/monitor/:username', function(req, res)
 router.get('/app/monitor/:username', function(req, res)
 {
       var username = req.params.username;
-      log.info("GET: /monitor/"+username);
+      log.info("GET: /app/monitor/"+username);
 
       MonitorModel.getMonitorFromUser(username,function(error, data)
       {
@@ -111,7 +111,38 @@ router.get('/app/monitor/:username', function(req, res)
             res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
           }
         }
-      });    
+      });
+});
+
+router.get('/app/monitorList/:username', function(req, res)
+{
+      var username = req.params.username;
+      log.info("GET: /app/monitorList/"+username);
+
+      MonitorModel.getMonitorListFromUser(username,function(error, data)
+      {
+        if (data == null)
+        {
+          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+        }
+        else
+        {
+          //si existe enviamos el json
+          if (typeof data !== 'undefined' && data.length > 0)
+          {
+            res.status(200).json(data)
+          }
+          else if (typeof data == 'undefined' || data.length == 0)
+          {
+            res.status(200).json([])
+          }
+          //en otro caso mostramos un error
+          else
+          {
+            res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+          }
+        }
+      });
 });
 
 router.get('/monitor/checked/:username', function(req, res)

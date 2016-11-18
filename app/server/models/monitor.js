@@ -59,10 +59,10 @@ monitorModel.putElement = function(element, depth)
                 if (element.nodes == children[i].name) {
                     children[i].nodes.push(element);
                 } else {
-                    iterate(children[i], depth + 1);                    
+                    iterate(children[i], depth + 1);
                 }
             }
-        } 
+        }
     }
 }
 
@@ -76,8 +76,32 @@ monitorModel.getMonitorFromUser = function(username,callback)
             callback(null, docs);
         });
     });
+}
+
+monitorModel.getMonitorListFromUser = function(username,callback)
+{
+    /*mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+        collection.find().toArray(function(err, docs) {
+            callback(null, docs);
+        });
+    });*/
+
+    mongoose.connection.db.collection('MONITOR', function (err, collection) {
+        collection.find({'username': username}).toArray(function(err, docs) {
+          list = [];
+          //log.info (flatten(docs))
+          fdocs = flatten(docs);
+          for (var k in fdocs) {
+            if (k.indexOf("vehicle_license")!=-1) {
+              list.push({"vehicle_license":fdocs[k]});
+            }
+          }
+            callback(null, list);
+        });
+    });
 
 }
+
 
 monitorModel.getMonitorFromUser00 = function(username,callback)
 {
@@ -113,11 +137,11 @@ monitorModel.getMonitorFromUser0 = function(username,callback)
                 //log.info("-->" + docs[i].name);
                 var element;
                 if (docs[i].type == 0) {
-                    element = {"type": 0, "name": docs[i].name, "nodes": [], "checked": "false"};                
+                    element = {"type": 0, "name": docs[i].name, "nodes": [], "checked": "false"};
                     vchildren = [];
                     for (var j=0; j<docs[i].children.length;j++) {
                         vchildren.push(docs[i].children[j].name);
-                        var element_children = {"type": docs[i].children[j].type, "name": docs[i].children[j].name, "nodes": [], "checked": "false"};                
+                        var element_children = {"type": docs[i].children[j].type, "name": docs[i].children[j].name, "nodes": [], "checked": "false"};
                         element.nodes.push(element_children);
                     }
                     monitorJson.nodes.push(element);
@@ -129,7 +153,7 @@ monitorModel.getMonitorFromUser0 = function(username,callback)
                             log.info("-3->" + docs[i].name);
                             for (var j=0; j<docs[i].children.length;j++) {
                                 var element_children = {"type": docs[i].type, "name": docs[i].name, "nodes": [], "checked": "false"};
-                            
+
                             }
                             //monitorJson.push(element);
                             monitorModel.putElement(element,0);
@@ -138,16 +162,16 @@ monitorModel.getMonitorFromUser0 = function(username,callback)
 
                         }
                     });
-                    
+
 
                 } else {
-                    element = {"type": 1, "name": docs[i].name, "nodes": [], "checked": "false"};                                    
+                    element = {"type": 1, "name": docs[i].name, "nodes": [], "checked": "false"};
                     monitorJson.nodes.push(element);
-                }                
+                }
                 //monitorJson.push(element);
             }
 
-            
+
 
 
             //callback(null, docs);
@@ -167,8 +191,8 @@ monitorModel.setMonitorCheckedFromUser = function(requestData,callback)
     else {
         var collection = db.collection('MONITOR');
         collection.find({'username': requestData.username}).toArray(function(err, docs) {
-            var jsondocs = jsonfy(JSON.stringify(docs)); 
-            delete jsondocs[0]['_id']; 
+            var jsondocs = jsonfy(JSON.stringify(docs));
+            delete jsondocs[0]['_id'];
             flat_monitor = flatten(jsondocs);
 
             var vehicleLicenseChecked = requestData.vehicleLicenseList.split(',');
@@ -186,7 +210,7 @@ monitorModel.setMonitorCheckedFromUser = function(requestData,callback)
                         indice = 0;
                         encontrado = false;
                     }
-                    
+
                 }
 
                 if (keys[i].indexOf("vehicle_license")!=-1) {
@@ -206,7 +230,7 @@ monitorModel.setMonitorCheckedFromUser = function(requestData,callback)
             collection.remove({"username": requestData.username}, function(err, result) {
             if (err) {
                 callback(null, null);
-            } else {            
+            } else {
                 collection.save(u['0']);
                 db.close();
                 callback(null, docs);
