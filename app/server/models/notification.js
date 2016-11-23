@@ -36,14 +36,32 @@ mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' +
 // Crear un objeto para ir almacenando todo lo necesario
 var notificationModel = {};
 
-notificationModel.getLastNotifications = function(username, callback)
+notificationModel.getConfigNotifications = function(username, vehicleLicense, callback)
+{
+    mongoose.connection.db.collection('NOTIFICATION', function (err, collection) {
+      collection.find({"username": username, "vehicle_license": vehicleLicense}).toArray(function(err, docs) {
+          callback(null, docs);
+        });
+    });
+}
+
+notificationModel.getAllNotifications = function(username, callback)
 {
     mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
-        //collection.find( { 'username': username}).sort({'date': -1}).limit(10).toArray(function(err, docs) {
-        collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
-          log.info(username);
-          log.info(docs);
-            callback(null, docs);
+      collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
+          callback(null, docs);
+        });
+    });
+}
+
+notificationModel.getLastNotifications = function(username, max, callback)
+{
+    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
+      //collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
+      collection.find({"username": username}).sort({'vehicle_license': 1, 'timestamp': -1}).toArray(function(err, docs) {
+          var result = {'status': 'ok', 'num_notifications': docs.length, 'result': docs.slice(0, max-1)};
+          //log.info(result);
+          callback(null, result);
         });
     });
 }
@@ -113,6 +131,21 @@ notificationModel.saveToken = function(username, token, callback)
     });
 }
 
+notificationModel.configNotificationChange = function(username, vehicleLicense, eventType, enabled, callback)
+{
+    mongoose.connection.db.collection('NOTIFICATION', function (err, collection) {
+      var element = {
+        username: username,
+        vehicle_license: vehicleLicense,
+        event_type: eventType,
+        enabled: enabled
+      };
+      collection.findOneAndUpdate(element, element, {upsert:true}, function(err, doc){
+        callback(null, element);
+      });
+    });
+}
+
 notificationModel.configNotificationAdd = function(username, vehicleLicense, eventIdList, callback)
 {
     mongoose.connection.db.collection('NOTIFICATION', function (err, collection) {
@@ -158,7 +191,7 @@ notificationModel.enableUserNotifications = function(username, callback)
     mongoose.connection.db.collection('USER', function (err, collection) {
         collection.find({'username': username}).toArray(function(err, docs) {
             if (docs[0]!=undefined) {
-                docs[0].notifications_active = 1;
+                docs[0].push_enabled = 1;
                 collection.save(docs[0]);
                 callback(null, docs);
             } else {
@@ -173,7 +206,7 @@ notificationModel.disableUserNotifications = function(username, callback)
     mongoose.connection.db.collection('USER', function (err, collection) {
         collection.find({'username': username}).toArray(function(err, docs) {
             if (docs[0]!=undefined) {
-                docs[0].notifications_active = 0;
+                docs[0].push_enabled = 0;
                 collection.save(docs[0]);
                 callback(null, docs);
             } else {
@@ -188,7 +221,7 @@ notificationModel.statusUserNotifications = function(username, callback)
     mongoose.connection.db.collection('USER', function (err, collection) {
         collection.find({'username': username}).toArray(function(err, docs) {
             if (docs[0]!=undefined) {
-                callback(null, docs[0].notifications_active);
+                callback(null, docs[0].push_enabled);
             } else {
                 callback(null, -1);
             }

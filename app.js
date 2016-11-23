@@ -23,6 +23,7 @@ var api_share = require('./app/server/routes/share');
 var api_watch = require('./app/server/routes/watch');
 var api_login = require('./app/server/routes/login');
 var api_notification = require('./app/server/routes/notification');
+var api_user = require('./app/server/routes/user');
 
 var i18n = require("i18n");
 
@@ -77,22 +78,22 @@ var dbMongoPort = properties.get('bbdd.mongo.port');
         uri: 'mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName,
         collection: 'USER_SESSIONS'
       });
- 
-    // Catch errors 
+
+    // Catch errors
     store.on('error', function(error) {
       assert.ifError(error);
       assert.ok(false);
     });
- 
+
     app.use(require('express-session')({
       secret: 'faeb4453e5d14fef6d04637f780787c76c73d1b4',
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 // 1 day
       },
       store: store,
-      // Boilerplate options, see: 
-      // * https://www.npmjs.com/package/express-session#resave 
-      // * https://www.npmjs.com/package/express-session#saveuninitialized 
+      // Boilerplate options, see:
+      // * https://www.npmjs.com/package/express-session#resave
+      // * https://www.npmjs.com/package/express-session#saveuninitialized
       resave: true,
       saveUninitialized: true
     }));
@@ -127,6 +128,7 @@ app.use('/api', api_share);
 app.use('/api', api_watch);
 app.use('/api', api_login);
 app.use('/api', api_notification);
+app.use('/api', api_user);
 
 require('./app/server/routes/routes')(app);
 

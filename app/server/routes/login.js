@@ -37,7 +37,7 @@ router.get('/app/login/', function(req, res)
       if (username==null || password==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       }
-      else if (version < 1) {
+      else if (version < 2) {
         res.status(202).json({"status": "msg", "title": "Versión incorrecta", "message": "Por favor, consulte con logistica@kyroslbs.com para actualizar su aplicación"});
       }
       else {
