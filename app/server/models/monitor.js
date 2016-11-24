@@ -88,13 +88,13 @@ monitorModel.getMonitorListFromUser = function(username,callback)
     });
 */
 
-    mongoose.connection.db.collection('MONITOR', function (err, collection) {
-        collection.find({'username': username}).toArray(function(err, docs) {
+    mongoose.connection.db.collection('MONITOR_'+username, function (err, collection) {
+        collection.find().toArray(function(err, docs) {
           list = [];
           //log.info (flatten(docs))
           fdocs = flatten(docs);
           for (var k in fdocs) {
-            if (k.indexOf("vehicle_license")!=-1) {
+            if (k.indexOf("name")!=-1) {
               //list.push({"vehicle_license":fdocs[k]});
               list.push(fdocs[k]);
             }

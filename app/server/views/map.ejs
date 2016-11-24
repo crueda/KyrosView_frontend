@@ -2108,15 +2108,24 @@ function loadMonitor() {
 
     for (i=0; i<ndata; i++) {
       monitorDevices[monitorVehicleLicense[i]] = deviceIdDict[monitorVehicleLicense[i]];
+      var id = deviceIdDict[monitorVehicleLicense[i]];
+      if (id==undefined) {
+        id = 0;
+      }
+      var matricula = monitorVehicleLicense[i];
+      if (matricula==undefined) {
+        matricula = "--";
+      }
       if (i == ndata-1) {
-        strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i] + '"}' ;
+        strDevices = strDevices + '{"id": ' + id + ', "name": "' + matricula + '"}' ;
       } else {
-        strDevices = strDevices + '{"id": ' + deviceIdDict[monitorVehicleLicense[i]] + ', "name": "' + monitorVehicleLicense[i]+ '"},' ;
+        strDevices = strDevices + '{"id": ' + id + ', "name": "' + matricula+ '"},' ;
       }
     }
 
     strDevices = strDevices + ']';
 
+    console.log(strDevices);
     var jsonDevices = JSON.parse(strDevices);
     $('#licenseHist').typeahead({source:jsonDevices,
         autoSelect: true
