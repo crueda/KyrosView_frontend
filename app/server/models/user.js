@@ -37,8 +37,8 @@ userModel.setUserPreferences = function(username, push_mode, group_mode, callbac
   mongoose.connection.db.collection('USER', function (err, collection) {
       collection.find({'username': username}).toArray(function(err, docs) {
           if (docs[0]!=undefined) {
-            docs[0].push_enabled = push_mode;
-            docs[0].group_notifications = group_mode;
+            docs[0].push_enabled = parseInt(push_mode);
+            docs[0].group_notifications = parseInt(group_mode);
             collection.save(docs[0]);
             callback(null, docs);
           } else {

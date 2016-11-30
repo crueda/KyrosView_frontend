@@ -54,6 +54,15 @@ notificationModel.getAllNotifications = function(username, callback)
     });
 }
 
+notificationModel.getNotification = function(_id, callback)
+{
+    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
+      collection.find({"_id": new ObjectId(_id)}).toArray(function(err, docs) {
+          callback(null, docs);
+        });
+    });
+}
+
 notificationModel.getLastNotifications = function(username, max, callback)
 {
     mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
