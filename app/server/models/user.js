@@ -48,5 +48,14 @@ userModel.setUserPreferences = function(username, push_mode, group_mode, callbac
   });
 }
 
+userModel.getUserFromUsername = function(username, callback)
+{
+  mongoose.connection.db.collection('USER', function (err, collection) {
+      collection.find({'username': username}).toArray(function(err, docs) {
+          callback(null, docs);
+      });
+  });
+}
+
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = userModel;

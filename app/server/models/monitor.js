@@ -102,6 +102,15 @@ monitorModel.getMonitorListFromUser = function(username,callback)
 
           mongoose.connection.db.collection('VEHICLE', function (err, collection) {
               collection.find({"vehicle_license": {$in: list}}).toArray(function(err, docs) {
+
+                  for (var i=0; i<docs.length; i++) {
+                    try {
+                      docs[i].icon_real_time = docs[i].icon_real_time.substring(0, docs[i].icon_real_time.indexOf('.')) + '.svg';
+                      docs[i].icon_cover = docs[i].icon_cover.substring(0, docs[i].icon_cover.indexOf('.')) + '.svg';
+                      docs[i].icon_alarm = docs[i].icon_alarm.substring(0, docs[i].icon_alarm.indexOf('.')) + '.svg';
+                    } catch(err) {}
+                  }
+
                   callback(null, docs);
               });
           });

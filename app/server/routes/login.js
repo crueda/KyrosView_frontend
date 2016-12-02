@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var jwt = require('jwt-simple');
 
 var status = require("../utils/statusCodes.js");
 var messages = require("../utils/statusMessages.js");
@@ -32,12 +33,12 @@ router.get('/app/login/', function(req, res)
     var password = req.query.password;
 
     if (version==undefined) {
-      version = 1;
+      version = 3;
     }
       if (username==null || password==null) {
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       }
-      else if (version < 2) {
+      else if (version < 3) {
         res.status(202).json({"status": "msg", "title": "Versión incorrecta", "message": "Por favor, consulte con logistica@kyroslbs.com para actualizar su aplicación"});
       }
       else {
@@ -49,9 +50,11 @@ router.get('/app/login/', function(req, res)
           }
           else
           {
-            //si existe enviamos el json
+            //Autenticación correcta
             if (typeof data !== 'undefined')
             {
+              var token_api = genToken(username);
+              data.token_api = token_api;
               res.status(200).json(data);
             }
             //en otro caso mostramos un error
@@ -63,5 +66,42 @@ router.get('/app/login/', function(req, res)
         });
       }
 });
+
+// private method
+function genToken(username) {
+  var expires = expiresIn1Hour();
+  //var expires = expiresInMin(5); // 1 day
+  //var expiresISO = expiresInMinISO(5); // 5 minutes
+  var token = jwt.encode({
+    exp: expires,
+    iss: username
+  }, require('../config/secret')());
+
+  return token;
+}
+
+function expiresIn(numDays) {
+  var dateObj = new Date();
+  return dateObj.setDate(dateObj.getDate() + numDays);
+}
+
+function expiresIn1Hour() {
+  var now = new Date;
+  var timezone =  now.getTimezoneOffset()
+  var milisecondsUTC = now.getTime() + (timezone*60*1000);
+  return milisecondsUTC + 3600000;
+}
+
+function expiresInMin(minutes) {
+  var now = new Date;
+  var milisecondsUTC = now.getTime();
+  return milisecondsUTC + (minutes * 60 * 1000);
+}
+
+function expiresInMinISO(minutes) {
+  var utc_date = moment.parseZone(moment.utc()+350000).utc().format('YYYY-MM-DDTHH:mm:ss.ssZ');
+  var new_utc_date = utc_date.substring(0,utc_date.indexOf("+")) + "Z";
+  return new_utc_date;
+}
 
 module.exports = router;

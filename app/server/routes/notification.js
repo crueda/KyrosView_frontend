@@ -101,7 +101,7 @@ router.get('/app/notificationLimit', function(req, res)
     var username = req.query.username;
     var max = req.query.max;
     if (max==undefined) {
-      max = 100;
+      max = 155;
     }
       log.info("GET: /notificationLimit?username="+username+"&max="+max);
 

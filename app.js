@@ -114,6 +114,10 @@ app.use(i18n.init);
 //var greeting = res.__('Hello');
 
 
+app.use('/api', api_login);
+
+// AUTENTICACION TOKEN
+app.all('/*', [require('./app/server/middlewares/validateRequest')]);
 
 app.use('/api', api_tracking);
 app.use('/api', api_odometer);
@@ -126,7 +130,6 @@ app.use('/api', api_heatmap);
 app.use('/api', api_vehicle);
 app.use('/api', api_share);
 app.use('/api', api_watch);
-app.use('/api', api_login);
 app.use('/api', api_notification);
 app.use('/api', api_user);
 

@@ -103,10 +103,10 @@ trackingModel.getTracking1AndIconFromVehicle = function(vehicleLicense,callback)
               collection.find({"vehicle_license": vehicleLicense}).toArray(function(err, docs2) {
                 if (docs[0]!=undefined) {
                   if (docs2[0]!=undefined) {
-                    docs[0].icon = docs2[0].icon_real_time;
+                    docs[0].icon = docs2[0].icon_real_time.substring(0, docs2[0].icon_real_time.indexOf('.')) + '.svg';;
                     docs[0].alias = docs2[0].alias;
                   } else {
-                    docs[0].icon = "car.png";
+                    docs[0].icon = "car.svg";
                     docs[0].alias = vehicleLicense;
                   }
                 }
