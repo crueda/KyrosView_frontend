@@ -162,37 +162,6 @@ router.get('/tracking1/vehicle/:vehicleLicense', function(req, res)
     }
 });
 
-router.get('/app/tracking1/vehicle/:vehicleLicense', function(req, res)
-{
-      var vehicleLicense = req.params.vehicleLicense;
-      log.info("GET: /tracking1/vehicle/"+vehicleLicense);
-
-      TrackingModel.getTracking1AndIconFromVehicle(vehicleLicense,function(error, data)
-      {
-        if (data == null)
-        {
-          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
-        }
-        else
-        {
-          //si existe enviamos el json
-          if (typeof data !== 'undefined' && data.length > 0)
-          {
-            res.status(200).json(data)
-          }
-          else if (typeof data == 'undefined' || data.length == 0)
-          {
-            res.status(200).json([])
-          }
-          //en otro caso mostramos un error
-          else
-          {
-            res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
-          }
-        }
-      });
-});
-
 /**
  * @api {get} /api/tracking1 Últimas posiciones de los vehiculos (ordenadas por fecha)
  * @apiName GetTracking1 Obtener información de último tracking de todos los vehiculos
@@ -557,54 +526,6 @@ router.get('/tracking/vehicle/:vehicleLicense', function(req, res)
     }
 });
 
-router.get('/app/tracking/vehicle/:vehicleLicense', function(req, res)
-{
-      var vehicleLicense = req.params.vehicleLicense;
-      var initDate = req.query.initDate;
-      var endDate = req.query.endDate;
-
-      log.info("GET: /app/tracking/vehicle/"+vehicleLicense);
-
-      if (initDate==null || endDate==null) {
-        res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
-      }
-      else {
-        var requestData = {
-          vehicleLicense : vehicleLicense,
-          initDate : initDate,
-          endDate : endDate
-        };
-        TrackingModel.getTrackingFromVehicleAndDate(requestData, function(error, data)
-        {
-          if (data == null)
-          {
-            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
-          }
-          else
-          {
-            //si existe enviamos el json
-            if (typeof data !== 'undefined' && data.length > 6999)
-            {
-              res.status(200).json({"status": "nok", "result": data});
-            }
-            else if (typeof data !== 'undefined' && data.length > 0)
-            {
-              res.status(200).json({"status": "ok", "result": data});
-            }
-            else if (typeof data == 'undefined' || data.length == 0)
-            {
-              res.status(200).json({"status": "ok", "result": []});
-              //res.status(200).json([])
-            }
-            //en otro caso mostramos un error
-            else
-            {
-              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
-            }
-          }
-        });
-      }
-});
 
 /**
  * @api {get} /api/tracking Información de una posición de un vehiculo

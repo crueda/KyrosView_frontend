@@ -51,7 +51,7 @@ router.get('/app/login/', function(req, res)
           else
           {
             //Autenticación correcta
-            if (typeof data !== 'undefined')
+            if (typeof data.result !== 'undefined')
             {
               var token_api = genToken(username);
               data.result[0].token_api = token_api;

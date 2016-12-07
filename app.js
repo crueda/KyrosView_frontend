@@ -22,8 +22,12 @@ var api_vehicle = require('./app/server/routes/vehicle');
 var api_share = require('./app/server/routes/share');
 var api_watch = require('./app/server/routes/watch');
 var api_login = require('./app/server/routes/login');
-var api_notification = require('./app/server/routes/notification');
-var api_user = require('./app/server/routes/user');
+var api_push = require('./app/server/routes/push');
+
+var api_app_notification = require('./app/server/routes/app_notification');
+var api_app_tracking = require('./app/server/routes/app_tracking');
+var api_app_user = require('./app/server/routes/app_user');
+var api_app_vehicle = require('./app/server/routes/app_vehicle');
 
 var i18n = require("i18n");
 
@@ -116,8 +120,7 @@ app.use(i18n.init);
 
 app.use('/api', api_login);
 
-// AUTENTICACION TOKEN
-app.all('/*', [require('./app/server/middlewares/validateRequest')]);
+app.use('/api', api_push);
 
 app.use('/api', api_tracking);
 app.use('/api', api_odometer);
@@ -130,8 +133,14 @@ app.use('/api', api_heatmap);
 app.use('/api', api_vehicle);
 app.use('/api', api_share);
 app.use('/api', api_watch);
-app.use('/api', api_notification);
-app.use('/api', api_user);
+
+// AUTENTICACION TOKEN
+//app.all('/*', [require('./app/server/middlewares/validateRequest')]);
+
+app.use('/api', api_app_notification);
+app.use('/api', api_app_user);
+app.use('/api', api_app_tracking);
+app.use('/api', api_app_vehicle);
 
 require('./app/server/routes/routes')(app);
 
