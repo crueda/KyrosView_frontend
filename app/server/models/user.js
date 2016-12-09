@@ -32,13 +32,16 @@ mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' +
 // Crear un objeto para ir almacenando todo lo necesario
 var userModel = {};
 
-userModel.setUserPreferences = function(username, push_mode, group_mode, callback)
+userModel.setUserPreferences = function(username, push_mode, group_mode, max_show_notifications, callback)
 {
   mongoose.connection.db.collection('USER', function (err, collection) {
       collection.find({'username': username}).toArray(function(err, docs) {
           if (docs[0]!=undefined) {
             docs[0].push_enabled = parseInt(push_mode);
             docs[0].group_notifications = parseInt(group_mode);
+            if (max_show_notifications!=undefined) {
+              docs[0].max_show_notifications = parseInt(max_show_notifications);
+            }
             collection.save(docs[0]);
             callback(null, docs);
           } else {

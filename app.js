@@ -23,11 +23,13 @@ var api_share = require('./app/server/routes/share');
 var api_watch = require('./app/server/routes/watch');
 var api_login = require('./app/server/routes/login');
 var api_push = require('./app/server/routes/push');
+var api_icon = require('./app/server/routes/icon');
 
 var api_app_notification = require('./app/server/routes/app_notification');
 var api_app_tracking = require('./app/server/routes/app_tracking');
 var api_app_user = require('./app/server/routes/app_user');
 var api_app_vehicle = require('./app/server/routes/app_vehicle');
+var api_app_monitor = require('./app/server/routes/app_monitor');
 
 var i18n = require("i18n");
 
@@ -133,16 +135,19 @@ app.use('/api', api_heatmap);
 app.use('/api', api_vehicle);
 app.use('/api', api_share);
 app.use('/api', api_watch);
+app.use('/api', api_icon);
 
 // AUTENTICACION TOKEN
 //app.all('/*', [require('./app/server/middlewares/validateRequest')]);
-
+app.all('/api/app/*', [require('./app/server/middlewares/validateRequest')]);
 app.use('/api', api_app_notification);
 app.use('/api', api_app_user);
 app.use('/api', api_app_tracking);
 app.use('/api', api_app_vehicle);
+app.use('/api', api_app_monitor);
 
 require('./app/server/routes/routes')(app);
+
 
 
 // If no route is matched by now, it must be a 404

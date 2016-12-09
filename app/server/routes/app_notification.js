@@ -65,6 +65,7 @@ router.get('/app/notifications', function(req, res)
       }
 });
 
+/*
 router.get('/app/notification/:_id', function(req, res)
 {
     var _id = req.params._id;
@@ -100,10 +101,11 @@ router.get('/app/notification/:_id', function(req, res)
         });
       }
 });
+*/
+
 
 router.get('/app/notificationLimit', function(req, res)
 {
-  log.info("-->");
     var username = req.query.username;
     var max = req.query.max;
     if (max==undefined) {

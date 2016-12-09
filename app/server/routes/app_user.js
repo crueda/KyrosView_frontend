@@ -29,9 +29,10 @@ router.get('/app/user/:username', function(req, res)
   var username = req.params.username;
   var push_mode = req.query.push_mode;
   var group_mode = req.query.group_mode;
-  
-  log.info("GET: /app/user/"+username+"?push_mode="+push_mode+"&group_mode="+group_mode);
-  UserModel.setUserPreferences(username, push_mode, group_mode, function(error, data) {
+  var max_show_notifications = req.query.max_show_notifications;
+
+  log.info("GET: /app/user/"+username+"?push_mode="+push_mode+"&group_mode="+group_mode+"&max_show_notifications="+max_show_notifications);
+  UserModel.setUserPreferences(username, push_mode, group_mode, max_show_notifications, function(error, data) {
     if (data == null) {
       res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
     }
