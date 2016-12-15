@@ -330,7 +330,8 @@ function showSelectedVehicles() {
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         scale: 0.6,
+         //scale: 0.6,
+         scale: 0.07,
          rotation: 0,
          src: getEventIcon(eventType)
         }))
@@ -356,7 +357,8 @@ function showSelectedVehicles() {
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         scale: 0.6,
+         //scale: 0.6,
+         scale: 0.07,
          rotation: 0,
          src: getEventIcon(eventType)
         }))
@@ -370,6 +372,8 @@ function showSelectedVehicles() {
   function addTrackingHistPointEvent(eventOrder, vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
+    //console.log(getEventIcon(eventType));
+
       var iconFeature = new ol.Feature({
         geometry: geo_point,
         //id: trackingId,
@@ -381,7 +385,8 @@ function showSelectedVehicles() {
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         scale: 0.7,
+         //scale: 0.7,
+         scale: 0.07,
          rotation: 0,
          src: getEventIcon(eventType)
         }))
@@ -446,7 +451,8 @@ vehiclesHistLayer.animateFeature (f,
 
   function getEventIcon(eventType) {
     if (eventType==0) {
-      return './images/multiEvent_40.png';
+      //return './images/multiEvent_40.png';
+      return './images/info.svg';
     } else {
        var evento = EventEnum[eventType];
        if (evento!=undefined) {
@@ -774,7 +780,7 @@ $('#datetimepicker2').datetimepicker('update');
 
     var icon = getEventIcon(eventType);
 
-    $('#event'+eventIndex).html("<td class='text-center'><img src='"+ icon +"'/></td><td class='text-center'>" + datestring_day + "</td><td class='text-center'>" + datestring_hour + "</td><td class='text-center'><img onclick='javascript:openTooltipEvent(" + eventType + "," + eventDate + "," + lat + "," + lon + "," + geocoding + "," + speed + "," + altitude + "," + heading + ");' src='/img/info.png' /></td>");
+    $('#event'+eventIndex).html("<td class='text-center'><img width='40' height='40' src='"+ icon +"'/></td><td class='text-center'>" + datestring_day + "</td><td class='text-center'>" + datestring_hour + "</td><td class='text-center'><img onclick='javascript:openTooltipEvent(" + eventType + "," + eventDate + "," + lat + "," + lon + "," + geocoding + "," + speed + "," + altitude + "," + heading + ");' src='/img/info.png' /></td>");
     $('#table_events').append('<tr id="event'+(eventIndex+1)+'" name="" class="clickable-row"></tr>');
 
   }
@@ -808,7 +814,7 @@ $('#datetimepicker2').datetimepicker('update');
 
   function openTooltipEvent(eventType, eventDate, lat, lon, geocoding, speed, altitude, heading) {
       var icon = getEventIcon(eventType);
-      document.getElementById('tooltipEventIcon').innerHTML = "<img src='" + icon + "'/>";
+      document.getElementById('tooltipEventIcon').innerHTML = "<img width='40' height='40' src='" + icon + "'/>";
       document.getElementById('tooltipEventDescription').innerHTML = getEventDescription(eventType);
 
       var date = new Date(eventDate);

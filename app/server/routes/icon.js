@@ -44,6 +44,76 @@ router.get('/icon/:id', function(req, res)
   });
 });
 
+router.get('/allicons', function(req, res)
+{
+  log.info("GET: /allicons");
+
+  var type = req.query.type;
+
+  if (type==null) {
+    res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+  }
+  else {
+    if (type=='1') {
+      IconModel.getAllEventIcons(function(error, data) {
+        if (data == null) {
+          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+        }
+        else {
+            //si existe enviamos el json
+            if (typeof data !== 'undefined') {
+              res.status(200).json(data)
+            } else {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+        }
+      });
+    }
+    else if (type=='2') {
+      IconModel.getAllVehicleIcons(function(error, data) {
+        if (data == null) {
+          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+        }
+        else {
+            //si existe enviamos el json
+            if (typeof data !== 'undefined') {
+              res.status(200).json(data)
+            } else {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+        }
+      });
+    } else {
+      res.status(200).json([]);
+    }
+  }
+});
+
+router.get('/icons', function(req, res)
+{
+  var subtypeList = req.query.subtypeList;
+
+  log.info("GET: /icons?subtypeList="+subtypeList);
+  if (subtypeList==null) {
+    res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+  }
+  else {
+    IconModel.getIcons(subtypeList, function(error, data) {
+    if (data == null) {
+      res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+    }
+    else {
+      //si existe enviamos el json
+      if (typeof data !== 'undefined') {
+        res.status(200).json(data)
+      } else {
+        res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+      }
+    }
+    });
+  }
+});
+
 router.get('/iconInfo', function(req, res)
 {
   log.info("GET: /iconInfo");

@@ -63,15 +63,23 @@ notificationModel.getNotification = function(_id, callback)
     });
 }
 
-notificationModel.getLastNotifications = function(username, max, callback)
+notificationModel.getLastNotifications = function(username, max, group, callback)
 {
     mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
       //collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
-      collection.find({"username": username}).sort({'vehicle_license': 1, 'timestamp': -1}).toArray(function(err, docs) {
-          var result = {'status': 'ok', 'num_notifications': docs.length, 'result': docs.slice(0, max-1)};
-          //log.info(result);
-          callback(null, result);
-        });
+      if (group==1) {
+        collection.find({"username": username}).sort({'vehicle_license': 1, 'timestamp': -1}).toArray(function(err, docs) {
+            var result = {'status': 'ok', 'num_notifications': docs.length, 'result': docs.slice(0, max-1)};
+            //log.info(result);
+            callback(null, result);
+          });
+      } else {
+        collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
+            var result = {'status': 'ok', 'num_notifications': docs.length, 'result': docs.slice(0, max-1)};
+            //log.info(result);
+            callback(null, result);
+          });
+      }
     });
 }
 

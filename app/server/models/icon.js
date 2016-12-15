@@ -4,6 +4,8 @@ var mongoose = require('mongoose');
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
 
+var ObjectId = require('mongoose').Types.ObjectId;
+
 // Definición del log
 var fs = require('fs');
 var log = require('tracer').console({
@@ -40,10 +42,45 @@ iconModel.getIcon = function(id, callback)
   });
 }
 
+iconModel.getIcons = function(subtypeList, callback)
+{
+  var subtypeArray = subtypeList.split(',');
+  var subtypeArrayInt = [];
+  for (var i=0; i<subtypeArray.length; i++) {
+    try {
+      subtypeArrayInt.push(parseInt(subtypeArray[i]));
+    } catch (err) {}
+  }
+
+  mongoose.connection.db.collection('ICON', function (err, collection) {
+      collection.find({'subtype': {$in: subtypeArrayInt}}).toArray(function(err, docs) {
+            callback(null, docs);
+      });
+  });
+}
+
 iconModel.getAllIconInfo = function(callback)
 {
   mongoose.connection.db.collection('ICON', function (err, collection) {
       collection.find({},{'svg': 0}).toArray(function(err, docs) {
+          callback(null, docs);
+      });
+  });
+}
+
+iconModel.getAllEventIcons = function(callback)
+{
+  mongoose.connection.db.collection('ICON', function (err, collection) {
+      collection.find({'type': 1}).toArray(function(err, docs) {
+          callback(null, docs);
+      });
+  });
+}
+
+iconModel.getAllVehicleIcons = function(callback)
+{
+  mongoose.connection.db.collection('ICON', function (err, collection) {
+      collection.find({'type': 2}).toArray(function(err, docs) {
           callback(null, docs);
       });
   });

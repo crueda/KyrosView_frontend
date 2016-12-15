@@ -139,7 +139,7 @@ app.use('/api', api_icon);
 
 // AUTENTICACION TOKEN
 //app.all('/*', [require('./app/server/middlewares/validateRequest')]);
-app.all('/api/app/*', [require('./app/server/middlewares/validateRequest')]);
+//app.all('/api/app/*', [require('./app/server/middlewares/validateRequest')]);
 app.use('/api', api_app_notification);
 app.use('/api', api_app_user);
 app.use('/api', api_app_tracking);

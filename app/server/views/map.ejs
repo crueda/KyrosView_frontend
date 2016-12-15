@@ -520,6 +520,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var index = 0;
 
     var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
+    //console.log(urlJson);
     document.getElementById('attr-loading').style.display = 'block';
       $.getJSON( urlJson, function( data ) {
         if (data.status == 'nok') {
@@ -2125,7 +2126,7 @@ function loadMonitor() {
 
     strDevices = strDevices + ']';
 
-    console.log(strDevices);
+    //console.log(strDevices);
     var jsonDevices = JSON.parse(strDevices);
     $('#licenseHist').typeahead({source:jsonDevices,
         autoSelect: true
@@ -2186,6 +2187,7 @@ tags: ['1','3'],
   }
 ];
 
+console.log(jsonString);
     jsonObject = JSON.parse(jsonString);
     $('#monitorDiv').height($(window).height()-200);
     var $checkableTree = $('#treeview-checkable').treeview({

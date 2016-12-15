@@ -108,8 +108,12 @@ router.get('/app/notificationLimit', function(req, res)
 {
     var username = req.query.username;
     var max = req.query.max;
+    var group = req.query.group;
     if (max==undefined) {
-      max = 50;
+      max = 100;
+    }
+    if (group==undefined) {
+      group = 0;
     }
       log.info("GET: /app/notificationLimit?username="+username+"&max="+max);
 
@@ -117,7 +121,7 @@ router.get('/app/notificationLimit', function(req, res)
         res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
       }
       else {
-        NotificationModel.getLastNotifications(username, max, function(error, data)
+        NotificationModel.getLastNotifications(username, max, group, function(error, data)
         {
           if (data == null)
           {
