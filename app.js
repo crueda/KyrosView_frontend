@@ -30,6 +30,7 @@ var api_app_tracking = require('./app/server/routes/app_tracking');
 var api_app_user = require('./app/server/routes/app_user');
 var api_app_vehicle = require('./app/server/routes/app_vehicle');
 var api_app_monitor = require('./app/server/routes/app_monitor');
+var api_app_graph = require('./app/server/routes/app_graph');
 
 var i18n = require("i18n");
 
@@ -145,6 +146,8 @@ app.use('/api', api_app_user);
 app.use('/api', api_app_tracking);
 app.use('/api', api_app_vehicle);
 app.use('/api', api_app_monitor);
+app.use('/api', api_app_graph);
+
 
 require('./app/server/routes/routes')(app);
 
