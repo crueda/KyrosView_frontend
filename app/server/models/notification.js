@@ -47,7 +47,7 @@ notificationModel.getConfigNotifications = function(username, vehicleLicense, ca
 
 notificationModel.getAllNotifications = function(username, callback)
 {
-    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
+    mongoose.connection.db.collection('APP_NOTIFICATION', function (err, collection) {
       collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
           callback(null, docs);
         });
@@ -65,7 +65,7 @@ notificationModel.getNotification = function(_id, callback)
 
 notificationModel.getLastNotifications = function(username, max, group, callback)
 {
-    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
+    mongoose.connection.db.collection('APP_NOTIFICATION', function (err, collection) {
       //collection.find({"username": username}).sort({'timestamp': -1}).toArray(function(err, docs) {
       if (group==1) {
         collection.find({"username": username}).sort({'vehicle_license': 1, 'timestamp': -1}).toArray(function(err, docs) {
@@ -85,7 +85,7 @@ notificationModel.getLastNotifications = function(username, max, group, callback
 
 notificationModel.archiveNotification = function(username, notificationId, callback)
 {
-    mongoose.connection.db.collection('APP_NOTIFICATIONS', function (err, collection) {
+    mongoose.connection.db.collection('APP_NOTIFICATION', function (err, collection) {
         /*collection.find({'_id': new ObjectId(notificationId)}).toArray(function(err, docs) {
             if (docs[0]!=undefined) {
                 docs[0].archive = 1;
@@ -112,7 +112,7 @@ notificationModel.archiveAllNotifications = function(username, callback)
         callback(err, null);
     }
     else {
-        var collection = db.collection('APP_NOTIFICATIONS');
+        var collection = db.collection('APP_NOTIFICATION');
         //collection.update({}, {$set: {archive: 1}},{multi: true},function(err, result) {
         collection.remove({'username':username } , function(err, doc){
              if (err) {

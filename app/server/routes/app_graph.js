@@ -60,4 +60,36 @@ router.get('/app/graph/vehicle/:vehicleLicense', function(req, res)
     }
 });
 
+router.get('/app/graph/reset/vehicle/:vehicleLicense', function(req, res)
+{
+    var vehicleLicense = req.params.vehicleLicense;
+    log.info("GET: /app/graph/reset/vehicle/"+vehicleLicense);
+
+    if (vehicleLicense==null) {
+      res.status(202).json({"response": {"status":status.STATUS_VALIDATION_ERROR,"description":messages.MISSING_PARAMETER}})
+    }
+    else {
+      GraphModel.resetGraphData(vehicleLicense,function(error, data)
+      {
+        if (data == null)
+        {
+          res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+        }
+        else
+        {
+          //si existe enviamos el json
+          if (typeof data !== 'undefined')
+          {
+            res.status(200).json(data)
+          }
+          //en otro caso mostramos un error
+          else
+          {
+            res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+          }
+        }
+      });
+    }
+});
+
 module.exports = router;

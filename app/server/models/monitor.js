@@ -88,8 +88,8 @@ monitorModel.getMonitorListFromUser = function(username,callback)
     });
 */
 
-    mongoose.connection.db.collection('MONITOR_'+username, function (err, collection) {
-        collection.find().toArray(function(err, docs) {
+    mongoose.connection.db.collection('MONITOR', function (err, collection) {
+        collection.find({'username': username}).toArray(function(err, docs) {
           list = [];
           //log.info (flatten(docs))
           fdocs = flatten(docs);
@@ -119,86 +119,6 @@ monitorModel.getMonitorListFromUser = function(username,callback)
         });
     });
 
-}
-
-
-monitorModel.getMonitorFromUser00 = function(username,callback)
-{
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        var collection = db.collection('MONITOR');
-        //callback(null, tempdoc);
-        collection.find({'username': username}).toArray(function(err, docs) {
-        //collection.find().toArray(function(err, docs) {
-            log.info(docs);
-            callback(null, docs);
-        });
-    }
-  });
-}
-
-monitorModel.getMonitorFromUser0 = function(username,callback)
-{
-  db.open(function(err, db) {
-    if(err) {
-        callback(err, null);
-    }
-    else {
-        //var collection = db.collection('MONITOR_'+username);
-        var collection = db.collection('MONITOR_jigo');
-        // nivel 0
-        collection.find({'level': 0}).toArray(function(err, docs) {
-
-            for (var i=0; i<docs.length; i++) {
-                //log.info("-->" + docs[i].name);
-                var element;
-                if (docs[i].type == 0) {
-                    element = {"type": 0, "name": docs[i].name, "nodes": [], "checked": "false"};
-                    vchildren = [];
-                    for (var j=0; j<docs[i].children.length;j++) {
-                        vchildren.push(docs[i].children[j].name);
-                        var element_children = {"type": docs[i].children[j].type, "name": docs[i].children[j].name, "nodes": [], "checked": "false"};
-                        element.nodes.push(element_children);
-                    }
-                    monitorJson.nodes.push(element);
-
-                    // buscar en hijos
-                    collection.find({'level': 1, 'name': {$in: vchildren}  }).toArray(function(err, docs) {
-                    //collection.find({'level': 1, 'name': {$in: vchildren.join(",")}  }).toArray(function(err, docs) {
-                        for (var i=0; i<docs.length; i++) {
-                            log.info("-3->" + docs[i].name);
-                            for (var j=0; j<docs[i].children.length;j++) {
-                                var element_children = {"type": docs[i].type, "name": docs[i].name, "nodes": [], "checked": "false"};
-
-                            }
-                            //monitorJson.push(element);
-                            monitorModel.putElement(element,0);
-
-                            log.info(JSON.stringify(monitorJson));
-
-                        }
-                    });
-
-
-                } else {
-                    element = {"type": 1, "name": docs[i].name, "nodes": [], "checked": "false"};
-                    monitorJson.nodes.push(element);
-                }
-                //monitorJson.push(element);
-            }
-
-
-
-
-            //callback(null, docs);
-            callback(null, monitorJson);
-
-        });
-    }
-  });
 }
 
 monitorModel.setMonitorCheckedFromUser = function(requestData,callback)

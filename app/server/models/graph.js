@@ -51,15 +51,48 @@ graphModel.getGraphData = function(vehicleLicense, callback)
             for(var eventType in docs[0].eventTypeCounter) {
               //log.info(eventType + " - " + docs[0].eventTypeCounter[eventType]);
               events.push([eventType, docs[0].eventTypeCounter[eventType]]);
-              events.sort(sortFunction);
+              //events.sort(sortFunction);
               //log.info(events);
-              docs[0].eventTypeOrdered = events;
             }
-          } else {
-            docs[0].eventTypeOrdered = [];
-
+            docs[0].eventTypeVector = events;
           }
           callback(null, docs);
+      });
+  });
+}
+
+graphModel.resetGraphData = function(vehicleLicense, callback)
+{
+  mongoose.connection.db.collection('ODOMETER', function (err, collection) {
+      collection.find({'vehicle_license': vehicleLicense}).toArray(function(err, docs) {
+          if (docs[0]!=undefined) {
+              var newOdemeterData = docs[0];
+              newOdemeterData.weekTrackingCounter = {
+                "monday" : 0,
+                "tuesday" : 0,
+                "friday" : 0,
+                "wednesday" : 0,
+                "thursday" : 0,
+                "sunday" : 0,
+                "saturday" : 0
+              };
+              newOdemeterData.weekEventCounter = {
+                "monday" : 0,
+                "tuesday" : 0,
+                "friday" : 0,
+                "wednesday" : 0,
+                "thursday" : 0,
+                "sunday" : 0,
+                "saturday" : 0
+              };
+              newOdemeterData.eventTypeCounter = {};
+              newOdemeterData.hourTrackingCounter = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+              newOdemeterData.hourEventCounter = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+              collection.save(newOdemeterData);
+              callback(null, newOdemeterData);
+            } else {
+              callback(null, docs[0]);
+            }
       });
   });
 }
