@@ -60,5 +60,35 @@ userModel.getUserFromUsername = function(username, callback)
   });
 }
 
+userModel.saveDeviceInfo = function(username, token, device_model,
+  device_platform, device_version, device_manufacturer,device_serial, device_uuid,
+  device_height, device_width, device_language,  callback)
+{
+    mongoose.connection.db.collection('USER', function (err, collection) {
+        collection.find({'username': username}).toArray(function(err, docs) {
+            if (docs[0]!=undefined) {
+                docs[0].token = token;
+                device_info = {
+                  'device_model': device_model,
+                  'device_platform': device_platform,
+                  'device_version': device_version,
+                  'device_manufacturer': device_manufacturer,
+                  'device_serial': device_serial,
+                  'device_uuid': device_uuid,
+                  'device_height': device_height,
+                  'device_width': device_width,
+                  'device_language': device_language
+                }
+                docs[0].device_info = device_info;
+
+                collection.save(docs[0]);
+                callback(null, docs);
+            } else {
+                callback(null, []);
+            }
+        });
+    });
+}
+
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = userModel;

@@ -452,11 +452,14 @@ vehiclesHistLayer.animateFeature (f,
   function getEventIcon(eventType) {
     if (eventType==0) {
       //return './images/multiEvent_40.png';
-      return './images/info.svg';
+      //return './images/info.svg';
+      return Constants['url_events'] + 'info.svg';
+
     } else {
        var evento = EventEnum[eventType];
        if (evento!=undefined) {
-        return './images/' + EventEnum.properties[evento].icon;
+        //return './images/' + EventEnum.properties[evento].icon;
+        return Constants['url_events'] + EventEnum.properties[evento].icon;
       } else {
         return "";
       }
