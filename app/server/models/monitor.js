@@ -108,6 +108,7 @@ monitorModel.getMonitorListFromUser = function(username,callback)
                       docs[i].icon_real_time = docs[i].icon_real_time.substring(0, docs[i].icon_real_time.indexOf('.')) + '.svg';
                       docs[i].icon_cover = docs[i].icon_cover.substring(0, docs[i].icon_cover.indexOf('.')) + '.svg';
                       docs[i].icon_alarm = docs[i].icon_alarm.substring(0, docs[i].icon_alarm.indexOf('.')) + '.svg';
+                      docs[i].name_order = docs[i].vehicle_license.toLowerCase();
                     } catch(err) {}
                   }
 

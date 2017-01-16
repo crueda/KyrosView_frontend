@@ -1,11 +1,13 @@
 var http = require('http');
 var express = require('express');
+var spdy = require('spdy')
 var path = require('path');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var cookieParser = require('cookie-parser');
 var MongoDBStore = require('connect-mongodb-session')(session);
+var fs = require('fs');
 
 var PropertiesReader = require('properties-reader');
 var properties = PropertiesReader('./kyrosview.properties');
@@ -33,6 +35,11 @@ var api_app_monitor = require('./app/server/routes/app_monitor');
 var api_app_graph = require('./app/server/routes/app_graph');
 
 var i18n = require("i18n");
+
+const options = {
+    key: fs.readFileSync(__dirname + '/server.key'),
+    cert:  fs.readFileSync(__dirname + '/server.crt')
+}
 
 //necesario para utilizar los verbos put y delete en formularios
 var methodOverride = require('method-override');
@@ -160,8 +167,20 @@ app.use(function(req, res, next) {
   //next(err);
 });
 
-http.createServer(app).listen(app.get('port'), function(){
+/*http.createServer(app).listen(app.get('port'), function(){
 	console.log('KyrosView server listening on port ' + app.get('port'));
 });
+*/
+
+spdy
+  .createServer(options, app)
+  .listen(3100, (error) => {
+    if (error) {
+      console.error(error)
+      return process.exit(1)
+    } else {
+      console.log('Listening on port 3100')
+    }
+  });
 
 module.exports = app;
