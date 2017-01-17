@@ -77,7 +77,8 @@ userModel.saveDeviceInfo = function(username, token, device_model,
                   'device_uuid': device_uuid,
                   'device_height': device_height,
                   'device_width': device_width,
-                  'device_language': device_language
+                  'device_language': device_language,
+                  'last_login': new Date().toISOString()
                 }
                 docs[0].device_info = device_info;
 
