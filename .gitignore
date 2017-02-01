@@ -14,3 +14,7 @@ pruebas/
 readme.img/
 
 *.log
+
+server.crt
+server.csr
+server.key
