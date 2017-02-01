@@ -148,6 +148,21 @@
   1053: "BACK_DOOR_OPENING",
   1054: "BACK_DOOR_CLOSING",
   1055: "JAMMER",
+  1056: "CHECK_IN_ALREADY_DONE",
+  1058: "CHECK_IN",
+  1059: "CHECK_OUT",
+  1060: "JOB_OPEN",
+  1061: "JOB_CLOSED",
+  1062: "CHECK_OUT_WITHOUT_CHECK_IN",
+  1063: "JOB_PAUSED_BREAKFAST",
+  1064: "JOB_RESUMED_BREAKFAST",
+  1065: "JOB_PAUSED_LUNCH",
+  1066: "JOB_RESUMED_LUNCH",
+  1067: "JOB_PAUSED_DINNER",
+  1068: "JOB_RESUMED_DINNER",
+  1069: "SYSTEM_AREA_ACTIVATED",
+  1070: "SYSTEM_AREA_DEACTIVATED",
+
   properties: {
   	"ALARM": {name: "alarm", description: "Alarma"},
   	"PANIC": {name: "panic", description: "Pánico"},
@@ -297,7 +312,21 @@
   	"SIDE_DOOR_CLOSING": {name: "side_door_closing", description: "yyy"},
   	"BACK_DOOR_OPENING": {name: "back_door_opening", description: "yyy"},
   	"BACK_DOOR_CLOSING": {name: "back_door_closing", description: "yyy"},
-  	"JAMMER": {name: "jammer", description: "yyy"}
+  	"JAMMER": {name: "jammer", description: "yyy"},
+    "CHECK_IN_ALREADY_DONE": {name: "info.svg", description: "Registro de entrada ya realizado"},
+    "CHECK_IN": {name: "info", description: "Registro de entrada"},
+    "CHECK_OUT": {name: "info", description: "Registro de salida"},
+    "JOB_OPEN": {name: "info", description: "Apertura de trabajo"},
+    "JOB_CLOSED": {name: "info", description: "Cierre de trabajo"},
+    "CHECK_OUT_WITHOUT_CHECK_IN": {name: "info", description: "Registro de salida sin entrada previa"},
+    "JOB_PAUSED_BREAKFAST": {name: "info", description: "Trabajo pausado para el desayuno"},
+    "JOB_RESUMED_BREAKFAST": {name: "info", description: "Trabajo reanudado después del desayuno"},
+    "JOB_PAUSED_LUNCH": {name: "info", description: "Trabajo pausado para la comida"},
+    "JOB_RESUMED_LUNCH": {name: "info", description: "Trabajo reanudado después de la comida"},
+    "JOB_PAUSED_DINNER": {name: "info", description: "Trabajo pausado para la cena"},
+    "JOB_RESUMED_DINNER": {name: "info", description: "Trabajo reanudado después del cena"},
+    "SYSTEM_AREA_ACTIVATED": {name: "info", description: "Área de sistema activada"},
+    "SYSTEM_AREA_DEACTIVATED": {name: "info", description: "Área de sistema desactivada"
   }
 };
 
