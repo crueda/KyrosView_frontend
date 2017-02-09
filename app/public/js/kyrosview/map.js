@@ -1344,6 +1344,13 @@ function addVehicleToMap(vehicleLicense) {
 function addVehicleFindToMap(vehicleLicense) {
   //if (vehicleLicense!='<%=vehicleLicense%>') {
     $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+      if (data == undefined || data.length == 0) {
+          $('#myModalMsgLabel').text("No existen puntos de tracking");
+          $('#myModalMsgLabel').css({ "color" : 'red' });
+          $('#myModalMsgLabel2').text("Revise la busqueda solicitada e intentelo de nuevo");
+          $('#myModalMsg').modal('show');
+        }
+        else {
       $.each( data, function( key, val ) {
           processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
@@ -1359,7 +1366,8 @@ function addVehicleFindToMap(vehicleLicense) {
           });
           map.addOverlay(actualPosOverlay);*/
 
-    });
+      });
+    }
     });
   //}
 }
