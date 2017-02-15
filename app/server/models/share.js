@@ -73,6 +73,7 @@ shareModel.addSharing = function(requestData, callback)
 
             
         }
+        db.close();
     });
 
 }

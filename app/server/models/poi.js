@@ -22,7 +22,8 @@ var dbMongoName = properties.get('bbdd.mongo.name');
 var dbMongoHost = properties.get('bbdd.mongo.ip');
 var dbMongoPort = properties.get('bbdd.mongo.port');
 
-mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, function (error) {
+
+mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName, { server: { reconnectTries: 3, poolSize: 5 } },  function (error) {
     if (error) {
         log.info(error);
     }
@@ -33,14 +34,8 @@ var poiModel = {};
 
 poiModel.getPoisFromBox = function(boxData,callback)
 {
-    mongoose.connection.db.collection('POIS', function (err, collection) {
-        log.info(boxData.ullon);
-        log.info(boxData.ullat);
-        log.info(boxData.drlon);
-        log.info(boxData.drlat);
-        //collection.find( { 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
+    mongoose.connection.db.collection('POI', function (err, collection) {
         collection.find( { 'username': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
-            log.info(docs);
             callback(null, docs);
         });
     });

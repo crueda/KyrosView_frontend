@@ -82,14 +82,14 @@ var dbMongoPort = properties.get('bbdd.mongo.port');
 
  var store = new MongoDBStore(
       {
-        uri: 'mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName,
+        uri: 'mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' + dbMongoName + '?connectTimeoutMS=500&maxPoolSize=100',
         collection: 'USER_SESSIONS'
       });
 
     // Catch errors
     store.on('error', function(error) {
-      assert.ifError(error);
-      assert.ok(false);
+      //assert.ifError(error);
+      //assert.ok(false);
     });
 
     app.use(require('express-session')({
