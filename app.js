@@ -21,6 +21,7 @@ var api_heatmap = require('./app/server/routes/heatmap');
 var api_vehicle = require('./app/server/routes/vehicle');
 var api_share = require('./app/server/routes/share');
 var api_watch = require('./app/server/routes/watch');
+var api_mailmap = require('./app/server/routes/mailmap');
 var api_login = require('./app/server/routes/login');
 var api_push = require('./app/server/routes/push');
 var api_icon = require('./app/server/routes/icon');
@@ -137,6 +138,7 @@ app.use('/api', api_vehicle);
 app.use('/api', api_share);
 app.use('/api', api_watch);
 app.use('/api', api_icon);
+app.use('/api', api_mailmap);
 
 // AUTENTICACION TOKEN
 //app.all('/*', [require('./app/server/middlewares/validateRequest')]);
