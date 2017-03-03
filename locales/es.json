@@ -8,7 +8,7 @@
 	"forgot_password_error": "Error al recuperar contraseña",
 	"password_updated": "Contraseña actualizada",
 	"update_password_error": "Error al actualizar la contraseña",
-	"user_not_found'": "El usuario no existe",
+	"user_not_found": "El usuario no existe",
 	"operation_error": "Error al realizar la operación, intentelo de nuevo",
 	"send_email_error": "Error al enviar el email",
 	"email_sent": "Email enviado a: ",
@@ -109,5 +109,6 @@
 	"hour": "Hora",
 	"nearby_devices": "Dispositivos cercanos",
 	"nearby_pois": "PDIs cercanos",
-	"Ok": "Ok"
+	"Ok": "Ok",
+	"user_not_found": "user_not_found"
 }

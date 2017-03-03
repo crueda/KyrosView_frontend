@@ -23,17 +23,17 @@ EM.dispatchResetPasswordLink = function(account, callback)
 
     var transporter = nodemailer.createTransport(smtpTransport({
         host: properties.get('mail.account.host'),
-        port: 25,
-        auth: {
+        port: 25
+        /*auth: {
             user: properties.get('mail.account.user'),
             pass: properties.get('mail.account.password')
-        }
+        }*/
     }));
     
 
     // setup e-mail data with unicode symbols
     var mailOptions = {
-        from: '"Kyros LBS" <logistica@kyroslbs.com>', 
+        from: '"Kyros LBS" <mail@kyroslbs.com>', 
         to: account.email, 
         subject: 'KyrosView - proceso para recuperación de contraseña', 
         html: EM.composeHtmlEmail(account),
@@ -63,11 +63,11 @@ EM.dispatchShareVehicleLink = function(shareData, callback)
 
     var transporter = nodemailer.createTransport(smtpTransport({
         host: properties.get('mail.account.host'),
-        port: 25,
-        auth: {
+        port: 25
+        /*auth: {
             user: properties.get('mail.account.user'),
             pass: properties.get('mail.account.password')
-        }
+        }*/
     }));
     
     // setup e-mail data with unicode symbols
@@ -124,7 +124,7 @@ EM.composeTextEmail = function(o)
 
 EM.composeShareVehicleHtmlEmail = function(username, vehicleLicense, uuid)
 {
-    var link = 'http://view.kyroslbs.com/follow.html?uuid='+uuid;
+    var link = 'http://view.kyroslbs.com/follow2.html?uuid='+uuid;
     var html = "<html><body>";
         html += "Hola !<br><br>";
         html += "El usuario de Kyros <b>"+username+"</b> desea compartir contigo la localización del vehículo <b>"+vehicleLicense+"</b>.<br><br>";
@@ -138,7 +138,7 @@ EM.composeShareVehicleHtmlEmail = function(username, vehicleLicense, uuid)
 
 EM.composeShareVehicleTextEmail = function(username, vehicleLicense, uuid)
 {
-    var link = 'http://view.kyroslbs.com/follow.html?uuid='+uuid;
+    var link = 'http://view.kyroslbs.com/follow2.html?uuid='+uuid;
     var html = "<html><body>";
         html += "Hola !<br><br>";
         html += "El usuario de Kyros <b>"+username+"</b> desea compartir contigo la localización del vehículo <b>"+vehicleLicense+"</b>.<br><br>";
