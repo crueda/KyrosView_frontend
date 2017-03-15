@@ -66,7 +66,7 @@ monitorModel.putElement = function(element, depth)
     }
 }
 
-
+//----------
 
 monitorModel.getMonitorFromUser = function(username,callback)
 {
@@ -78,6 +78,129 @@ monitorModel.getMonitorFromUser = function(username,callback)
     });
 }
 
+monitorModel.addToParent = function(element, parentId, childs)
+{
+     for (var i=0; i<childs.length; i++) {
+        if (childs[i]['id'] == parentId) {
+            childs[i]['childs'].push(element);
+        } else {
+            if (childs[i].hasOwnProperty('childs')) {
+                monitorModel.addToParent(element, parentId, childs[i]['childs']);
+            }
+        }
+     }
+}
+
+monitorModel.getMonitorFromUser0 = function(username,callback)
+{
+    monitor = [];
+    mongoose.connection.db.collection('USER', function (err, collection) {
+        collection.find({'username': username}).toArray(function(err, docs) {
+            //log.info(JSON.stringify(docs));
+            if (docs[0]==undefined) {
+                callback(null, []);                
+            } else {
+
+
+                var parent_fleet = {};
+                var parent_vehicle = {};
+                var name_fleet = {};
+                var name_vehicle = {};
+
+                mongoose.connection.db.collection('FLEET', function (err, collection) {
+                    collection.find().toArray(function(err, docsFleet) {
+                        
+                        mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+                            collection.find().toArray(function(err, docsVehicle) {
+                                for (var i=0; i<docsFleet.length;i++) {
+                                    parent_fleet[docsFleet[i]['id']] = docsFleet[i]['parent_id'];
+                                    name_fleet[docsFleet[i]['id']] = docsFleet[i]['name'];
+                                    if (docsFleet[i]['vehicle']!=undefined) {
+                                        for (var j=0; j<docsFleet[i]['vehicle'].length; j++) {
+                                            parent_vehicle[docsFleet[i]['vehicle'][j]] = docsFleet[i]['id'];
+                                        }
+                                    }
+                                }
+
+
+                                for (var k=0; k<docsVehicle.length;k++) {
+                                    name_vehicle[docsVehicle[k]['device_id']] = docsVehicle[k]['vehicle_license'];
+                                }
+
+                                // primer arbol
+                                for (var i=0; i<docs[0]['monitor_fleet'].length; i++)
+                                {
+                                    element_fleet = {"type":0, "childs":[], "name": name_fleet[docs[0]['monitor_fleet'][i]], "state":{"selected":"false"},"backColor":"#e6e6e6","selectable":"false", "id": docs[0]['monitor_fleet'][i]}
+                                    monitor.push (element_fleet);
+                                }
+                                for (var j=0; j<docs[0]['monitor_vehicle'].length; j++)
+                                {
+                                    element_vehicle = {"type":1, "name": name_vehicle[docs[0]['monitor_vehicle'][j]], "state":{"selected":"false"}, "id": docs[0]['monitor_vehicle'][j]}
+                                    monitor.push (element_vehicle);
+                                }
+
+                                // Recorrer monitor y construir el arbol
+                                for (t=0; t<monitor.length; t++) {
+                                    if (monitor[t]['type']==0) {
+                                        var parentId = parent_fleet[monitor[t]['id']];
+                                        if(parentId!=0) {
+                                            // insertarlo como hijo de su padre
+                                            element = monitor[t]
+                                            for (t2=0; t2<monitor.length; t2++) {
+                                                if (monitor[t].hasOwnProperty('childs')) {
+                                                    monitorModel.addToParent(element, parentId, monitor[t]['childs']);
+                                                }
+                                                /*if (monitor[t2]['id'] == parent) {
+                                                    monitor[t2]['childs'].push(element);
+                                                }*/
+                                            }
+
+                                            // eliminar de monitor
+                                            monitor.splice(t, 1);
+                                        }                                        
+                                    } else {
+                                        var parentId = parent_vehicle[monitor[t]['id']];
+                                        if(parentId!=0) {
+                                            // insertarlo como hijo de su padre
+                                            element = monitor[t]
+                                            for (t2=0; t2<monitor.length; t2++) {
+                                                if (monitor[t].hasOwnProperty('childs')) {
+                                                    monitorModel.addToParent(element, parentId, monitor[t]['childs']);
+                                                }
+
+                                                /*if (monitor[t2]['id'] == parent) {
+                                                    monitor[t2]['childs'].push(element);
+                                                }*/
+                                            }
+
+                                            // eliminar de monitor
+                                            monitor.splice(t, 1);
+                                        } 
+                                    }
+
+                                }
+
+                                log.info(monitor);
+                                callback(null, monitor);
+
+
+                            });
+                        });
+
+                    });
+                });
+
+            }
+        });
+    });
+
+
+}
+
+
+
+
+// --------------
 monitorModel.getMonitorListFromUser = function(username,callback)
 {
   /*

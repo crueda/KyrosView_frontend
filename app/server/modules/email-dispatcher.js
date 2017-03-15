@@ -33,7 +33,7 @@ EM.dispatchResetPasswordLink = function(account, callback)
 
     // setup e-mail data with unicode symbols
     var mailOptions = {
-        from: '"Kyros LBS" <mail@kyroslbs.com>', 
+        from: '"Kyros LBS" <reminder@mail.kyroslbs.com>', 
         to: account.email, 
         subject: 'KyrosView - proceso para recuperación de contraseña', 
         html: EM.composeHtmlEmail(account),
@@ -72,7 +72,7 @@ EM.dispatchShareVehicleLink = function(shareData, callback)
     
     // setup e-mail data with unicode symbols
     var mailOptions = {
-        from: '"Kyros LBS" <logistica@kyroslbs.com>', 
+        from: '"Kyros LBS" <share@mail.kyroslbs.com>', 
         to: shareData.email, 
         subject: 'KyrosView - seguimiento de vehículo', 
         html: EM.composeShareVehicleHtmlEmail(shareData.username, shareData.vehicle_license, shareData.uuid),

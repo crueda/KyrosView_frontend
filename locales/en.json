@@ -23,8 +23,7 @@
 	"consume": "Consume",
 	"alias": "Alias",
 	"coordinates": "Coordinates",
-	"heading": "Heading",
-	"historic": "Historical positions",
+	"historic": "Historic",
 	"message": "Message",
 	"consult": "Consult",
 	"init_date": "Init date",
@@ -38,10 +37,10 @@
 	"update": "Update",
 	"position_map": "Position over the map",
 	"actual_position": "Actual position",
-	"tracking_point": "Tracking point",						
-	"init_tracking_point": "Init tracking point",						
+	"tracking_point": "Tracking point",
+	"init_tracking_point": "Init tracking point",
 	"end_tracking_point": "End tracking point",
-	"tracking_line": "Tracking line",						
+	"tracking_line": "Tracking line",
 	"show_over_map": "Show over map",
 	"no_tracking": "There are not tracking points",
 	"check_search": "Check the requested search and try again",
@@ -71,7 +70,6 @@
 	"map_ol": "Map",
 	"real_time": "Selected",
 	"map_g": "Map G.",
-	"historic": "Historic",
 	"globe": "Globe",
 	"all": "All",
 	"graphs": "Graphs",
@@ -106,11 +104,9 @@
 	"recent": "last",
 	"more_info": "Info",
 	"events": "Events",
-	"day": "Day",
 	"hour": "Hour",
 	"nearby_devices": "Nearby devices",
-	"nearby_pois": "Nearby POIs"
-
-
-
+	"nearby_pois": "Nearby POIs",
+	"geocoding": "geocoding",
+	"Ok": "Ok"
 }
