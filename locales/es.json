@@ -110,5 +110,7 @@
 	"nearby_devices": "Dispositivos cercanos",
 	"nearby_pois": "PDIs cercanos",
 	"Ok": "Ok",
-	"user_not_found": "user_not_found"
+	"user_not_found": "user_not_found",
+	"username": "Usuario",
+	"password": "Contraseña"
 }

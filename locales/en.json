@@ -108,5 +108,7 @@
 	"nearby_devices": "Nearby devices",
 	"nearby_pois": "Nearby POIs",
 	"geocoding": "geocoding",
-	"Ok": "Ok"
+	"Ok": "Ok",
+	"username": "Username",
+	"password": "Password"
 }

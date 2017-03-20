@@ -159,6 +159,12 @@ function closeTooltip() {
     document.getElementById('attr-logo').style.display = 'block';
   }
 
+function disabledBack() {
+  window.location.hash="no-back";
+   window.location.hash="Again-No-back" //chrome
+   window.onhashchange=function(){window.location.hash="no-back";}
+}
+
 // --------------------------------------------------------------
 // showLastTrackings
 // --------------------------------------------------------------
