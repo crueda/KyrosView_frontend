@@ -935,6 +935,8 @@ var mapPointSource = new ol.source.Vector({
   // deshabilitar el boton atras del navegador
   disabledBack();
 
+//alert ('<%=user_type%>');
+
 //createChart(0,0);
 // var now = new Date();
 // var m = moment(now);
@@ -1302,8 +1304,9 @@ $("#vehiclePhoto").fileinput({
         <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
       </td>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
+        <button onclick="javascript:menuRecentPos();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_recent.png"/><br><%= __('recent') %></button>
       </td>
+     
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
@@ -1315,12 +1318,13 @@ $("#vehiclePhoto").fileinput({
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
+    <% if (user_type == 'PRO'){%>
     <tr>
        <td align="center">
         <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
       </td>
-      <td align="center">
-        <button onclick="javascript:menuRecentPos();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_recent.png"/><br><%= __('recent') %></button>
+    <td align="center">
+        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
@@ -1332,6 +1336,7 @@ $("#vehiclePhoto").fileinput({
         <button onclick="javascript:menuPois('<%=user%>');" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
       </td>
     <tr><td>&nbsp;</td><td></td></tr>
+    <% } %>
     <tr>
       <td align="center">
         <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br><%= __('logout') %></button>
@@ -2513,12 +2518,14 @@ kyrosGroup,
   })
 });
 
+<% if (user_type == 'PRO'){%>
 if (!isMobile()) {
 var layerSwitcher = new ol.control.LayerSwitcher({
     tipLabel: '<%= __('layers') %>' // Optional label for button
   });
   map.addControl(layerSwitcher);
 }
+<% }%>
 
 if (!isMobile()) {
 map.addControl(new ol.control.FullScreen());

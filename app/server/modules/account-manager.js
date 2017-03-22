@@ -95,7 +95,6 @@ exports.manualLogin = function(user, pass, callback)
             console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
-              connection.release();
               if(error)
               {
                   console.log(colors.red('Query error: %s'), error);
@@ -110,28 +109,50 @@ exports.manualLogin = function(user, pass, callback)
                     if( crypt(pass, passDB) !== passDB) {
                        callback(null);
                     } else {
-                      // comprobar si existe en la bbdd de mongo
-                      mongoose.connection.db.collection('USER', function (err, collection) {
-                        collection.find({"username" : user}).toArray(function(err, docs) {
-                            if (docs.length==0) {
-                                user_mongo = {
-                                  "username" : user,
-                                  "password" : rows[0]['password'],
-                                  "firstname" : rows[0]['firstname'],
-                                  "language" : rows[0]['lang'],
-                                  "vehicle_license" : "",
-                                  "lastname" : rows[0]['lastname'],
-                                  "date_end" : rows[0]['dateEnd'],
-                                  "email" : rows[0]['email'],
-                                  "blocked" : rows[0]['blocked']
-                                }
-                                collection.save(user_mongo);
-                              }
-                            callback(null, rows[0]);
-                          });
-                      });
 
-                      //callback(null, rows[0]);
+                      // Ver si es usuario LITE o PRO (si tiene o no la funcionalidad 20)
+                      var sqlLite = "SELECT * FROM USER_FUNCTIONALITY where FUNCTIONALITY_ID=20 and USER_NAME= '" + user + "'";                      
+                      connection.query(sqlLite, function(error, rowsLite)
+                      {
+                        connection.release();
+                        if(error)
+                        {
+                            console.log(colors.red('Query error: %s'), error);
+                            callback(null);
+                        }
+                        else
+                        {
+                          if (rowsLite[0]!=undefined) {
+                            // es usuario PRO
+                            console.log(rows[0]);
+                            rows[0]['user_type'] = "PRO";
+                          } else {
+                            // es usuario LITE
+                            rows[0]['user_type'] = "LITE";
+                          }
+                          // comprobar si existe en la bbdd de mongo
+                          mongoose.connection.db.collection('USER', function (err, collection) {
+                            collection.find({"username" : user}).toArray(function(err, docs) {
+                                if (docs.length==0) {
+                                    user_mongo = {
+                                      "username" : user,
+                                      "password" : rows[0]['password'],
+                                      "firstname" : rows[0]['firstname'],
+                                      "language" : rows[0]['lang'],
+                                      "vehicle_license" : "",
+                                      "lastname" : rows[0]['lastname'],
+                                      "date_end" : rows[0]['dateEnd'],
+                                      "email" : rows[0]['email'],
+                                      "blocked" : rows[0]['blocked']
+                                    }
+                                    collection.save(user_mongo);
+                                  }
+                                callback(null, rows[0]);
+                              });
+                          });
+                        }
+                      });
+                          
                     }
                   }
               }
@@ -180,11 +201,11 @@ exports.addNewAccount = function(newData, callback)
                             callback('email-taken');
                         } else {
                             saltAndHash(newData.pass, function(hash){
-						      newData.pass = hash;
-					          // append date stamp when record was created //
-						      newData.date = moment().format('MMMM Do YYYY, h:mm:ss a');
-						      var cryptPass = crypt(newPass);
-					           var sqlInsert = "INSERT INTO USER_GUI SET EMAIL= '" + newData.email + "',USERNAME='" + newData.user + "',PASSWORD='" + cryptPass + "' ,CREATED='" + newData.date + "'";
+          						      newData.pass = hash;
+          					          // append date stamp when record was created //
+          						      newData.date = moment().format('MMMM Do YYYY, h:mm:ss a');
+						                var cryptPass = crypt(newPass);
+					                  var sqlInsert = "INSERT INTO USER_GUI SET EMAIL= '" + newData.email + "',USERNAME='" + newData.user + "',PASSWORD='" + cryptPass + "' ,CREATED='" + newData.date + "'";
                                console.log(colors.green('Query: %s'), sqlInsert);
                                connection.query(sqlInsert, function(error, result) {
                                 connection.release();

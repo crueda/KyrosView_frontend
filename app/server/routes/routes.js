@@ -51,6 +51,8 @@ module.exports = function(app) {
 				});
 			}	else{
 				req.session.user = o;
+				//console.log ("*********>>" + o['user_type']);
+
 				//console.log("FIJAR COOKIE a: " + o.lang);
 				res.cookie('kyrosview_lang', o.lang, { maxAge: 900000, httpOnly: true });
 				/*if (req.body['remember-me'] == 'true'){
@@ -61,6 +63,7 @@ module.exports = function(app) {
 				AM.loadDefaultVehicle(req.body['user'] , function(data){
 					if (data != null){
 				    	req.session.user.vehicleLicense = data;
+				    	req.session.user_type = o['user_type'];
 				    	res.redirect('/map');
 				   	} else {
 				   		res.render('login.ejs', { msg: '', msg_color: 'black'});
@@ -99,7 +102,8 @@ module.exports = function(app) {
             res.render('map.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense
+                vehicleLicense : req.session.user.vehicleLicense,
+                user_type : req.session.user.user_type
 			});
             
 		}
@@ -114,7 +118,8 @@ module.exports = function(app) {
             res.render('map.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense
+                vehicleLicense : req.session.user.vehicleLicense,
+                user_type : req.session.user.user_type
 			});
             
 		}
@@ -128,7 +133,8 @@ module.exports = function(app) {
             res.render('gmap.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense
+                vehicleLicense : req.session.user.vehicleLicense,
+                user_type : req.session.user.user_type                
 			});            
 		}
 	});
@@ -176,7 +182,8 @@ module.exports = function(app) {
 						msg: res.__('select_vehicle_error'),
 						msg_color: 'red',
 						user : req.session.user.username,
-						vehicleLicense : req.session.user.vehicleLicense
+						vehicleLicense : req.session.user.vehicleLicense,
+						user_type : req.session.user.user_type
                 		//vehicleLicense : req.body['vehicleLicense']
 					});
 
@@ -184,8 +191,10 @@ module.exports = function(app) {
 					req.session.user.vehicleLicense = req.body['vehicleLicense']; 
 					res.render('map.ejs', {
 						msg: res.__('device_selected'),
+
                 		user : req.session.user.username,
-                		vehicleLicense : req.body['vehicleLicense']
+                		vehicleLicense : req.body['vehicleLicense'],
+                		user_type : req.session.user.user_type
 					});					
 				}
 			});
