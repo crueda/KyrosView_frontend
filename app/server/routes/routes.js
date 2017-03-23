@@ -51,14 +51,26 @@ module.exports = function(app) {
 				});
 			}	else{
 				req.session.user = o;
-				//console.log ("*********>>" + o['user_type']);
 
-				//console.log("FIJAR COOKIE a: " + o.lang);
-				res.cookie('kyrosview_lang', o.lang, { maxAge: 900000, httpOnly: true });
+				// FIJAR EL IDIOMA
+				//Con los idiomas hay 2 opciones: usar el que tenga configurado el usuario en kyros o usar el seleccionado en la pantalla de login
+				//Se utiliza una mezcla: se usa la opcion 2 pero si no se fija uno en la ventana de login se usa el idioma por defecto del usuario
+				//opcion 1:
+				//res.cookie('kyrosview_lang', o.lang, { maxAge: 900000, httpOnly: true });
+				
+				//opcion 2:
+				var lang = req.body['lang'];
+				if (lang=="undefined") {
+					lang = o.lang;
+				}
+				res.cookie('kyrosview_lang', lang, { maxAge: 900000, httpOnly: true });
+
+				//SESION POR COOKIE
 				/*if (req.body['remember-me'] == 'true'){
 					res.cookie('user', o.user, { maxAge: 900000 });
 					res.cookie('pass', o.pass, { maxAge: 900000 });
 				}*/
+
 				// consultar vehiculo por defecto
 				AM.loadDefaultVehicle(req.body['user'] , function(data){
 					if (data != null){
@@ -78,8 +90,6 @@ module.exports = function(app) {
 		res.render('login-mobile.ejs', { msg: '', 	msg_color: 'black'});
 	});
 
-// logged-in user homepage //
-	
 	 app.get('/globe', function(req, res) {
 		if (req.session.user == null){
 	// if user is not logged-in redirect back to login page //

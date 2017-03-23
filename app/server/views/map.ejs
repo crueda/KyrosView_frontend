@@ -3,16 +3,16 @@
 <head>
   <title>Kyros View</title>
   <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+  <meta name="viewport" content="initial-scale=1.0, width=device-width">
 
   <link href='./img/kyros.png' rel='shortcut icon' type='image/png'>
 
   <link rel="stylesheet" href="./css/ol.min.css?1" />
   <link rel="stylesheet" href="./css/ol3-layerswitcher.min.css?1" type="text/css">
 
-<link href="/css/kyrosview/kyrosview.css?1" rel="stylesheet">
-<link href="/css/kyrosview/buttons.css?1" rel="stylesheet">
-<!--link href="/css/kyrosview_all.min.css?1" rel="stylesheet"-->
+  <link href="/css/kyrosview/kyrosview.css?1" rel="stylesheet">
+  <link href="/css/kyrosview/buttons.css?1" rel="stylesheet">
+  <!--link href="/css/kyrosview_all.min.css?1" rel="stylesheet"-->
 
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -20,130 +20,134 @@
   <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
 
 
-<link rel="stylesheet" href="./css/fileinput.min.css?1" type="text/css">
+  <link rel="stylesheet" href="./css/fileinput.min.css?1" type="text/css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.4.0/css/bootstrap-slider.min.css" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.4.0/css/bootstrap-slider.min.css" type="text/css">
 
 
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-<!--script src="https://openlayers.org/en/v3.18.2/build/ol.js"></script-->
+  <!--script src="https://openlayers.org/en/v3.18.2/build/ol.js"></script-->
 
   <script type="text/javascript" src="/js/external/ol.js"></script>
 
   <script type="text/javascript" src="/js/external/ol3-layerswitcher.js" type="text/javascript"></script>
 
-<script type="text/javascript" src="https://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
+  <script type="text/javascript" src="https://viglino.github.io/ol3-ext/style/shadowstyle.js"></script>
 
+  <% if ( __('lang') == 'en') { %>
+  <script type="text/javascript" src="js/kyrosview/event-enum_en.js"> </script>
+  <% } else { %>
+  <script type="text/javascript" src="js/kyrosview/event-enum.js"> </script>
+  <% } %>
+  <script type="text/javascript" src="js/kyrosview/constants.js"> </script>
 
-<script type="text/javascript" src="js/kyrosview/event-enum.js"> </script>
-<script type="text/javascript" src="js/kyrosview/constants.js"> </script>
-<script type="text/javascript" src="js/kyrosview/map.js"> </script>
-<!--script type="text/javascript" src="js/kyrosview_all.min.js"> </script-->
+  <script type="text/javascript" src="js/kyrosview/map.js"> </script>
+  <!--script type="text/javascript" src="js/kyrosview_all.min.js"> </script-->
 
-    <script src="/js/external/highcharts.js"></script>
-    <!--script src="https://code.highcharts.com/highcharts.js"></script-->
-<!--script src="https://code.highcharts.com/modules/exporting.js"></script-->
+  <script src="/js/external/highcharts.js"></script>
+  <!--script src="https://code.highcharts.com/highcharts.js"></script-->
+  <!--script src="https://code.highcharts.com/modules/exporting.js"></script-->
 
-<style>
-.table > thead > tr > td.active, .table > tbody > tr > td.active, .table > tfoot > tr > td.active, .table > thead > tr > th.active, .table > tbody > tr > th.active, .table > tfoot > tr > th.active, .table > thead > tr.active > td, .table > tbody > tr.active > td, .table > tfoot > tr.active > td, .table > thead > tr.active > th, .table > tbody > tr.active > th, .table > tfoot > tr.active > th {
-            background-color:#009900;
+  <style>
+    .table > thead > tr > td.active, .table > tbody > tr > td.active, .table > tfoot > tr > td.active, .table > thead > tr > th.active, .table > tbody > tr > th.active, .table > tfoot > tr > th.active, .table > thead > tr.active > td, .table > tbody > tr.active > td, .table > tfoot > tr.active > td, .table > thead > tr.active > th, .table > tbody > tr.active > th, .table > tfoot > tr.active > th {
+      background-color:#009900;
 
-        }
-.table > thead > tr > td.highlight, .table > tbody > tr > td.highlight, .table > tfoot > tr > td.highlight, .table > thead > tr > th.highlight, .table > tbody > tr > th.highlight, .table > tfoot > tr > th.active, .table > thead > tr.highlight > td, .table > tbody > tr.highlight > td, .table > tfoot > tr.highlight > td, .table > thead > tr.active > th, .table > tbody > tr.highlight > th, .table > tfoot > tr.highlight > th {
-            background-color:#009900;
+    }
+    .table > thead > tr > td.highlight, .table > tbody > tr > td.highlight, .table > tfoot > tr > td.highlight, .table > thead > tr > th.highlight, .table > tbody > tr > th.highlight, .table > tfoot > tr > th.active, .table > thead > tr.highlight > td, .table > tbody > tr.highlight > td, .table > tfoot > tr.highlight > td, .table > thead > tr.active > th, .table > tbody > tr.highlight > th, .table > tfoot > tr.highlight > th {
+      background-color:#009900;
 
-        }
+    }
 
-.highcharts-background {
-  fill: #efefef;
-  stroke: #a4edba;
-  stroke-width: 4px;
-}
-</style>
+    .highcharts-background {
+      fill: #efefef;
+      stroke: #a4edba;
+      stroke-width: 4px;
+    }
+  </style>
 
-<script type="text/javascript">
+  <script type="text/javascript">
 
-var mychart;
+    var mychart;
 
-function createChart(posDate, speed) {
-       var now = new Date();
+    function createChart(posDate, speed) {
+     var now = new Date();
      var m_now = moment(now).valueOf()-15000;
-    this.mychart = Highcharts.chart('containerG', {
-        chart: {
-            type: 'scatter',
-            margin: [10, 10, 60, 80],
-            spacingLeft: 10,
-            spacingRight: 10,
-            spacingBottom: 0,
-            marginTop: 10,
-            marginLeft: 120,
-            marginBottom: 25,
-        },
+     this.mychart = Highcharts.chart('containerG', {
+      chart: {
+        type: 'scatter',
+        margin: [10, 10, 60, 80],
+        spacingLeft: 10,
+        spacingRight: 10,
+        spacingBottom: 0,
+        marginTop: 10,
+        marginLeft: 120,
+        marginBottom: 25,
+      },
+      title: {
+        text: 'Velocidad'
+      },
+      xAxis: {
+        gridLineWidth: 1,
+        minPadding: 0.2,
+        maxPadding: 0.2,
+        maxZoom: 60,
+        labels: {
+          formatter: function () {
+            var d = new Date()
+            var n = d.getTimezoneOffset();
+            var date1 = this.value;
+            var date2 = parseInt(date1)-((n/60)*3600000);
+            return Highcharts.dateFormat('%H:%M', new Date(date2));
+          }
+        }
+      },
+      yAxis: {
         title: {
-            text: 'Velocidad'
+          text: 'Velocidad'
         },
-        xAxis: {
-            gridLineWidth: 1,
-            minPadding: 0.2,
-            maxPadding: 0.2,
-            maxZoom: 60,
-            labels: {
-                            formatter: function () {
-                                var d = new Date()
-                                var n = d.getTimezoneOffset();
-                                var date1 = this.value;
-                                var date2 = parseInt(date1)-((n/60)*3600000);
-                                return Highcharts.dateFormat('%H:%M', new Date(date2));
-                            }
-                        }
-        },
-        yAxis: {
-            title: {
-                text: 'Velocidad'
-            },
-            minPadding: 0.2,
-            maxPadding: 0.2,
-            maxZoom: 60,
-            plotLines: [{
-                value: 0,
-                width: 2,
-                color: '#808080'
-            }]
-        },
-        legend: {
-            enabled: false,
-            floating: true,
-        },
-        exporting: {
-            enabled: false
-        },
-        plotOptions: {
-            series: {
-                lineWidth: 3,
-
-            }
-        },
-        series: [{
-            data: [[posDate, speed]]
+        minPadding: 0.2,
+        maxPadding: 0.2,
+        maxZoom: 60,
+        plotLines: [{
+          value: 0,
+          width: 2,
+          color: '#808080'
         }]
+      },
+      legend: {
+        enabled: false,
+        floating: true,
+      },
+      exporting: {
+        enabled: false
+      },
+      plotOptions: {
+        series: {
+          lineWidth: 3,
+
+        }
+      },
+      series: [{
+        data: [[posDate, speed]]
+      }]
     });
 
      document.getElementById('button-close-chart').style.display = 'block';
      document.getElementById('button-open-chart').style.display = 'none';
-}
+   }
 
-function addSpeedToChart(posDate, speed) {
-  if (this.mychart==undefined) {
+   function addSpeedToChart(posDate, speed) {
+    if (this.mychart==undefined) {
      createChart(posDate, speed);
-  }
-  this.mychart.series[0].addPoint([posDate, speed]);
+   }
+   this.mychart.series[0].addPoint([posDate, speed]);
 
-}
+ }
 
-function initDefaultVehicleDataSync() {
+ function initDefaultVehicleDataSync() {
 
   $.ajax({
     url: '/api/tracking1/vehicle/<%=vehicleLicense%>',
@@ -151,23 +155,23 @@ function initDefaultVehicleDataSync() {
     async: false,
     success: function(data){
 
-   $.each( data, function( key, val ) {
+     $.each( data, function( key, val ) {
 
-     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+       processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
      // comprobar eventos
      if (val.events.length>0) {
       for (var i=0; i<val.events.length; i++) {
         addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
       }
-     }
+    }
 
-     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
+    centerMap(val.location.coordinates[0],val.location.coordinates[1]);
 
-     document.getElementById('attr-loading').style.display = 'none';
+    document.getElementById('attr-loading').style.display = 'none';
 
-    });
-  }
+  });
+   }
  });
 }
 
@@ -179,15 +183,15 @@ function loadDefaultVehicleDataSync() {
     async: false,
     success: function(data){
         //Proceso de los datos recibidos
-      $.each( data, function( key, val ) {
-        iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-        iconCoverDict[val.vehicle_license] = val.icon_cover;
-        iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicle_license] = val.alias;
-        deviceIdDict[val.vehicle_license] = val.device_id;
-      });
-    }
-  });
+        $.each( data, function( key, val ) {
+          iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+          iconCoverDict[val.vehicle_license] = val.icon_cover;
+          iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+          aliasDict[val.vehicle_license] = val.alias;
+          deviceIdDict[val.vehicle_license] = val.device_id;
+        });
+      }
+    });
 
   // Leer el icono del vehiculo en base64 modo sincrono
   $.ajax({
@@ -197,8 +201,8 @@ function loadDefaultVehicleDataSync() {
     success: function(data){
         //almacenar el icono recibido
         iconBase64Dict['<%=vehicleLicense%>'] = data;
-    }
-  });
+      }
+    });
 }
 
 function reloadVehiclesData() {
@@ -213,7 +217,7 @@ function reloadVehiclesData() {
         for (var i=0; i<val.events.length; i++) {
           addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
         }
-       }
+      }
 
        //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
        //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
@@ -222,12 +226,12 @@ function reloadVehiclesData() {
 
 
 
-      });
-    });
+     });
+   });
   } else if (mapmode==2) {
      //clearMapSelected();
-    
- 
+
+
      for (var i=0; i<selectedVehicles.length; i++) {
 
       $.getJSON( '/api/tracking1/vehicle/'+selectedRecentVehicles[i], function( data ) {
@@ -240,28 +244,28 @@ function reloadVehiclesData() {
         }
         else {*/
 
-        $.each( data, function( key, val ) {
+          $.each( data, function( key, val ) {
 
           // añadir la linea
           if (dateDict[val.vehicle_license] != val.pos_date) {
             addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);
           }
 
-         processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
          // comprobar eventos
          if (val.events.length>0) {
           for (var i=0; i<val.events.length; i++) {
             addTrackingPointEventSelected(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
           }
-         }
-        });
+        }
+      });
 
         //}
       });
-     }
+    }
 
-   
+
 
 
   }  else if (mapmode==22) {
@@ -284,19 +288,19 @@ function reloadVehiclesData() {
             addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);
           }
 
-         processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
          // comprobar eventos
          if (val.events.length>0) {
           for (var i=0; i<val.events.length; i++) {
             addTrackingPointEventSelected(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
           }
-         }
-        });
-
-      }
+        }
       });
-     }
+
+        }
+      });
+    }
   }
 
 
@@ -317,26 +321,26 @@ function addVehicleSelectedToMap(vehicleLicense) {
   if (vehicleLicense!='<%=vehicleLicense%>') {
     $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
       $.each( data, function( key, val ) {
-          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
-        });
+        processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+      });
     });
   }
 }
 
-  function openDefaultDevice() {
-    $('#myModalMenuKyros').modal('hide');
+function openDefaultDevice() {
+  $('#myModalMenuKyros').modal('hide');
 
     // centrar el mapa
     var new_view = new ol.View({
-          center: ol.proj.transform([longitudeDict['<%=vehicleLicense%>'], latitudeDict['<%=vehicleLicense%>']], 'EPSG:4326', 'EPSG:3857'),
-          zoom: 12,
-          maxZoom:22,
-          minZoom:3
+      center: ol.proj.transform([longitudeDict['<%=vehicleLicense%>'], latitudeDict['<%=vehicleLicense%>']], 'EPSG:4326', 'EPSG:3857'),
+      zoom: 12,
+      maxZoom:22,
+      minZoom:3
     });
 
     var pan = ol.animation.pan({
-          duration: 700,
-          source:  (map.getView().getCenter()),
+      duration: 700,
+      source:  (map.getView().getCenter()),
     });
     map.beforeRender(pan);
     map.setView(new_view);
@@ -347,8 +351,8 @@ function addVehicleSelectedToMap(vehicleLicense) {
 
   function openTooltip(vehicleLicense) {
     tooltipSelectedVehicleLicense = vehicleLicense;
-     $("#uploadFormIcon").attr("action", "/api/icon/upload/" + vehicleLicense);
-     $("#uploadFormPhoto").attr("action", "/api/image/upload/" + vehicleLicense);
+    $("#uploadFormIcon").attr("action", "/api/icon/upload/" + vehicleLicense);
+    $("#uploadFormPhoto").attr("action", "/api/image/upload/" + vehicleLicense);
 
     if (iconBase64Dict[vehicleLicense]!=null && iconBase64Dict[vehicleLicense]!='') {
       document.getElementById('tooltipIcon').innerHTML = "<img src='data:image/png;base64," + iconBase64Dict[vehicleLicense] + "'/>";
@@ -368,7 +372,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var minutes = pad(date.getMinutes());
     var seconds = pad(date.getSeconds());
 
-      document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
+    document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
     document.getElementById('tooltipAlias').innerHTML = aliasDict[vehicleLicense];
     document.getElementById('tooltipLatitude').innerHTML = latitudeDict[vehicleLicense].toFixed(4);
@@ -393,9 +397,9 @@ function addVehicleSelectedToMap(vehicleLicense) {
     if (geocodingDict[vehicleLicense]=='' || geocodingDict[vehicleLicense]==undefined) {
 
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
-      lat: latitudeDict[vehicleLicense],
-      lon: longitudeDict[vehicleLicense],
-      format: 'json',
+        lat: latitudeDict[vehicleLicense],
+        lon: longitudeDict[vehicleLicense],
+        format: 'json',
       }, function (result) {
         document.getElementById('tooltipLocation').innerHTML = result.display_name;
       });
@@ -405,18 +409,18 @@ function addVehicleSelectedToMap(vehicleLicense) {
     $.getJSON( '/api/odometer/'+vehicleLicense, function( data ) {
       $.each( data, function( key, val ) {
         try {
-        document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipWeekSpeed').innerHTML = val.weekSpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipMonthSpeed').innerHTML = val.monthSpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipDayDistance').innerHTML = val.dayDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipWeekDistance').innerHTML = val.weekDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipMonthDistance').innerHTML = val.monthDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume.toFixed(2).replace(".",",");
-        document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume.toFixed(2).replace(".",",");
-        document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume.toFixed(2).replace(".",",");
-        document.getElementById('tooltipTotalSpeed').innerHTML = val.totalSpeed.toFixed(1).replace(".",",");
-        document.getElementById('tooltipTotalDistance').innerHTML = val.totalDistance.toFixed(3).replace(".",",");
-        document.getElementById('tooltipTotalConsume').innerHTML = val.totalConsume.toFixed(2).replace(".",",");
+          document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed.toFixed(1).replace(".",",");
+          document.getElementById('tooltipWeekSpeed').innerHTML = val.weekSpeed.toFixed(1).replace(".",",");
+          document.getElementById('tooltipMonthSpeed').innerHTML = val.monthSpeed.toFixed(1).replace(".",",");
+          document.getElementById('tooltipDayDistance').innerHTML = val.dayDistance.toFixed(3).replace(".",",");
+          document.getElementById('tooltipWeekDistance').innerHTML = val.weekDistance.toFixed(3).replace(".",",");
+          document.getElementById('tooltipMonthDistance').innerHTML = val.monthDistance.toFixed(3).replace(".",",");
+          document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume.toFixed(2).replace(".",",");
+          document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume.toFixed(2).replace(".",",");
+          document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume.toFixed(2).replace(".",",");
+          document.getElementById('tooltipTotalSpeed').innerHTML = val.totalSpeed.toFixed(1).replace(".",",");
+          document.getElementById('tooltipTotalDistance').innerHTML = val.totalDistance.toFixed(3).replace(".",",");
+          document.getElementById('tooltipTotalConsume').innerHTML = val.totalConsume.toFixed(2).replace(".",",");
         }catch (err) {
         }
 
@@ -426,14 +430,14 @@ function addVehicleSelectedToMap(vehicleLicense) {
     });
 
     if (vehicleLicense == '<%=vehicleLicense%>') {
-       $('#tooltipHeader').css('background-color', '#F7BE81');
-       document.getElementById('selectButton').style.display = 'none';
-    } else {
-        $('#tooltipHeader').css('background-color', '#3399ff');
-        document.getElementById('selectButton').style.display = 'block';
-        $('#selectButtonText').text("<%= __('select_button') %>");
+     $('#tooltipHeader').css('background-color', '#F7BE81');
+     document.getElementById('selectButton').style.display = 'none';
+   } else {
+    $('#tooltipHeader').css('background-color', '#3399ff');
+    document.getElementById('selectButton').style.display = 'block';
+    $('#selectButtonText').text("<%= __('select_button') %>");
 
-    }
+  }
 
     // Cargar el icono del vehiculo
     var urlPostIconDevice = "/api/icon/vehicle/"+vehicleLicense;
@@ -457,15 +461,15 @@ function addVehicleSelectedToMap(vehicleLicense) {
     });
   }
 
-   function menuPois(username) {
+  function menuPois(username) {
     $('#myModalMenuKyros').modal('hide');
 
     // comprobar nivel de zoom actual
     if (map.getView().getZoom() < 10) {
-        $('#myModalMsgLabel').text("<%= __('zoom_low') %>");
-        $('#myModalMsgLabel').css({ "color" : 'red' });
-        $('#myModalMsgLabel2').text("<%= __('check_zoom_level') %>");
-        $('#myModalMsg').modal('show');
+      $('#myModalMsgLabel').text("<%= __('zoom_low') %>");
+      $('#myModalMsgLabel').css({ "color" : 'red' });
+      $('#myModalMsgLabel2').text("<%= __('check_zoom_level') %>");
+      $('#myModalMsg').modal('show');
     }
     else {
       showPois(username);
@@ -477,22 +481,22 @@ function addVehicleSelectedToMap(vehicleLicense) {
     if (loadMonitorLoaded) {
       $('#myModalCalendar').modal('show');
     } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
-    }
-  }
+     $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+     $('#myModalMsgLabel').css({ "color" : 'red' });
+     $('#myModalMsgLabel2').text("<%= __('wait') %>");
+     $('#myModalMsg').modal('show');
+   }
+ }
 
-  function menuFind() {
-    $('#myModalMenuKyros').modal('hide');
-    if (loadMonitorLoaded) {
-      $('#myModalFind').modal('show');
-    } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
+ function menuFind() {
+  $('#myModalMenuKyros').modal('hide');
+  if (loadMonitorLoaded) {
+    $('#myModalFind').modal('show');
+  } else {
+   $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+   $('#myModalMsgLabel').css({ "color" : 'red' });
+   $('#myModalMsgLabel2').text("<%= __('wait') %>");
+   $('#myModalMsg').modal('show');
       //$('#myModalFind').modal('show');
     }
   }
@@ -502,26 +506,26 @@ function addVehicleSelectedToMap(vehicleLicense) {
     if (loadMonitorLoaded) {
       showRecentPos();
     } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
-    }
-  }
+     $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+     $('#myModalMsgLabel').css({ "color" : 'red' });
+     $('#myModalMsgLabel2').text("<%= __('wait') %>");
+     $('#myModalMsg').modal('show');
+   }
+ }
 
-  function menuDevices() {
-    $('#myModalMenuKyros').modal('hide');
-    if (loadMonitorLoaded) {
-      $('#myModalMonitor').modal('show');
-    } else {
-       $('#myModalMsgLabel').text("<%= __('loading_data') %>");
-       $('#myModalMsgLabel').css({ "color" : 'red' });
-       $('#myModalMsgLabel2').text("<%= __('wait') %>");
-       $('#myModalMsg').modal('show');
-    }
-  }
+ function menuDevices() {
+  $('#myModalMenuKyros').modal('hide');
+  if (loadMonitorLoaded) {
+    $('#myModalMonitor').modal('show');
+  } else {
+   $('#myModalMsgLabel').text("<%= __('loading_data') %>");
+   $('#myModalMsgLabel').css({ "color" : 'red' });
+   $('#myModalMsgLabel2').text("<%= __('wait') %>");
+   $('#myModalMsg').modal('show');
+ }
+}
 
- function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
+function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
     //clearMapHistoric();
     //clearMapSelected();
 
@@ -549,61 +553,61 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
     //console.log(urlJson);
     document.getElementById('attr-loading').style.display = 'block';
-      $.getJSON( urlJson, function( data ) {
-        if (data.status == 'nok') {
-          $('#myModalMsgLabel').text("<%= __('too_many_tracking') %>");
-          $('#myModalMsgLabel').css({ "color" : 'red' });
-          $('#myModalMsgLabel2').text("<%= __('narrow_search') %>");
-          $('#myModalMsg').modal('show');
-        }
-        else if (data.result.length == 0) {
-          $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
-          $('#myModalMsgLabel').css({ "color" : 'red' });
-          $('#myModalMsgLabel2').text("<%= __('check_search') %>");
-          $('#myModalMsg').modal('show');
-        }
-        else {
+    $.getJSON( urlJson, function( data ) {
+      if (data.status == 'nok') {
+        $('#myModalMsgLabel').text("<%= __('too_many_tracking') %>");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsgLabel2').text("<%= __('narrow_search') %>");
+        $('#myModalMsg').modal('show');
+      }
+      else if (data.result.length == 0) {
+        $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
+        $('#myModalMsgLabel').css({ "color" : 'red' });
+        $('#myModalMsgLabel2').text("<%= __('check_search') %>");
+        $('#myModalMsg').modal('show');
+      }
+      else {
 
-          clearMap();
-          mapmode = 1;
+        clearMap();
+        mapmode = 1;
 
-          document.getElementById('attr-graph-hist').style.display = 'block';
-          initTableEvents();
+        document.getElementById('attr-graph-hist').style.display = 'block';
+        initTableEvents();
 
-          $.each( data.result, function( key, val ) {
-            var lat = val.location.coordinates[1];
-            var lon = val.location.coordinates[0];
-            var speed = val.speed;
-            var altitude = val.altitude;
-            var heading = val.heading;
-            var trackingId = val.tracking_id;
-            var posDate = val.pos_date;
-            var vehicleLicense = val.vehicle_license;
-            var geocoding = val.geocoding;
-            if (initPos==true) {
-              minLon=lon;
+        $.each( data.result, function( key, val ) {
+          var lat = val.location.coordinates[1];
+          var lon = val.location.coordinates[0];
+          var speed = val.speed;
+          var altitude = val.altitude;
+          var heading = val.heading;
+          var trackingId = val.tracking_id;
+          var posDate = val.pos_date;
+          var vehicleLicense = val.vehicle_license;
+          var geocoding = val.geocoding;
+          if (initPos==true) {
+            minLon=lon;
+            minLat=lat;
+            maxLon=lon;
+            maxLat=lat;
+            lon_anterior=lon;
+            lat_anterior=lat;
+            initPos=false;
+          } else {
+            if (lat<minLat)
               minLat=lat;
-              maxLon=lon;
+            if (lat>maxLat)
               maxLat=lat;
-              lon_anterior=lon;
-              lat_anterior=lat;
-              initPos=false;
-            } else {
-              if (lat<minLat)
-                minLat=lat;
-              if (lat>maxLat)
-                maxLat=lat;
-              if (lon<minLon)
-                minLon=lon;
-              if (lon>maxLon)
-                maxLon=lon;
-            }
+            if (lon<minLon)
+              minLon=lon;
+            if (lon>maxLon)
+              maxLon=lon;
+          }
 
-            trackingIdHist.push(trackingId);
-            latHist.push(lat);
-            lonHist.push(lon);
-            posDateHist.push(posDate);
-            groupEvent = [];
+          trackingIdHist.push(trackingId);
+          latHist.push(lat);
+          lonHist.push(lon);
+          posDateHist.push(posDate);
+          groupEvent = [];
             // comprobar eventos
             if (val.events.length>0) {
               for (var i=0; i<val.events.length; i++) {
@@ -642,25 +646,25 @@ function addVehicleSelectedToMap(vehicleLicense) {
               }
             }
 
-          if (lat_anterior!=lat || lon_anterior!=lon) {
-            addTrackingHistLine(lat_anterior, lon_anterior, lat, lon);
-          }
-          lon_anterior=lon;
-          lat_anterior=lat;
-          index++;
-        });
+            if (lat_anterior!=lat || lon_anterior!=lon) {
+              addTrackingHistLine(lat_anterior, lon_anterior, lat, lon);
+            }
+            lon_anterior=lon;
+            lat_anterior=lat;
+            index++;
+          });
       } // else
       document.getElementById('attr-loading').style.display = 'none';
 
-        if (index>1) {
+      if (index>1) {
           // Hay mas de 1 dispositivo -> centrar
           if (minLon != 0 && minLat != 0 && maxLon != 0 && maxLat != 0){
            var bottomLeft = ol.proj.transform([minLon, minLat], 'EPSG:4326', 'EPSG:3857');
            var topRight = ol.proj.transform([maxLon, maxLat], 'EPSG:4326', 'EPSG:3857');
            extent = new ol.extent.boundingExtent([bottomLeft,topRight]);
            map.getView().fit(extent, map.getSize());
-          }
-        } else {
+         }
+       } else {
           // solo 1 dispositivo, centrar en su posicion
           var new_view = new ol.View({
             center: ol.proj.transform(maxLon, maxLat, 'EPSG:4326', 'EPSG:3857'),
@@ -677,10 +681,10 @@ function addVehicleSelectedToMap(vehicleLicense) {
         for (i=1; i<latHist.length-1;i++)
         {
           var bearing = getBearing(latHist[i-1], lonHist[i-1], latHist[i], lonHist[i]);
-            addTrackingHistPoint(vehicleLicenseHist, posDateHist[i], trackingIdHist[i], latHist[i], lonHist[i],bearing);
+          addTrackingHistPoint(vehicleLicenseHist, posDateHist[i], trackingIdHist[i], latHist[i], lonHist[i],bearing);
             //addTrackingHistPointEffect(vehicleLicenseHist, trackingIdHist[i], latHist[i], lonHist[i]);
 
-        }
+          }
 
         // pintar los eventos
 
@@ -696,7 +700,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
         addTrackingHistPointEnd(vehicleLicenseHist, trackingIdHist[trackingIdHist.length-1], latHist[trackingIdHist.length-1], lonHist[trackingIdHist.length-1]);
 
       });
-  }
+}
 </script>
 
 
@@ -707,164 +711,164 @@ function addVehicleSelectedToMap(vehicleLicense) {
  // Sources y Layers
  // *******************************
 
-var style =
-  [ new ol.style.Style(
-      { image: new ol.style.Shadow(
-        { radius: 6,
-        }),
-        stroke: new ol.style.Stroke(
-        { color: [0,0,0,0.3],
-          width: 1
-        }),
-        fill: new ol.style.Fill(
-          { color: [0,0,0,0.3]
-          }),
-        zIndex: -1
-      }),
-    new ol.style.Style(
-      {
+ var style =
+ [ new ol.style.Style(
+  { image: new ol.style.Shadow(
+    { radius: 6,
+    }),
+  stroke: new ol.style.Stroke(
+    { color: [0,0,0,0.3],
+      width: 1
+    }),
+  fill: new ol.style.Fill(
+    { color: [0,0,0,0.3]
+    }),
+  zIndex: -1
+}),
+ new ol.style.Style(
+ {
 
 
-      image: new ol.style.RegularShape(
-        { radius: 7,
-          radius2: 7,
-          points: 12,
+  image: new ol.style.RegularShape(
+    { radius: 7,
+      radius2: 7,
+      points: 12,
           //fill: new ol.style.Fill({ color: '#0052cc' })
           fill: new ol.style.Fill({ color: '#008000' })
         }),
-      stroke: new ol.style.Stroke(
-        {
+  stroke: new ol.style.Stroke(
+  {
         //color: '#66c2ff',
         color: '#00cc00',
         //color: '#'+Math.floor(Math.random()*16777215).toString(16),
         width: 6
-        }),
-      fill: new ol.style.Fill(
-        { color: [0,0,255,0.3]
-        })
-      })
-  ];
-  style[1].getImage().getAnchor()[1] += 10;
-
-var style2 =
-  [ new ol.style.Style(
-      { image: new ol.style.Shadow(
-        { radius: 6,
-        }),
-        stroke: new ol.style.Stroke(
-        { color: [0,0,0,0.3],
-          width: 1
-        }),
-        fill: new ol.style.Fill(
-          { color: [0,0,0,0.3]
-          }),
-        zIndex: -1
       }),
-    new ol.style.Style(
-      {
+  fill: new ol.style.Fill(
+    { color: [0,0,255,0.3]
+    })
+})
+ ];
+ style[1].getImage().getAnchor()[1] += 10;
+
+ var style2 =
+ [ new ol.style.Style(
+  { image: new ol.style.Shadow(
+    { radius: 6,
+    }),
+  stroke: new ol.style.Stroke(
+    { color: [0,0,0,0.3],
+      width: 1
+    }),
+  fill: new ol.style.Fill(
+    { color: [0,0,0,0.3]
+    }),
+  zIndex: -1
+}),
+ new ol.style.Style(
+ {
 
 
-      image: new ol.style.RegularShape(
-        { radius: 8,
-          radius2: 8,
-          points: 12,
-          fill: new ol.style.Fill({ color: '#ff8000' })
-        })
+  image: new ol.style.RegularShape(
+    { radius: 8,
+      radius2: 8,
+      points: 12,
+      fill: new ol.style.Fill({ color: '#ff8000' })
+    })
 
-      })
-  ];
-  style2[1].getImage().getAnchor()[1] += 10;
+})
+ ];
+ style2[1].getImage().getAnchor()[1] += 10;
 
-  var vectorPoiSource = new ol.source.Vector({
+ var vectorPoiSource = new ol.source.Vector({
    features: []
-  });
-  var poisLayer = new ol.layer.Vector({
+ });
+ var poisLayer = new ol.layer.Vector({
    title: '<%= __('pois') %>',
    visible: true,
    source: vectorPoiSource
-  });
+ });
 
-  var vehiclesRealTimeSource = new ol.source.Vector({
+ var vehiclesRealTimeSource = new ol.source.Vector({
    features: []
-  });
-  var vehiclesRealTimeLayer = new ol.layer.Vector({
+ });
+ var vehiclesRealTimeLayer = new ol.layer.Vector({
    title: '<%=vehicleLicense%>',
    style: style,
    visible: true,
    source: vehiclesRealTimeSource
-  });
+ });
 
-  var vehiclesPointSource = new ol.source.Vector({
+ var vehiclesPointSource = new ol.source.Vector({
    features: []
-  });
-  var vehiclesPointLayer = new ol.layer.Vector({
+ });
+ var vehiclesPointLayer = new ol.layer.Vector({
    //title: '<%=vehicleLicense%> track',
    title: '',
    style: style,
    visible: true,
    source: vehiclesPointSource
-  });
+ });
 
-  var vehiclesSelectedSource = new ol.source.Vector({
+ var vehiclesSelectedSource = new ol.source.Vector({
    features: []
-  });
-  var vehiclesSelectedLayer = new ol.layer.Vector({
+ });
+ var vehiclesSelectedLayer = new ol.layer.Vector({
    title: '<%= __('layer_vehicles_selected') %>',
    visible: true,
    source: vehiclesSelectedSource
-  });
+ });
 
-  var vehiclesLineSource = new ol.source.Vector({
+ var vehiclesLineSource = new ol.source.Vector({
    features: []
-  });
-  var lineStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+ });
+ var lineStyle = new ol.style.Style({
+  stroke: new ol.style.Stroke({
         //color: '#0000ff',
         color: '#6675ff',
         //color: '#'+Math.floor(Math.random()*16777215).toString(16),
         width: 4
-    })
-  });
-  var vehiclesLineLayer = new ol.layer.Vector({
-    title: '',
-    visible: true,
-    style: style,
+      })
+});
+ var vehiclesLineLayer = new ol.layer.Vector({
+  title: '',
+  visible: true,
+  style: style,
     //style: lineStyle,
     source: vehiclesLineSource
   });
 
 
-var mapPointSource = new ol.source.Vector({
+ var mapPointSource = new ol.source.Vector({
    features: []
-  });
-  var mapPointLayer = new ol.layer.Vector({
+ });
+ var mapPointLayer = new ol.layer.Vector({
    visible: true,
-    style: style2,
+   style: style2,
    source: mapPointSource
-  });
+ });
 
-  var vehiclesHistSource = new ol.source.Vector({
+ var vehiclesHistSource = new ol.source.Vector({
    features: []
-  });
-  var vehiclesHistLayer = new ol.layer.Vector({
+ });
+ var vehiclesHistLayer = new ol.layer.Vector({
    title: "<%= __('historical_positions') %>",
    visible: true,
-    style: style,
+   style: style,
    source: vehiclesHistSource
-  });
+ });
 
 
-  var duration = 3000;
-  function flash(feature) {
-        var start = new Date().getTime();
-        var listenerKey;
+ var duration = 3000;
+ function flash(feature) {
+  var start = new Date().getTime();
+  var listenerKey;
 
-        function animate(event) {
-          var vectorContext = event.vectorContext;
-          var frameState = event.frameState;
-          var flashGeom = feature.getGeometry().clone();
-          var elapsed = frameState.time - start;
-          var elapsedRatio = elapsed / duration;
+  function animate(event) {
+    var vectorContext = event.vectorContext;
+    var frameState = event.frameState;
+    var flashGeom = feature.getGeometry().clone();
+    var elapsed = frameState.time - start;
+    var elapsedRatio = elapsed / duration;
           // radius will be 5 at start and 30 at end.
           var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
           var opacity = ol.easing.easeOut(1 - elapsedRatio);
@@ -892,45 +896,45 @@ var mapPointSource = new ol.source.Vector({
         listenerKey = map.on('postcompose', animate);
       }
 
-  var vehiclesEventHistSource = new ol.source.Vector({
-   features: [],
-    wrapX: false
-  });
-  vehiclesEventHistSource.on('addfeature', function(e) {
-    flash(e.feature);
-  });
-  var vehiclesEventHistLayer = new ol.layer.Vector({
-   title: "",
-   visible: true,
-   source: vehiclesEventHistSource
-  });
+      var vehiclesEventHistSource = new ol.source.Vector({
+       features: [],
+       wrapX: false
+     });
+      vehiclesEventHistSource.on('addfeature', function(e) {
+        flash(e.feature);
+      });
+      var vehiclesEventHistLayer = new ol.layer.Vector({
+       title: "",
+       visible: true,
+       source: vehiclesEventHistSource
+     });
 
 
-  var vehiclesHistLineSource = new ol.source.Vector({
-   features: []
-  });
-  var lineStyleHist = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+      var vehiclesHistLineSource = new ol.source.Vector({
+       features: []
+     });
+      var lineStyleHist = new ol.style.Style({
+        stroke: new ol.style.Stroke({
         //color: '#0000ff',
         color: '#6675ff',
         width: 3
-    })
-  });
-  var vehiclesHistLineLayer = new ol.layer.Vector({
-    title: "<%= __('historical_track') %>",
-    visible: true,
-    style: lineStyleHist,
-    source: vehiclesHistLineSource
-  });
+      })
+      });
+      var vehiclesHistLineLayer = new ol.layer.Vector({
+        title: "<%= __('historical_track') %>",
+        visible: true,
+        style: lineStyleHist,
+        source: vehiclesHistLineSource
+      });
 
-  var projection = ol.proj.get('EPSG:3857');
+      var projection = ol.proj.get('EPSG:3857');
 
 
 
 // --------------------------------------------------
 // ------------------- READY ------------------------
 // --------------------------------------------------
- $(document).ready(function() {
+$(document).ready(function() {
   $.ajaxSetup({ cache: false });
 
   // deshabilitar el boton atras del navegador
@@ -1021,7 +1025,7 @@ this.mychart = Highcharts.chart('containerG', {
             data: [[1478531569000, 0]]
         }]
     });
-*/
+    */
 
 //$('#containerG').width($(window).width()-400);
 //$("#containerG").style.left = 0;
@@ -1039,12 +1043,12 @@ $('#aboutTextDiv').width(540);
 
 
 $("#slider_distance_devices").slider({
-    ticks: [10, 100, 200, 300, 400, 500, 600],
+  ticks: [10, 100, 200, 300, 400, 500, 600],
     //ticks_labels: ['10', '100', '200', '300', '400', '500', '600'],
     ticks_snap_bounds: 50,
     value: 300,
     tooltip: 'always'
-});
+  });
 $("#slider_distance_devices").slider("disable");
 
 $("#slider_check_devices").click(function() {
@@ -1057,10 +1061,10 @@ $("#slider_check_devices").click(function() {
 });
 
 $("#slider_distance_pois").slider({
-    ticks: [25, 50, 75, 100, 125, 150, 175, 200],
-    ticks_snap_bounds: 50,
-    value: 100,
-    tooltip: 'always'
+  ticks: [25, 50, 75, 100, 125, 150, 175, 200],
+  ticks_snap_bounds: 50,
+  value: 100,
+  tooltip: 'always'
 });
 $("#slider_distance_pois").slider("disable");
 
@@ -1087,35 +1091,35 @@ $('#tab_logic').on('click', '.clickable-row', function(event) {
   }
 });
 
- $('.ckbox label').on('click', function () {
-      $(this).parents('tr').toggleClass('selected');
-    });
+$('.ckbox label').on('click', function () {
+  $(this).parents('tr').toggleClass('selected');
+});
 
 $("#vehiclePhoto").fileinput({
-    uploadAsync: true,
-    maxFileCount: 1,
-    maxFileSize: 50000,
-    browseLabel: "Select",
-    browseClass: "btn btn-success"
-  });
+  uploadAsync: true,
+  maxFileCount: 1,
+  maxFileSize: 50000,
+  browseLabel: "Select",
+  browseClass: "btn btn-success"
+});
 
-  document.getElementById('attr-graph-hist').style.display = 'none';
+document.getElementById('attr-graph-hist').style.display = 'none';
 
-  var nowDate = new Date();
-  var yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+var nowDate = new Date();
+var yesterdayDate = new Date();
+yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-  var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
-  var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
-  $('#datetimepicker1').datetimepicker({
-      locale: 'es',
+var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+var today2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 59);
+$('#datetimepicker1').datetimepicker({
+  locale: 'es',
       //maxDate: today,
       defaultDate: today
       //defaultDate: yesterdayDate
     });
-  $('#datetimepicker2').datetimepicker({
-      locale: 'es',
-      defaultDate: today2
+$('#datetimepicker2').datetimepicker({
+  locale: 'es',
+  defaultDate: today2
       //defaultDate: nowDate
     });
 
@@ -1189,18 +1193,18 @@ $("#vehiclePhoto").fileinput({
   $('#okButtonShare').click(function(){
     var email = $('#emailShare').val();
     if (validarEmail(email)==false) {
-        $('#myModalMsgLabel').text("<%= __('email_address_nok') %>");
-        $('#myModalMsgLabel').css({ "color" : 'red' });
-        $('#myModalMsg').modal('show');
+      $('#myModalMsgLabel').text("<%= __('email_address_nok') %>");
+      $('#myModalMsgLabel').css({ "color" : 'red' });
+      $('#myModalMsg').modal('show');
     } else {
       $.getJSON( '/api/share/vehicle/'+tooltipSelectedVehicleLicense+'?email='+email, function( data ) {
-          if (data=='ok') {
-            $('#myModalMsgLabel').text("<%= __('share_ok') %>");
-          } else {
-            $('#myModalMsgLabel').text("<%= __('share_error') %>");
-          }
-          $('#myModalMsgLabel').css({ "color" : 'green' });
-          $('#myModalMsg').modal('show');
+        if (data=='ok') {
+          $('#myModalMsgLabel').text("<%= __('share_ok') %>");
+        } else {
+          $('#myModalMsgLabel').text("<%= __('share_error') %>");
+        }
+        $('#myModalMsgLabel').css({ "color" : 'green' });
+        $('#myModalMsg').modal('show');
       });
     }
 
@@ -1236,9 +1240,9 @@ $("#vehiclePhoto").fileinput({
     progressBar.css({ "width" : "0%" });
 
     button.removeClass("btn-success")
-        .addClass("btn-primary")
-        .text("Ok")
-        .removeAttr("data-dismiss");
+    .addClass("btn-primary")
+    .text("Ok")
+    .removeAttr("data-dismiss");
 
   });
 
@@ -1277,18 +1281,18 @@ $("#vehiclePhoto").fileinput({
         <h4 class="modal-title" id="myModalLabel"><%= __('message') %></h4>
       </div> <!-- /.modal-header -->
 
-    <div class="modal-body">
-      <div class="form-group">
-        <h4 class="modal-title" id="myModalMsgLabel"></h4>
-      </div>
-      <div class="form-group">
-        <h5 class="modal-title" id="myModalMsgLabel2"></h5>
-      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <h4 class="modal-title" id="myModalMsgLabel"></h4>
+        </div>
+        <div class="form-group">
+          <h5 class="modal-title" id="myModalMsgLabel2"></h5>
+        </div>
 
-      <div id="okButton" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary">Ok</button>
-      </div>
-    </div> <!-- /.modal-body -->
+        <div id="okButton" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button class="form-control btn btn-primary">Ok</button>
+        </div>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1303,57 +1307,57 @@ $("#vehiclePhoto").fileinput({
         <h4 class="modal-title" id="myModalLabel"><%= __('main_menu') %></h4>
       </div> <!-- /.modal-header -->
 
-    <div class="modal-body" id="grad1">
+      <div class="modal-body" id="grad1">
 
-    <table border="0" bgcolor="#bfbeb5">
-    <tr>
-      <td align="center">
-        <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuRecentPos();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_recent.png"/><br><%= __('recent') %></button>
-      </td>
-     
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:menuFind();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_find.png"/><br><%= __('find') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuDevices();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br><%= __('all') %></button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <% if (user_type == 'PRO'){%>
-    <tr>
-       <td align="center">
-        <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
-      </td>
-    <td align="center">
-        <button onclick="javascript:location.href=baseurl+'/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
-      </td>
-    </tr>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <tr>
-      <td align="center">
-        <button onclick="javascript:location.href=baseurl+'/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuPois('<%=user%>');" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
-      </td>
-    <tr><td>&nbsp;</td><td></td></tr>
-    <% } %>
-    <tr>
-      <td align="center">
-        <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br><%= __('logout') %></button>
-      </td>
-      <td align="center">
-        <button onclick="javascript:menuAbout();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_about.png"/><br><%= __('about') %></button>
-      </td>
-    </tr>
-    </table>
-    </div> <!-- /.modal-body -->
+        <table border="0" bgcolor="#bfbeb5">
+          <tr>
+            <td align="center">
+              <button onclick="javascript:menuRealtime();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_map.png"/><br><%= __('map_ol') %></button>
+            </td>
+            <td align="center">
+              <button onclick="javascript:menuRecentPos();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_recent.png"/><br><%= __('recent') %></button>
+            </td>
+
+          </tr>
+          <tr><td>&nbsp;</td><td></td></tr>
+          <tr>
+            <td align="center">
+              <button onclick="javascript:menuFind();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_find.png"/><br><%= __('find') %></button>
+            </td>
+            <td align="center">
+              <button onclick="javascript:menuDevices();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_devices.png"/><br><%= __('all') %></button>
+            </td>
+          </tr>
+          <tr><td>&nbsp;</td><td></td></tr>
+          <% if (user_type == 'PRO'){%>
+          <tr>
+           <td align="center">
+            <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
+          </td>
+          <td align="center">
+            <button onclick="javascript:location.href=baseurl+'/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
+          </td>
+        </tr>
+        <tr><td>&nbsp;</td><td></td></tr>
+        <tr>
+          <td align="center">
+            <button onclick="javascript:location.href=baseurl+'/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
+          </td>
+          <td align="center">
+            <button onclick="javascript:menuPois('<%=user%>');" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
+          </td>
+          <tr><td>&nbsp;</td><td></td></tr>
+          <% } %>
+          <tr>
+            <td align="center">
+              <button onclick="$('#myformLogout').submit();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_logout.png"/><br><%= __('logout') %></button>
+            </td>
+            <td align="center">
+              <button onclick="javascript:menuAbout();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_about.png"/><br><%= __('about') %></button>
+            </td>
+          </tr>
+        </table>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1367,24 +1371,24 @@ $("#vehiclePhoto").fileinput({
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         <div class="caja">
-        <img onclick="javascript:backMenuDevices();" src="/img/back.png"/>
+          <img onclick="javascript:backMenuDevices();" src="/img/back.png"/>
         </div>
         <div class="caja">
-        <h4 class="modal-title" id="myModalLabel"><%= __('monitor_devices') %></h4>
+          <h4 class="modal-title" id="myModalLabel"><%= __('monitor_devices') %></h4>
         </div>
         <br>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body" id="treeBody">
 
-      <div class="col-sm-12 monitorDiv" id="monitorDiv">
+        <div class="col-sm-12 monitorDiv" id="monitorDiv">
           <div id="treeview-checkable" class=""></div>
         </div>
 
-      <div id="okButtonUpdateMonitor" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button id="showDevicesMapButton" class="form-control btn btn-primary"><%= __('show_over_map') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
+        <div id="okButtonUpdateMonitor" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button id="showDevicesMapButton" class="form-control btn btn-primary"><%= __('show_over_map') %></button>
+        </div>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1397,68 +1401,68 @@ $("#vehiclePhoto").fileinput({
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         <div class="caja">
-        <img onclick="javascript:backMenuHistoric();" src="/img/back.png"/>
+          <img onclick="javascript:backMenuHistoric();" src="/img/back.png"/>
         </div>
         <div class="caja">
-        <h4 class="modal-title" id="myModalLabel"><%= __('historic') %></h4>
+          <h4 class="modal-title" id="myModalLabel"><%= __('historic') %></h4>
         </div>
         <br>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
 
-      <div class="container">
+        <div class="container">
           <div class="row">
-              <div class='col-sm-6'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('init_date') %>:</h5>
+            <div class='col-sm-6'>
+              <div class="form-group">
+                <h5 class="modal-title"><%= __('init_date') %>:</h5>
 
-                      <div class='input-group date' id='datetimepicker1'>
-                          <input type='text' class="form-control" id='initDate'/>
-                          <span class="input-group-addon">
-                              <span class="glyphicon glyphicon-calendar"></span>
-                          </span>
-                      </div>
-                  </div>
+                <div class='input-group date' id='datetimepicker1'>
+                  <input type='text' class="form-control" id='initDate'/>
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                </div>
               </div>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-      <div class="container">
+        <div class="container">
           <div class="row">
-              <div class='col-sm-6'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('end_date') %>:</h5>
+            <div class='col-sm-6'>
+              <div class="form-group">
+                <h5 class="modal-title"><%= __('end_date') %>:</h5>
 
-                      <div class='input-group date' id='datetimepicker2'>
-                          <input type='text' class="form-control" id='endDate'/>
-                          <span class="input-group-addon">
-                              <span class="glyphicon glyphicon-calendar"></span>
-                          </span>
-                      </div>
-                  </div>
+                <div class='input-group date' id='datetimepicker2'>
+                  <input type='text' class="form-control" id='endDate'/>
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                </div>
               </div>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-      <div class="container">
+        <div class="container">
           <div class="row">
-              <div class='col-sm-2'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('license') %>:</h5>
-                          <input type='text' class="form-control" id='licenseHist' data-provide="typeahead" placeholder=""/>
-                  </div>
+            <div class='col-sm-2'>
+              <div class="form-group">
+                <h5 class="modal-title"><%= __('license') %>:</h5>
+                <input type='text' class="form-control" id='licenseHist' data-provide="typeahead" placeholder=""/>
               </div>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-      <div id="okButtonCalendar" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('consult') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
+        <div id="okButtonCalendar" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button class="form-control btn btn-primary"><%= __('consult') %></button>
+        </div>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1471,32 +1475,32 @@ $("#vehiclePhoto").fileinput({
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         <div class="caja">
-        <img onclick="javascript:backMenuFind();" src="/img/back.png"/>
+          <img onclick="javascript:backMenuFind();" src="/img/back.png"/>
         </div>
         <div class="caja">
-        <h4 class="modal-title" id="myModalLabel"><%= __('find') %></h4>
+          <h4 class="modal-title" id="myModalLabel"><%= __('find') %></h4>
         </div>
         <br>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
 
-      <div class="container">
+        <div class="container">
           <div class="row">
-              <div class='col-sm-2'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('license') %>:</h5>
-                          <input type='text' class="form-control" id='licenseFind' data-provide="typeahead" placeholder=""/>
-                  </div>
+            <div class='col-sm-2'>
+              <div class="form-group">
+                <h5 class="modal-title"><%= __('license') %>:</h5>
+                <input type='text' class="form-control" id='licenseFind' data-provide="typeahead" placeholder=""/>
               </div>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-      <div id="okButtonFind" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('consult') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
+        <div id="okButtonFind" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button class="form-control btn btn-primary"><%= __('consult') %></button>
+        </div>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1509,24 +1513,24 @@ $("#vehiclePhoto").fileinput({
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         <div class="caja">
-        <img onclick="javascript:backMenuAbout();" src="/img/back.png"/>
+          <img onclick="javascript:backMenuAbout();" src="/img/back.png"/>
         </div>
         <div class="caja">
-        <h4 class="modal-title" id="myModalLabel"><%= __('about_kyros') %></h4>
+          <h4 class="modal-title" id="myModalLabel"><%= __('about_kyros') %></h4>
         </div>
         <br>
       </div> <!-- /.modal-header -->
 
       <div class="container monitorDiv" id="aboutDiv">
-      <div class="modal-body">
+        <div class="modal-body">
 
-<object id="aboutTextDiv" data="./changelog/index.html" width="100" height="100" type="text/html">
-    KyrosView
-</object>
+          <object id="aboutTextDiv" data="./changelog/index.html" width="100" height="100" type="text/html">
+            KyrosView
+          </object>
 
 
-    </div> <!-- /.modal-body -->
-    </div>
+        </div> <!-- /.modal-body -->
+      </div>
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1539,10 +1543,10 @@ $("#vehiclePhoto").fileinput({
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         <div class="caja">
-        <img onclick="javascript:backMenuRecent();" src="/img/back.png"/>
+          <img onclick="javascript:backMenuRecent();" src="/img/back.png"/>
         </div>
         <div class="caja">
-        <h4 class="modal-title" id="myModalLabel"><%= __('recent_pos') %></h4>
+          <h4 class="modal-title" id="myModalLabel"><%= __('recent_pos') %></h4>
         </div>
         <br>
 
@@ -1550,40 +1554,40 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-body">
 
-      <div class="container monitorDiv" id="recentDiv">
+        <div class="container monitorDiv" id="recentDiv">
           <div class="row">
-              <div class="col-sm-6 column">
-      <form id="recentPosForm" name="recentPosForm">
-      <!--table class="table table-bordered table-hover" id="tab_logic"-->
-      <table class="table table-bordered" data-click-to-select="true" id="tab_logic">
-        <thead>
-          <tr >
-            <th class="text-center">
-              <%= __('icon') %>
-            </th>
-            <th class="text-center">
-              <%= __('license') %>
-            </th>
-            <th class="text-center">
-              <%= __('date') %>
-            </th>
+            <div class="col-sm-6 column">
+              <form id="recentPosForm" name="recentPosForm">
+                <!--table class="table table-bordered table-hover" id="tab_logic"-->
+                <table class="table table-bordered" data-click-to-select="true" id="tab_logic">
+                  <thead>
+                    <tr >
+                      <th class="text-center">
+                        <%= __('icon') %>
+                      </th>
+                      <th class="text-center">
+                        <%= __('license') %>
+                      </th>
+                      <th class="text-center">
+                        <%= __('date') %>
+                      </th>
 
-          </tr>
-        </thead>
-        <tbody>
-            <tr id='addr1' class="clickable-row"></tr>
-        </tbody>
-      </table>
-      </form>
-    </div>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr id='addr1' class="clickable-row"></tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-      <div id="okButtonRecentPos" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('consult') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
+        <div id="okButtonRecentPos" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button class="form-control btn btn-primary"><%= __('consult') %></button>
+        </div>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1599,40 +1603,40 @@ $("#vehiclePhoto").fileinput({
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
-      <div class="container monitorDiv" id="eventsDiv">
+        <div class="container monitorDiv" id="eventsDiv">
           <div class="row">
-              <div class="col-sm-6 column">
-      <form id="recentPosForm" name="recentPosForm">
-      <!--table class="table table-bordered table-hover" id="tab_logic"-->
-      <table class="table table-bordered table-hover" data-click-to-select="true" id="table_events">
-        <thead>
-          <tr >
-            <th class="text-center">
-              <%= __('icon') %>
-            </th>
-            <th class="text-center">
-              <%= __('day') %>
-            </th>
-            <th class="text-center">
-              <%= __('hour') %>
-            </th>
-            <th class="text-center">
-              <%= __('more_info') %>
-            </th>
+            <div class="col-sm-6 column">
+              <form id="recentPosForm" name="recentPosForm">
+                <!--table class="table table-bordered table-hover" id="tab_logic"-->
+                <table class="table table-bordered table-hover" data-click-to-select="true" id="table_events">
+                  <thead>
+                    <tr >
+                      <th class="text-center">
+                        <%= __('icon') %>
+                      </th>
+                      <th class="text-center">
+                        <%= __('day') %>
+                      </th>
+                      <th class="text-center">
+                        <%= __('hour') %>
+                      </th>
+                      <th class="text-center">
+                        <%= __('more_info') %>
+                      </th>
 
-          </tr>
-        </thead>
-        <tbody>
-            <tr id='event1' class="clickable-row"></tr>
-        </tbody>
-      </table>
-      </form>
-    </div>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr id='event1' class="clickable-row"></tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-    </div> <!-- /.modal-body -->
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1649,26 +1653,26 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-body">
 
-      <div class="container">
+        <div class="container">
           <div class="row">
-              <div class='col-sm-6'>
-                  <div class="form-group">
-                      <h5 class="modal-title"><%= __('email') %>:</h5>
-                      <div class="input-group">
-                        <input type="text" class="form-control" id="emailShare" name="email">
-                        <label for="emailShare" class="input-group-addon glyphicon glyphicon-envelope"></label>
-                      </div>
+            <div class='col-sm-6'>
+              <div class="form-group">
+                <h5 class="modal-title"><%= __('email') %>:</h5>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="emailShare" name="email">
+                  <label for="emailShare" class="input-group-addon glyphicon glyphicon-envelope"></label>
+                </div>
 
-                  </div>
               </div>
+            </div>
 
           </div>
-      </div>
+        </div>
 
-      <div id="okButtonShare" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('send') %></button>
-      </div>
-    </div> <!-- /.modal-body -->
+        <div id="okButtonShare" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button class="form-control btn btn-primary"><%= __('send') %></button>
+        </div>
+      </div> <!-- /.modal-body -->
 
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -1681,13 +1685,13 @@ $("#vehiclePhoto").fileinput({
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
         <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true"><img src="./img/close.png"/></button-->
         <!--h4 class="modal-title" id="myModalLabel">Log in</h4-->
-            <table class="tooltip-header-table" border="0">
-            <tr>
-              <td id="tooltipIcon" width="100"></td>
-              <td><b><font color="black" id="tooltipVehicleLicense">---</font></b></td>
+        <table class="tooltip-header-table" border="0">
+          <tr>
+            <td id="tooltipIcon" width="100"></td>
+            <td><b><font color="black" id="tooltipVehicleLicense">---</font></b></td>
 
-            </tr>
-            </table>
+          </tr>
+        </table>
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
@@ -1700,117 +1704,117 @@ $("#vehiclePhoto").fileinput({
         </ul>
 
         <div class="tab-content">
-        <br>
-          <div id="details" class="tab-pane fade in active">
-          <table class="tooltip-details-table" border="0">
-            <tr>
-              <td width="20%"><b><%= __('date') %>&nbsp;</b></td>
-              <td width="80%"><font color="black" id="tooltipDate">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('alias') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipAlias">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('coordinates') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('speed') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipSpeed">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('heading') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipHeading">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('geocoding') %>&nbsp;</b></td>
-              <td valign="top"><font color="black" id="tooltipLocation">---</font></td>
-            </tr>
-          </table>
-        </div>
-
-        <div id="odometer" class="tab-pane fade">
-        <br>
-        <table class="bordered">
-          <thead>
-          <tr>
-                <th class="numeric" width="20%"><%= __('day') %></th>
-                <th class="numeric" width="20%"><%= __('week') %></th>
-                <th class="numeric" width="20%"><%= __('month') %></th>
-                <th width="40%"></th>
-          <tr>
-          </thead>
-            <tbody>
-              <tr>
-                <td id="tooltipDayDistance">---</td>
-                <td id="tooltipWeekDistance">---</td>
-                <td id="tooltipMonthDistance">---</td>
-                <td><font color="red"><%= __('distance') %></font> (Km)</td>
-              </tr>
-              <tr>
-                <td id="tooltipDaySpeed">---</td>
-                <td id="tooltipWeekSpeed">---</td>
-                <td id="tooltipMonthSpeed">---</td>
-                <td><font color="red"><%= __('average_speed') %></font> (km/h)</td>
-              </tr>
-              <tr>
-                <td id="tooltipDayConsume">---</td>
-                <td id="tooltipWeekConsume">---</td>
-                <td id="tooltipMonthConsume">---</td>
-                <td><font color="red"><%= __('consume') %></font> (L)</td>
-              </tr>
-            </tbody>
-          </table>
           <br>
-          <div class="table-responsive">
-          <table class="tooltip-details-table" border="0">
-            <tr>
-              <td width="30%"><b><%= __('distance') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipTotalDistance">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('average_speed') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipTotalSpeed">---</font></td>
-            </tr>
-            <tr>
-              <td><b><%= __('consume') %>&nbsp;</b></td>
-              <td><font color="black" id="tooltipTotalConsume">---</font></td>
-            </tr>
-          </table>
+          <div id="details" class="tab-pane fade in active">
+            <table class="tooltip-details-table" border="0">
+              <tr>
+                <td width="20%"><b><%= __('date') %>&nbsp;</b></td>
+                <td width="80%"><font color="black" id="tooltipDate">---</font></td>
+              </tr>
+              <tr>
+                <td><b><%= __('alias') %>&nbsp;</b></td>
+                <td><font color="black" id="tooltipAlias">---</font></td>
+              </tr>
+              <tr>
+                <td><b><%= __('coordinates') %>&nbsp;</b></td>
+                <td><font color="black" id="tooltipLatitude">---</font>, <font color="black" id="tooltipLongitude">---</font></td>
+              </tr>
+              <tr>
+                <td><b><%= __('speed') %>&nbsp;</b></td>
+                <td><font color="black" id="tooltipSpeed">---</font></td>
+              </tr>
+              <tr>
+                <td><b><%= __('heading') %>&nbsp;</b></td>
+                <td><font color="black" id="tooltipHeading">---</font></td>
+              </tr>
+              <tr>
+                <td><b><%= __('geocoding') %>&nbsp;</b></td>
+                <td valign="top"><font color="black" id="tooltipLocation">---</font></td>
+              </tr>
+            </table>
           </div>
 
-        </div>
+          <div id="odometer" class="tab-pane fade">
+            <br>
+            <table class="bordered">
+              <thead>
+                <tr>
+                  <th class="numeric" width="20%"><%= __('day') %></th>
+                  <th class="numeric" width="20%"><%= __('week') %></th>
+                  <th class="numeric" width="20%"><%= __('month') %></th>
+                  <th width="40%"></th>
+                  <tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="tooltipDayDistance">---</td>
+                      <td id="tooltipWeekDistance">---</td>
+                      <td id="tooltipMonthDistance">---</td>
+                      <td><font color="red"><%= __('distance') %></font> (Km)</td>
+                    </tr>
+                    <tr>
+                      <td id="tooltipDaySpeed">---</td>
+                      <td id="tooltipWeekSpeed">---</td>
+                      <td id="tooltipMonthSpeed">---</td>
+                      <td><font color="red"><%= __('average_speed') %></font> (km/h)</td>
+                    </tr>
+                    <tr>
+                      <td id="tooltipDayConsume">---</td>
+                      <td id="tooltipWeekConsume">---</td>
+                      <td id="tooltipMonthConsume">---</td>
+                      <td><font color="red"><%= __('consume') %></font> (L)</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <br>
+                <div class="table-responsive">
+                  <table class="tooltip-details-table" border="0">
+                    <tr>
+                      <td width="30%"><b><%= __('distance') %>&nbsp;</b></td>
+                      <td><font color="black" id="tooltipTotalDistance">---</font></td>
+                    </tr>
+                    <tr>
+                      <td><b><%= __('average_speed') %>&nbsp;</b></td>
+                      <td><font color="black" id="tooltipTotalSpeed">---</font></td>
+                    </tr>
+                    <tr>
+                      <td><b><%= __('consume') %>&nbsp;</b></td>
+                      <td><font color="black" id="tooltipTotalConsume">---</font></td>
+                    </tr>
+                  </table>
+                </div>
 
-        <div id="icon" class="tab-pane fade">
-          <br>
-          <img id="iconVehicle" class="iconVehicle" src=""/>
-          <input onclick="javascript:deleteIcon();" type="submit" class="btn-danger" value="<%= __('delete') %>" name="submit">
+              </div>
 
-          <form id        =  "uploadFormIcon"
-               enctype   =  "multipart/form-data"
-               action    =  "/api/icon/upload"
-               method    =  "POST"
-          >
+              <div id="icon" class="tab-pane fade">
+                <br>
+                <img id="iconVehicle" class="iconVehicle" src=""/>
+                <input onclick="javascript:deleteIcon();" type="submit" class="btn-danger" value="<%= __('delete') %>" name="submit">
 
-          <br>
-          <input id="vehicleIcon" name="vehicleIcon" multiple type="file" class="file file-loading" data-allowed-file-extensions='["png"]'
-          >
+                <form id        =  "uploadFormIcon"
+                enctype   =  "multipart/form-data"
+                action    =  "/api/icon/upload"
+                method    =  "POST"
+                >
+
+                <br>
+                <input id="vehicleIcon" name="vehicleIcon" multiple type="file" class="file file-loading" data-allowed-file-extensions='["png"]'
+                >
           <!--input type="file" class="filestyle" data-placeholder="No file" name="iconVehiclePhoto" data-buttonName="btn-primary">
           <input type="submit" value="Actualizar" name="submit"-->
 
-          </form>
-       </div>
+        </form>
+      </div>
 
-       <div id="photo" class="tab-pane fade">
-          <br>
-          <img id="imageVehicle" class="imageVehicle" src=""/>
-          <form id        =  "uploadFormPhoto"
-               enctype   =  "multipart/form-data"
-               action    =  "/api/image/upload"
-               method    =  "POST"
-          >
-          <!-- the avatar markup -->
+      <div id="photo" class="tab-pane fade">
+        <br>
+        <img id="imageVehicle" class="imageVehicle" src=""/>
+        <form id        =  "uploadFormPhoto"
+        enctype   =  "multipart/form-data"
+        action    =  "/api/image/upload"
+        method    =  "POST"
+        >
+        <!-- the avatar markup -->
           <!--div id="kv-avatar-errors-1" class="center-block" style="width:800px;display:none"></div>
           <form class="text-center" action="/api/icon/upload" method="post" enctype="multipart/form-data">
               <div class="kv-avatar center-block" style="width:200px">
@@ -1824,17 +1828,17 @@ $("#vehiclePhoto").fileinput({
           <br>
           <input id="vehiclePhoto" name="vehiclePhoto" multiple type="file" class="file file-loading" data-allowed-file-extensions='["png", "jpg", "jpeg", "gif", "bmp"]'>
 
-          </form>
-       </div>
+        </form>
+      </div>
 
 
-        <br>
-      </div> <!-- /.modal-body -->
-      <table border="0">
+      <br>
+    </div> <!-- /.modal-body -->
+    <table border="0">
       <tr>
         <td width="50" align="center">
           <div id="selectButton2" class="modal-footer" onclick="javascript:openShare();">
-          <img src="./img/share.png"/>
+            <img src="./img/share.png"/>
           </div> <!-- /.modal-footer -->
         </td>
         <td>
@@ -1842,17 +1846,17 @@ $("#vehiclePhoto").fileinput({
             <button id="selectButtonText" class="form-control btn btn-primary"><%= __('select_button') %></button>
           </div> <!-- /.modal-footer -->
         </td>
-       <td width="50" align="center">
+        <td width="50" align="center">
           <div id="selectButton2" class="modal-footer" onclick="javascript:openHist();">
-          <img src="./img/calendar.png"/>
+            <img src="./img/calendar.png"/>
           </div> <!-- /.modal-footer -->
         </td>
       </tr>
-      </table>
+    </table>
 
-    </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+  </div>
+</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <div style="z-index: 10000;" class="modal fade" id="myModalTooltipTrackingPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -1861,19 +1865,19 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header" id="tooltipTrackingHeader">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-            <table border="0">
-            <tr>
-              <td><b><%= __('id') %>: </b><font color="black" id="tooltipTrackingTrackingId">---</font></td>
-            </tr>
-            </table>
+        <table border="0">
+          <tr>
+            <td><b><%= __('id') %>: </b><font color="black" id="tooltipTrackingTrackingId">---</font></td>
+          </tr>
+        </table>
 
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
 
-          <div class="form-group">
+        <div class="form-group">
 
-            <table border="0">
+          <table border="0">
             <tr>
               <td width="25%"><b><%= __('date') %></b></td>
               <td><font color="black" id="tooltipTrackingDate">---</font></td>
@@ -1900,14 +1904,14 @@ $("#vehiclePhoto").fileinput({
             </tr>
           </table>
 
-         </div> <!-- /.form-group -->
+        </div> <!-- /.form-group -->
 
       </div> <!-- /.modal-body -->
 
-      </div> <!-- /.modal-footer -->
+    </div> <!-- /.modal-footer -->
 
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <div style="z-index: 10000;" class="modal fade" id="myModalTooltipEventPoint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -1916,21 +1920,21 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header" id="tooltipEventHeader">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-         <table class="tooltip-header-table" border="0">
-            <tr>
-              <td id="tooltipEventIcon" width="100"></td>
-              <td><b><font color="black" id="tooltipEventDescription">---</font></b></td>
-            </tr>
-            </table>
+        <table class="tooltip-header-table" border="0">
+          <tr>
+            <td id="tooltipEventIcon" width="100"></td>
+            <td><b><font color="black" id="tooltipEventDescription">---</font></b></td>
+          </tr>
+        </table>
 
 
       </div> <!-- /.modal-header -->
 
       <div class="modal-body">
 
-          <div class="form-group">
+        <div class="form-group">
 
-            <table border="0">
+          <table border="0">
             <tr>
               <td width="25%"><b><%= __('day') %></b>&nbsp;</td>
               <td><font color="black" id="tooltipEventDay">---</font></td>
@@ -1961,13 +1965,13 @@ $("#vehiclePhoto").fileinput({
             </tr>
           </table>
 
-         </div> <!-- /.form-group -->
+        </div> <!-- /.form-group -->
 
       </div> <!-- /.modal-body -->
 
-      </div> <!-- /.modal-footer -->
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+    </div> <!-- /.modal-footer -->
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <!-- Ventana modal punto sobre el mapa -->
@@ -1977,16 +1981,16 @@ $("#vehiclePhoto").fileinput({
 
       <div class="modal-header" id="tooltipMapHeader">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-            <table border="0">
-            <tr>
-              <td><b><%= __('position_map') %></td>
-            </tr>
-            </table>
+        <table border="0">
+          <tr>
+            <td><b><%= __('position_map') %></td>
+          </tr>
+        </table>
 
       </div> <!-- /.modal-header -->
       <div class="modal-body">
-          <div class="form-group table-responsive">
-            <table>
+        <div class="form-group table-responsive">
+          <table>
             <tr>
               <td><b><%= __('coordinates') %>:&nbsp;</b></td>
               <td><font color="black" id="tooltipMapLatitude">---</font>, <font color="black" id="tooltipMapLongitude">---</font></td>
@@ -1997,75 +2001,75 @@ $("#vehiclePhoto").fileinput({
             </tr>
 
           </table>
-         </div> <!-- /.form-group -->
-         <br>
-         <br>
+        </div> <!-- /.form-group -->
+        <br>
+        <br>
 
-          <div class="form-group">
-              <div class='container-fluid'>
-              <div class="row">
-                <div class='col-md-4'>
-                  <input id="slider_check_devices" type="checkbox"/>&nbsp;<%= __('nearby_devices') %>
-                </div>
-                <div class='col-md-4'>
-                  <input id="slider_distance_devices" type="text"/>&nbsp;&nbsp;&nbsp;Kms.
-                </div>
-               </div>
-               </div>
-
-
-         </div> <!-- /.form-group -->
-
-         <br>
-
-          <div class="form-group">
-              <div class='container-fluid'>
-              <div class="row">
-                <div class='col-md-4'>
-                  <input id="slider_check_pois" type="checkbox"/>&nbsp;<%= __('nearby_pois') %>
-                </div>
-                <div class='col-md-4'>
-                  <input id="slider_distance_pois" type="text"/>&nbsp;&nbsp;&nbsp;Kms.
-                </div>
-               </div>
-               </div>
+        <div class="form-group">
+          <div class='container-fluid'>
+            <div class="row">
+              <div class='col-md-4'>
+                <input id="slider_check_devices" type="checkbox"/>&nbsp;<%= __('nearby_devices') %>
+              </div>
+              <div class='col-md-4'>
+                <input id="slider_distance_devices" type="text"/>&nbsp;&nbsp;&nbsp;Kms.
+              </div>
+            </div>
+          </div>
 
 
-         </div> <!-- /.form-group -->
+        </div> <!-- /.form-group -->
 
-      <div id="okButtonFindNear" class="modal-footer" data-dismiss="modal" aria-hidden="true">
-        <button class="form-control btn btn-primary"><%= __('Ok') %></button>
-      </div>
+        <br>
+
+        <div class="form-group">
+          <div class='container-fluid'>
+            <div class="row">
+              <div class='col-md-4'>
+                <input id="slider_check_pois" type="checkbox"/>&nbsp;<%= __('nearby_pois') %>
+              </div>
+              <div class='col-md-4'>
+                <input id="slider_distance_pois" type="text"/>&nbsp;&nbsp;&nbsp;Kms.
+              </div>
+            </div>
+          </div>
+
+
+        </div> <!-- /.form-group -->
+
+        <div id="okButtonFindNear" class="modal-footer" data-dismiss="modal" aria-hidden="true">
+          <button class="form-control btn btn-primary"><%= __('Ok') %></button>
+        </div>
 
 
       </div> <!-- /.modal-body -->
-      </div> <!-- /.modal-footer -->
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+    </div> <!-- /.modal-footer -->
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-  <div class="container">
-   <div class="row-fluid">
-    <!--div class="span12"-->
-     <div id="map" class="map">
-       <div id="attr-logo" class="attr-logo"></div>
-       <div id="attr-loading" class="attr-loading"></div>
-       <!--div id="attr-conf" onclick="javascript:location.href=window.location.host"></div-->
-       <div id="attr-button-menu" class="attr-button-menu" onclick="javascript:openMenuKyros();"></div>
-       <div id="attr-graph-hist" class="attr-graph-hist" onclick="$('#myformGraphHist').submit();"></div>
-       <!--div id="attr-button-update" onclick="javascript:reloadLayer();"></div-->
-       <div id="info"></div>
+<div class="container">
+ <div class="row-fluid">
+  <!--div class="span12"-->
+  <div id="map" class="map">
+   <div id="attr-logo" class="attr-logo"></div>
+   <div id="attr-loading" class="attr-loading"></div>
+   <!--div id="attr-conf" onclick="javascript:location.href=window.location.host"></div-->
+   <div id="attr-button-menu" class="attr-button-menu" onclick="javascript:openMenuKyros();"></div>
+   <div id="attr-graph-hist" class="attr-graph-hist" onclick="$('#myformGraphHist').submit();"></div>
+   <!--div id="attr-button-update" onclick="javascript:reloadLayer();"></div-->
+   <div id="info"></div>
 
-       <div id="button-close-chart" class="attr-button-close-chart" onclick="javascript:closeChart();"></div>
-       <div id="button-open-chart" class="attr-button-open-chart" onclick="javascript:openChart();"></div>
+   <div id="button-close-chart" class="attr-button-close-chart" onclick="javascript:closeChart();"></div>
+   <div id="button-open-chart" class="attr-button-open-chart" onclick="javascript:openChart();"></div>
 
 
-     <!--/div-->
+   <!--/div-->
 
-      </div> <!--map-->
-<div id="containerG" class="attr-chart" style="position:absolute; bottom:0px; left: 15%; width: 75%; height: 150px; margin: 0 auto"></div>
+ </div> <!--map-->
+ <div id="containerG" class="attr-chart" style="position:absolute; bottom:0px; left: 15%; width: 75%; height: 150px; margin: 0 auto"></div>
 
-<!--div id="containerG" class="attr-chart" style="min-width: 110px; left:0px; height: 150px; margin: 0 auto"></div-->
+ <!--div id="containerG" class="attr-chart" style="min-width: 110px; left:0px; height: 150px; margin: 0 auto"></div-->
 
 
 
@@ -2087,31 +2091,31 @@ $("#vehiclePhoto").fileinput({
 // This function handles arrays and objects
 function eachRecursive(obj)
 {
-    for (var k in obj)
-    {
-        if (typeof obj[k] == "object" && obj[k] !== null)
-            eachRecursive(obj[k]);
-        else
-            if ( (k=='type') && (obj[k]==0) ){
-              encontradoVehiculo = false;
-            }
-            else if ( (k=='type') && (obj[k]==1) ){
-              encontradoVehiculo = true;
-            }
-            else if ( (k=='checked') && (obj[k]=="true") ){
-              encontradoChecked = true;
-            }
-            else if ( (k=='checked') && (obj[k]=="false") ){
-              encontradoChecked = false;
-            }
-            else if (k=='name') {
-              if (encontradoVehiculo) {
-                monitorVehicleLicense.push(obj[k]);
-                vehicleLicenseToSelect = obj[k];
-              }
-              if (encontradoChecked) {
-                if (selectedVehicles.indexOf(vehicleLicenseToSelect)==-1) {
-                  selectedVehicles.push(vehicleLicenseToSelect);
+  for (var k in obj)
+  {
+    if (typeof obj[k] == "object" && obj[k] !== null)
+      eachRecursive(obj[k]);
+    else
+      if ( (k=='type') && (obj[k]==0) ){
+        encontradoVehiculo = false;
+      }
+      else if ( (k=='type') && (obj[k]==1) ){
+        encontradoVehiculo = true;
+      }
+      else if ( (k=='checked') && (obj[k]=="true") ){
+        encontradoChecked = true;
+      }
+      else if ( (k=='checked') && (obj[k]=="false") ){
+        encontradoChecked = false;
+      }
+      else if (k=='name') {
+        if (encontradoVehiculo) {
+          monitorVehicleLicense.push(obj[k]);
+          vehicleLicenseToSelect = obj[k];
+        }
+        if (encontradoChecked) {
+          if (selectedVehicles.indexOf(vehicleLicenseToSelect)==-1) {
+            selectedVehicles.push(vehicleLicenseToSelect);
                   //addVehicleSelectedToMap(vehicleLicenseToSelect);
                   //addVehicleToMap(obj[k]);
                 }
@@ -2119,10 +2123,10 @@ function eachRecursive(obj)
               encontradoVehiculo = false;
               encontradoChecked = false;
             }
-    }
-}
+          }
+        }
 
-function loadMonitor() {
+        function loadMonitor() {
 //function loadMonitorSync() {
   $.getJSON( "/api/monitor/<%=user%>", function( data ) {
   /*$.ajax({
@@ -2131,7 +2135,7 @@ function loadMonitor() {
     async: false,
     success: function(data){ */
 
-    jsonString = JSON.stringify(data[0].monitor)
+      jsonString = JSON.stringify(data[0].monitor)
     //jsonString = JSON.stringify(data)
 
     jsonObject = JSON.parse(jsonString);
@@ -2170,10 +2174,10 @@ function loadMonitor() {
     //console.log(strDevices);
     var jsonDevices = JSON.parse(strDevices);
     $('#licenseHist').typeahead({source:jsonDevices,
-        autoSelect: true
+      autoSelect: true
     });
     $('#licenseFind').typeahead({source:jsonDevices,
-        autoSelect: true
+      autoSelect: true
     });
 
     // construir el arbol
@@ -2184,34 +2188,34 @@ function loadMonitor() {
     jsonString = jsonString.split('"true"').join('true');
     jsonString = jsonString.split("checked").join("selected");
 
-var tree = [
-  {
-    text: "Parent 1",
-tags: ['1','3'],
+    var tree = [
+    {
+      text: "Parent 1",
+      tags: ['1','3'],
 
-    nodes: [
+      nodes: [
       {
         text: "Child 1",
-tags: ['1','3'],
+        tags: ['1','3'],
         //tags: [1, 3]
         nodes: [
-          {
-            text: "Grandchild 1",
-            expanded: false,
-          },
-          {
-            text: "Grandchild 2"
-          }
+        {
+          text: "Grandchild 1",
+          expanded: false,
+        },
+        {
+          text: "Grandchild 2"
+        }
         ]
       },
       {
         text: "Child 2"
       }
-    ]
-  },
-  {
-    text: "Parent 2",
-tags: ['1','3'],
+      ]
+    },
+    {
+      text: "Parent 2",
+      tags: ['1','3'],
     //tags: [1, 3]
   },
   {
@@ -2226,13 +2230,13 @@ tags: ['1','3'],
   {
     text: "Parent 5"
   }
-];
+  ];
 
     //console.log(jsonString);
     jsonObject = JSON.parse(jsonString);
     $('#monitorDiv').height($(window).height()-200);
     var $checkableTree = $('#treeview-checkable').treeview({
-          data: jsonObject,
+      data: jsonObject,
           //data: tree,
           showIcon: true,
           showCheckbox: false,
@@ -2258,8 +2262,8 @@ tags: ['1','3'],
             else if (node.type == 1)
               selectedVehicles.push(node.text);
               //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
-          },
-          onNodeUnselected: function (event, node) {
+            },
+            onNodeUnselected: function (event, node) {
           //onNodeUnchecked: function (event, node) {
             //console.log(node.text + ' was unchecked');
             if (node.type == 1) {
@@ -2272,7 +2276,7 @@ tags: ['1','3'],
           }
         });
 
-      $('#treeview-checkable').treeview('collapseAll', { silent: true });
+    $('#treeview-checkable').treeview('collapseAll', { silent: true });
 
     //$('#treeview-checkable').treeview('selectNode', [ 655, { silent: false } ]);
    /*
@@ -2289,7 +2293,7 @@ tags: ['1','3'],
     document.getElementById('attr-loading').style.display = 'none';
     loadMonitorLoaded = true;
   //} //del ajax async
- });
+});
 }
 
 var sourceHeatmap3 = new ol.source.Vector({
@@ -2309,23 +2313,23 @@ var sourceHeatmap1 = new ol.source.Vector({
 });
 
 var heatmap3 = new ol.layer.Heatmap({
-    title: '<%= __('heatmap3') %>',
-    visible: false,
-    source: sourceHeatmap3,
-    opacity: .9
- });
+  title: '<%= __('heatmap3') %>',
+  visible: false,
+  source: sourceHeatmap3,
+  opacity: .9
+});
 var heatmap2 = new ol.layer.Heatmap({
-    title: '<%= __('heatmap2') %>',
-    visible: false,
-    source: sourceHeatmap2,
-    opacity: .9
- });
+  title: '<%= __('heatmap2') %>',
+  visible: false,
+  source: sourceHeatmap2,
+  opacity: .9
+});
 var heatmap1 = new ol.layer.Heatmap({
-    title: '<%= __('heatmap1') %>',
-    visible: false,
-    source: sourceHeatmap1,
-    opacity: .9
- });
+  title: '<%= __('heatmap1') %>',
+  visible: false,
+  source: sourceHeatmap1,
+  opacity: .9
+});
 
 
 var sourceCluster3 = new ol.source.Vector({
@@ -2487,63 +2491,63 @@ var kyrosDevicesGroup = new ol.layer.Group({
     //layers: [vectorLayer]
     layers: []
   });
-*/
+  */
 
-var kyrosGroup = new ol.layer.Group({
+  var kyrosGroup = new ol.layer.Group({
     'title': '<%= __('tracking') %>',
     layers: [vehiclesHistLineLayer,vehiclesHistLayer, vehiclesEventHistLayer, mapPointLayer, vehiclesLineLayer, vehiclesPointLayer, vehiclesRealTimeLayer, vehiclesSelectedLayer, poisLayer]
   });
 
-var map = new ol.Map({
-  layers: [
-  new ol.layer.Group({
-   'title': '<%= __('base_maps') %>',
-   layers: [toner, roads, osm]
- }),
+  var map = new ol.Map({
+    layers: [
+    new ol.layer.Group({
+     'title': '<%= __('base_maps') %>',
+     layers: [toner, roads, osm]
+   }),
 
 //kyrosDevicesGroup,
 kyrosGroup,
 
-  new ol.layer.Group({
-   'title': '<%= __('heatmap') %>',
-   layers: [heatmap3, heatmap2, heatmap1]
- }),
-  new ol.layer.Group({
-   'title': '<%= __('clusters') %>',
-   layers: [clusters3, clusters2, clusters1]
- }),
+new ol.layer.Group({
+ 'title': '<%= __('heatmap') %>',
+ layers: [heatmap3, heatmap2, heatmap1]
+}),
+new ol.layer.Group({
+ 'title': '<%= __('clusters') %>',
+ layers: [clusters3, clusters2, clusters1]
+}),
 
 
-  ],
-  target: 'map',
-  controls: ol.control.defaults({ attribution: false }),
-  view: new ol.View({
-    center: ol.proj.transform([-3.75, 40.24], 'EPSG:4326', 'EPSG:3857'),
-    zoom: 7,
-    maxZoom:22,
-    minZoom:3
-  })
+],
+target: 'map',
+controls: ol.control.defaults({ attribution: false }),
+view: new ol.View({
+  center: ol.proj.transform([-3.75, 40.24], 'EPSG:4326', 'EPSG:3857'),
+  zoom: 7,
+  maxZoom:22,
+  minZoom:3
+})
 });
 
-<% if (user_type == 'PRO'){%>
-if (!isMobile()) {
-var layerSwitcher = new ol.control.LayerSwitcher({
+  <% if (user_type == 'PRO'){%>
+    if (!isMobile()) {
+      var layerSwitcher = new ol.control.LayerSwitcher({
     tipLabel: '<%= __('layers') %>' // Optional label for button
   });
-  map.addControl(layerSwitcher);
-}
-<% }%>
+      map.addControl(layerSwitcher);
+    }
+    <% }%>
 
-if (!isMobile()) {
-map.addControl(new ol.control.FullScreen());
-}
+    if (!isMobile()) {
+      map.addControl(new ol.control.FullScreen());
+    }
 
-if (!isMobile()) {
-map.addControl(new ol.control.ZoomSlider({
-  maxResolution: 0.5972,
-  minResolution: 39135.76
-}));
-}
+    if (!isMobile()) {
+      map.addControl(new ol.control.ZoomSlider({
+        maxResolution: 0.5972,
+        minResolution: 39135.76
+      }));
+    }
 
 /*
 if (!isMobile()) {
@@ -2586,10 +2590,10 @@ var displayFeatureInfo = function(pixel) {
    return feature;
  });
  if (feature) {
-             info.tooltip('hide')
-             .attr('data-original-title', feature.get('name'))
-             .tooltip('fixTitle')
-             .tooltip('show');
+   info.tooltip('hide')
+   .attr('data-original-title', feature.get('name'))
+   .tooltip('fixTitle')
+   .tooltip('show');
 
              //info.tooltip('show');
 
@@ -2599,31 +2603,31 @@ var displayFeatureInfo = function(pixel) {
            }
          };
 
-var displayTooltipInfo = function(evt) {
-  info.css({
-   left: evt.pixel[0] + 'px',
-   top: (evt.pixel[1] - 15) + 'px'
-  });
-  var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-    return feature;
-  });
-  if (feature) {
-    if (feature.get('elementId')=='trackingPoint') {
-      openTooltipTrackingPoint(feature.get('vehicleLicense'), feature.get('id'));
-    }
-    else if (feature.get('elementId')=='eventPoint') {
-      info.tooltip('hide');
-      showEvents(feature.get('id'));
-    }
-    else if (feature.get('elementId')=='device') {
-      info.tooltip('hide');
+         var displayTooltipInfo = function(evt) {
+          info.css({
+           left: evt.pixel[0] + 'px',
+           top: (evt.pixel[1] - 15) + 'px'
+         });
+          var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+            return feature;
+          });
+          if (feature) {
+            if (feature.get('elementId')=='trackingPoint') {
+              openTooltipTrackingPoint(feature.get('vehicleLicense'), feature.get('id'));
+            }
+            else if (feature.get('elementId')=='eventPoint') {
+              info.tooltip('hide');
+              showEvents(feature.get('id'));
+            }
+            else if (feature.get('elementId')=='device') {
+              info.tooltip('hide');
     //if (isMobile()) {
       openTooltip(feature.get('id'));
 
       // Muestro ultimos trackings solo si no es el dispositivo por defecto
       if (feature.get('id')!='<%=vehicleLicense%>')
         info.tooltip('hide');
-        showLastTrackings(feature.get('id'), 7);
+      showLastTrackings(feature.get('id'), 7);
     //} else {
     }
     else if (feature.get('elementId')=='positionPoint') {
@@ -2639,16 +2643,16 @@ var displayTooltipInfo = function(evt) {
   }
 };
 
-  map.on('pointermove', function(evt) {
-    if (evt.dragging) {
-      info.tooltip('hide');
-      return;
-    }
-    displayFeatureInfo(map.getEventPixel(evt.originalEvent));
-  });
+map.on('pointermove', function(evt) {
+  if (evt.dragging) {
+    info.tooltip('hide');
+    return;
+  }
+  displayFeatureInfo(map.getEventPixel(evt.originalEvent));
+});
 
-  map.on('singleclick', function(evt) {
-    displayTooltipInfo(evt);
+map.on('singleclick', function(evt) {
+  displayTooltipInfo(evt);
     //if (!isMobile()) {
     //   closeTooltip();
     //}
@@ -2659,31 +2663,31 @@ $(map.getViewport()).on("click", function(e) {
     map.forEachFeatureAtPixel(map.getEventPixel(e), function (feature, layer) {
         //do something
     });
-});*/
+  });*/
 
 
-       </script>
+</script>
 
 <script type="text/javascript" src="/js/external/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="/js/external/bootstrap3-typeahead.min.js" type="text/javascript"></script>
 
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
 
 <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-  <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
+<script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js"></script>
 
 <script type="text/javascript" src="js/fileinput.min.js"> </script>
 
 <script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/featureanimation.js"></script>
 
 <script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/dropanimation.js"></script>
-    <script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
-  <script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
-  <script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
-  <script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
+<script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/nullanimation.js"></script>
+<script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/showanimation.js"></script>
+<script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/bounceanimation.js"></script>
+<script type="text/javascript" src="https://viglino.github.io/ol3-ext/featureanimation/shakeanimation.js"></script>
 
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.4.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.4.0/bootstrap-slider.min.js"></script>
 
 
-     </body>
-     </html>
+</body>
+</html>

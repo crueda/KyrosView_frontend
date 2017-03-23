@@ -4,7 +4,7 @@
   <title>Kyros View</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+  <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -15,22 +15,22 @@
   <script src="https://code.highcharts.com/highcharts-3d.js"></script>
   
   <style>
-  html,body{
-   height:100%;
-}
-  .carousel-inner{
-    height:100%;
-    width:100%;
-  }
-  .carousel,.item,.active{
-   height:100%;
+      html,body{
+         height:100%;
+     }
+     .carousel-inner{
+        height:100%;
+        width:100%;
+    }
+    .carousel,.item,.active{
+     height:100%;
  }
-  .carousel-inner > .item > div {
-      width: 80%;
-      height:100%;
-      margin: auto;
+ .carousel-inner > .item > div {
+  width: 80%;
+  height:100%;
+  margin: auto;
 
-  }
+}
 
 #attr-button-map
 {
@@ -43,10 +43,12 @@
     background-image: url("./img/buttons/button_map.png");
 }
 
-  </style>
+</style>
 
 
-  <script type="text/javascript">
+<script type="text/javascript">
+
+    var baseurl = "";
 
     function getInitDateLastDays(days) {
         var milliseconds = (new Date).getTime();
@@ -59,11 +61,11 @@
      * In order to synchronize tooltips and crosshairs, override the
      * built-in events with handlers defined on the parent element.
      */
-    $('#container1').bind('mousemove touchmove touchstart', function (e) {
+     $('#container1').bind('mousemove touchmove touchstart', function (e) {
         var chart,
-            point,
-            i,
-            event;
+        point,
+        i,
+        event;
 
         for (i = 0; i < Highcharts.charts.length; i = i + 1) {
             chart = Highcharts.charts[i];
@@ -75,11 +77,11 @@
             }
         }
     });
-    $('#container2').bind('mousemove touchmove touchstart', function (e) {
+     $('#container2').bind('mousemove touchmove touchstart', function (e) {
         var chart,
-            point,
-            i,
-            event;
+        point,
+        i,
+        event;
 
         for (i = 0; i < Highcharts.charts.length; i = i + 1) {
             chart = Highcharts.charts[i];
@@ -91,11 +93,11 @@
             }
         }
     });
-    $('#container3').bind('mousemove touchmove touchstart', function (e) {
+     $('#container3').bind('mousemove touchmove touchstart', function (e) {
         var chart,
-            point,
-            i,
-            event;
+        point,
+        i,
+        event;
 
         for (i = 0; i < Highcharts.charts.length; i = i + 1) {
             chart = Highcharts.charts[i];
@@ -111,14 +113,14 @@
     /**
      * Override the reset function, we don't need to hide the tooltips and crosshairs.
      */
-    Highcharts.Pointer.prototype.reset = function () {
+     Highcharts.Pointer.prototype.reset = function () {
         return undefined;
     };
 
     /**
      * Highlight a point by showing tooltip, setting hover state and draw crosshair
      */
-    Highcharts.Point.prototype.highlight = function (event) {
+     Highcharts.Point.prototype.highlight = function (event) {
         this.onMouseOver(); // Show the hover marker
         this.series.chart.tooltip.refresh(this); // Show the tooltip
         this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
@@ -127,7 +129,7 @@
     /**
      * Synchronize zooming through the setExtremes event handler.
      */
-    function syncExtremes(e) {
+     function syncExtremes(e) {
         var thisChart = this.chart;
 
         if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
@@ -153,9 +155,9 @@
             });
 
             $('<div class="chart">')
-                .appendTo('#container1')
-                .highcharts({
-                    global : {
+            .appendTo('#container1')
+            .highcharts({
+                global : {
                         //useUTC: true,
                     },
                     chart: {
@@ -235,43 +237,43 @@
 
     // Grafica 2. Numero de posiciones
     $.getJSON('/api/numpositions/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10', function (numpositions) {
-            $('<div class="chart">')
-                .appendTo('#container2')
-                .highcharts({
-                    global : {
-                    useUTC : true
-                }   ,chart: {
-                        type: 'column',
-                        width: $(document).width(),
-                        height: $(document).height(),
-                        options3d: {
-                            enabled: true,
-                            alpha: 10,
-                            beta: 25,
-                            depth: 70
-                        }
-                    },
-                    title: {
-                        text: '<%= __('num_positions') %>',
-                        align: 'left',
-                        margin: 0,
-                        x: 30
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        column: {
-                            depth: 25
-                        }
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-                    xAxis: {
+        $('<div class="chart">')
+        .appendTo('#container2')
+        .highcharts({
+            global : {
+                useUTC : true
+            }   ,chart: {
+                type: 'column',
+                width: $(document).width(),
+                height: $(document).height(),
+                options3d: {
+                    enabled: true,
+                    alpha: 10,
+                    beta: 25,
+                    depth: 70
+                }
+            },
+            title: {
+                text: '<%= __('num_positions') %>',
+                align: 'left',
+                margin: 0,
+                x: 30
+            },
+            credits: {
+                enabled: false
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                column: {
+                    depth: 25
+                }
+            },
+            exporting: {
+                enabled: false
+            },
+            xAxis: {
                         //categories: Highcharts.getOptions().lang.shortMonths
                         categories: numpositions.dataset.xData
 
@@ -312,80 +314,86 @@
 
     // Grafica 3: Numero de posiciones por heading
     $.getJSON('/api/numpositionsGroupByHeading/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>', function (numpositions) {
-            $('<div class="chart">')
-                .appendTo('#container3')
-                .highcharts({
-                    chart: {
-                        polar: true,
-                        width: $(document).width(),
-                        height: $(document).height()
-                    },
-                    title: {
-                        text: 'Orientación',
-                        align: 'left',
-                        margin: 0,
-                        x: 30
-                    },
-                    pane: {
-                        startAngle: 0,
-                        endAngle: 360
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-                    xAxis: {
-                        tickInterval: 45,
-                        min: 0,
-                        max: 360,
-                        labels: {
-                            formatter: function () {
-                                return this.value + '°';
-                            }
-                        }
-                    },
-                    yAxis: {
-                        min: 0
-                    },
-                    plotOptions: {
-                        series: {
-                            pointStart: 0,
-                            pointInterval: 45
-                        },
-                        column: {
-                            pointPadding: 0,
-                            groupPadding: 0
-                        }
-                    },
-                    series: [{
-                        type: 'column',
-                        name: 'Posiciones',
+        $('<div class="chart">')
+        .appendTo('#container3')
+        .highcharts({
+            chart: {
+                polar: true,
+                width: $(document).width(),
+                height: $(document).height()
+            },
+            title: {
+                text: 'Orientación',
+                align: 'left',
+                margin: 0,
+                x: 30
+            },
+            pane: {
+                startAngle: 0,
+                endAngle: 360
+            },
+            credits: {
+                enabled: false
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            xAxis: {
+                tickInterval: 45,
+                min: 0,
+                max: 360,
+                labels: {
+                    formatter: function () {
+                        return this.value + '°';
+                    }
+                }
+            },
+            yAxis: {
+                min: 0
+            },
+            plotOptions: {
+                series: {
+                    pointStart: 0,
+                    pointInterval: 45
+                },
+                column: {
+                    pointPadding: 0,
+                    groupPadding: 0
+                }
+            },
+            series: [{
+                type: 'column',
+                name: 'Posiciones',
                         //data: [8, 7, 6, 5, 4, 3, 2, 1],
                         //data: [154, 0, 0, 0, 0, 0, 0, 0],
                         data: numpositions.dataset.data,
                         pointPlacement: 'between'
                     }]
                 });
-        });
+    });
 
 });
-    </script>
+</script>
 </head>
 <body>
 
- <form id="myformLogout" action="/logout" method="POST">
- </form>
- 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+   <form id="myformLogout" action="/logout" method="POST">
+   </form>
 
-<script>
-$(document).ready(function(){
+   <script src="https://code.highcharts.com/highcharts.js"></script>
+   <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+   <script>
+    $(document).ready(function(){
+
+                var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        baseurl = protocol + '//' + host;
+
    var height = $(window).height();  //getting windows height
    var width = $(window).width();  //getting windows width
    jQuery('#myCarousel').css('height',height+'px');   //and setting height of carousel
@@ -398,15 +406,15 @@ $(document).ready(function(){
    $('#myCarousel').carousel({
     interval: 120000,
     cycle: false
-    });
+});
 
 });
 </script>
 
 
 
-  <div id="myCarousel" class="carousel slide" data-ride="carousel">
-        <div id="attr-button-map" onclick="javascript:location.href='http://view.kyroslbs.com/map'"></div>
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <div id="attr-button-map" onclick="javascript:location.href=baseurl+'/map'"></div>
 
 
     <!-- Indicators -->
@@ -414,37 +422,37 @@ $(document).ready(function(){
       <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
       <li data-target="#myCarousel" data-slide-to="1"></li>
       <li data-target="#myCarousel" data-slide-to="2"></li>
-    </ol>
+  </ol>
 
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner" role="listbox">
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner" role="listbox">
       <div class="item active">
         <div id="container1" style="width: 100%; height: 100%; margin: 0 auto"></div>
-      </div>
-
-      <div class="item">
-        <!--img src="./img/img_chania2.jpg" alt="Chania" width="460" height="345"-->
-        <div id="container2" style="width: 100%; height: 100%; margin: 0 auto"></div>
-      </div>
-    
-      <div class="item">
-        <!--img src="./img/img_chania2.jpg" alt="Chania" width="460" height="345"-->
-        <div id="container3" style="width: 100%; height: 100%; margin: 0 auto"></div>
-      </div>
-
     </div>
 
+    <div class="item">
+        <!--img src="./img/img_chania2.jpg" alt="Chania" width="460" height="345"-->
+        <div id="container2" style="width: 100%; height: 100%; margin: 0 auto"></div>
+    </div>
+    
+    <div class="item">
+        <!--img src="./img/img_chania2.jpg" alt="Chania" width="460" height="345"-->
+        <div id="container3" style="width: 100%; height: 100%; margin: 0 auto"></div>
+    </div>
 
-    <!-- Left and right controls -->
-    <a id="left_control" class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a id="rigth_control" class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-  </div>
+</div>
+
+
+<!-- Left and right controls -->
+<a id="left_control" class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+  <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+  <span class="sr-only"><%= __('previous') %></span>
+</a>
+<a id="rigth_control" class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+  <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+  <span class="sr-only"><%= __('next') %></span>
+</a>
+</div>
 
 
 </body>

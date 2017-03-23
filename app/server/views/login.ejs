@@ -1,110 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <title>Kyros View</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
-  <style>
-  html,body{
-   height:100%;
-	}
+	<title>Kyros View</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
+	<style>
+		html,body{
+			height:100%;
+		}
 
-	body {
-	    background-image:    url(./img/background_map.png);
-	    background-size:     cover;                      
-	    background-repeat:   no-repeat;
-	    background-position: center center;              
-	}
+		body {
+			background-image:    url(./img/background_map.png);
+			background-size:     cover;                      
+			background-repeat:   no-repeat;
+			background-position: center center;              
+		}
 
-	table {
-    border-style: solid;
-    border-color: #ffffff;
-	}
+		table {
+			border-style: solid;
+			border-color: #ffffff;
+		}
 
-	.main-div{
-		text-align:center;
-		margin : 0px auto;
-	}
+		.main-div{
+			text-align:center;
+			margin : 0px auto;
+		}
 
 	</style>
 
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-
-    
-    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
 
-    <script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  
+	<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+	<script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+	<script>
+		var baseurl = "";
+
+		function getLang() {
+		    // capturamos la url
+		    var loc = document.location.href;
+		    // si existe el interrogante
+		    if(loc.indexOf('?')>0) {
+		      // cogemos la parte de la url que hay despues del interrogante
+		      var getString = loc.split('?')[1];
+		      // obtenemos un array con cada clave=valor
+		      var GET = getString.split('&');
+		      var get = {};
+
+		      // recorremos todo el array de valores
+		      for(var i = 0, l = GET.length; i < l; i++){
+		        var tmp = GET[i].split('=');
+		        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+		        if (unescape(decodeURI(tmp[0])) == 'lang')
+		          return unescape(decodeURI(tmp[1]));
+		      }
+		      return null;
+		    }
+		 }
+
+		function goToEs() {
+			location.href=baseurl+'?lang=es';
+		}
+		function goToEn() {
+			location.href=baseurl+'?lang=en';
+		}
+	</script>
 
 </head>
 <body>
 
-<script>
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
 
-function goToEs() {
-	return window.location.host+'?lang=es'
-}
-</script>
+				<div class="modal-header">
 
-<!--a href="" data-toggle="modal" data-target="#myModal">ss</a-->
 
-<!--div class="main-div">
-<br><br>
-<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-    Entrar
-</button>
-</div-->
+					<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button-->
+					<table>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-
-			<div class="modal-header">
-			
-
-				<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button-->
-				<table>
-							
-				<tr>
-				<td width="90%">
-				<img src="./img/kyroslbs.png"/>
-				<td width="10%" style="text-align: right; vertical-align:top">
-				<a href="http://view.kyroslbs.com?lang=es"><img src="./img/es.gif"/></a> <a href="http://view.kyroslbs.com?lang=en"><img src="./img/en.gif"/></a>
-				<td>
-				</tr>							
+						<tr>
+							<td width="90%">
+								<img src="./img/kyroslbs.png"/>
+								<td width="10%" style="text-align: right; vertical-align:top">
+									<a href="javascript:goToEs();"><img src="./img/es.gif"/></a> 
+									<a href="javascript:goToEn();"><img src="./img/en.gif"/></a>
+									<td>
+									</tr>							
 				<!--tr>
 				<td width="90%">
 				<h4 class="modal-title" id="myModalLabel"><%= __('login_kyros') %></h4>
-				</tr-->
-				</table>
-			</div> <!-- /.modal-header -->
+			</tr-->
+		</table>
+	</div> <!-- /.modal-header -->
 
-			<div class="modal-body">
-				<h4 class="modal-title" id="myModalLabel"><%= __('login_kyros') %></h4>
-				<br>
-				<form role="form" id="loginForm" action="/" method="POST">
-					<div class="form-group">
-						<div class="input-group">
-							<input type="text" class="form-control" id="uLogin" placeholder="<%= __('username') %>" name="user">
-							<label for="uLogin" class="input-group-addon glyphicon glyphicon-user"></label>
-						</div>
-					</div> <!-- /.form-group -->
+	<div class="modal-body">
+		<h4 class="modal-title" id="myModalLabel"><%= __('login_kyros') %></h4>
+		<br>
+		<form role="form" id="loginForm" action="/" method="POST">
+			<input type="hidden" id="language" name="lang" value=""/>
+			<div class="form-group">
+				<div class="input-group">
+					<input type="text" class="form-control" id="uLogin" placeholder="<%= __('username') %>" name="user">
+					<label for="uLogin" class="input-group-addon glyphicon glyphicon-user"></label>
+				</div>
+			</div> <!-- /.form-group -->
 
-					<div class="form-group">
-						<div class="input-group">
-							<input type="password" class="form-control" id="uPassword" placeholder="<%= __('password') %>" name="pass">
-							<label for="uPassword" class="input-group-addon glyphicon glyphicon-lock"></label>
-						</div> <!-- /.input-group -->
-					</div> <!-- /.form-group -->
+			<div class="form-group">
+				<div class="input-group">
+					<input type="password" class="form-control" id="uPassword" placeholder="<%= __('password') %>" name="pass">
+					<label for="uPassword" class="input-group-addon glyphicon glyphicon-lock"></label>
+				</div> <!-- /.input-group -->
+			</div> <!-- /.form-group -->
 
 
-					<div class="checkbox">
-					
-					<a href="http://view.kyroslbs.com/lost-password"><%= __('forgot_password') %></a>									
-					
+			<div class="checkbox">
+
+				<a href=baseurl+"/lost-password"><%= __('forgot_password') %></a>									
 					<!--div class="row">
 					    <div class="col-xs-12">
 					        <div class="text-right">
@@ -114,87 +131,94 @@ function goToEs() {
 					        </div>
 					    </div>
 					</div-->
-					
-					
 
-					</div> <!-- /.checkbox -->
-				</form>
+				</div> <!-- /.checkbox -->
+			</form>
 
-			</div> <!-- /.modal-body -->
+		</div> <!-- /.modal-body -->
 
-			<div class="modal-footer">
-				<button class="form-control btn btn-primary">Ok</button>
+		<div class="modal-footer">
+			<button class="form-control btn btn-primary">Ok</button>
 
-				
-			</div> <!-- /.modal-footer -->
 
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
+		</div> <!-- /.modal-footer -->
+
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <script>
 
-function test() {
-	document.getElementById('uLogin').value='test';
-	document.getElementById('uPassword').value='test';
-	$('#loginForm').submit();
-}
-
-$(document).ready(function(){
-	
-	setTimeout(function(){
-  		$('#myModal').modal('show');
-	}, 250);
-
-	$('#myModal').modal({backdrop: 'static', keyboard: false}) 	
-
-	if ('<%=msg%>'!='') {
-		$('.modal-title').text("<%=msg%>");
-		$('.modal-title').css({ "color" : '<%=msg_color%>' });
+	function test() {
+		document.getElementById('uLogin').value='test';
+		document.getElementById('uPassword').value='test';
+		document.getElementById('language').value = getLang();
+		$('#loginForm').submit();
 	}
 
-	$('#uLogin').keypress(function(e) {
-            // Enter pressed?
-            if(e.which == 10 || e.which == 13) {
-                this.form.submit();
-            }
-    });
-	$('#uPassword').keypress(function(e) {
-            // Enter pressed?
-            if(e.which == 10 || e.which == 13) {
-                this.form.submit();
-            }
-    });
+	$(document).ready(function(){
 
-    $('.modal-footer button').click(function(){
-		var button = $(this);
+		var pathArray = location.href.split( '/' );
+		var protocol = pathArray[0];
+		var host = pathArray[2];
+		baseurl = protocol + '//' + host;
 
-		if ( button.attr("data-dismiss") != "modal" ){
-			
-			$('#loginForm').submit();
+
+		setTimeout(function(){
+			$('#myModal').modal('show');
+		}, 250);
+
+		$('#myModal').modal({backdrop: 'static', keyboard: false}) 	
+
+		if ('<%=msg%>'!='') {
+			$('.modal-title').text("<%=msg%>");
+			$('.modal-title').css({ "color" : '<%=msg_color%>' });
 		}
-	});
 
-	$('#myModal').on('hidden.bs.modal', function (e) {
-		var inputs = $('form input');
-		var title = $('.modal-title');
-		var progressBar = $('.progress-bar');
-		var button = $('.modal-footer button');
+		$('#uLogin').keypress(function(e) {
+            // Enter pressed?
+            if(e.which == 10 || e.which == 13) {
+				document.getElementById('language').value = getLang();
+            	this.form.submit();
+            }
+        });
+		$('#uPassword').keypress(function(e) {
+            // Enter pressed?
+            if(e.which == 10 || e.which == 13) {
+				document.getElementById('language').value = getLang();
+            	this.form.submit();
+            }
+        });
 
-		inputs.removeAttr("disabled");
+		$('.modal-footer button').click(function(){
+			var button = $(this);
+
+			if ( button.attr("data-dismiss") != "modal" ){
+				document.getElementById('language').value = getLang();
+				$('#loginForm').submit();
+			}
+		});
+
+		$('#myModal').on('hidden.bs.modal', function (e) {
+			var inputs = $('form input');
+			var title = $('.modal-title');
+			var progressBar = $('.progress-bar');
+			var button = $('.modal-footer button');
+
+			inputs.removeAttr("disabled");
 
 		//title.text("Log in");
 
 		progressBar.css({ "width" : "0%" });
 
 		button.removeClass("btn-success")
-				.addClass("btn-primary")
-				.text("Ok")
-				.removeAttr("data-dismiss");
-                
+		.addClass("btn-primary")
+		.text("Ok")
+		.removeAttr("data-dismiss");
+
 	});
-});
-      
+	});
+
 </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 {
+	"lang": "en",
 	"Hello": "Hello",
 	"login_kyros": "Login to KyrosView:",
 	"forgot_password": "Forgot your password?",
@@ -113,5 +114,8 @@
 	"Ok": "Ok",
 	"username": "Username",
 	"password": "Password",
-	"config_account": "Config account"
+	"config_account": "Config account",
+	"recover_passsword": "Recover password",
+	"next": "Next",
+	"previous": "Previous"
 }

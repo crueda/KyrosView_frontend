@@ -1,4 +1,5 @@
 {
+	"lang": "es",
 	"Hello": "Hola",
 	"login_kyros": "Entrar en KyrosView:",
 	"forgot_password": "¿Olvidaste tu contraseña?",
@@ -115,5 +116,10 @@
 	"user_not_found": "user_not_found",
 	"username": "Usuario",
 	"password": "Contraseña",
-	"config_account": "Configuración de la cuenta"
+	"config_account": "Configuración de la cuenta",
+	"recover_passsword": "Recuperar contraseña",
+	"next": "Siguiente",
+	"previous": "Anterior"
+
+
 }

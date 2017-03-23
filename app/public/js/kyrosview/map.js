@@ -447,7 +447,6 @@ vehiclesHistLayer.animateFeature (f,
 
 
   function getEventDescription(eventType) {
-    //var evento = EVENT_ENUM.getByValue('value', eventType);
     var evento = EventEnum[eventType];
     if (evento!=undefined) {
       return EventEnum.properties[evento].description;
