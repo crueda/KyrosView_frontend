@@ -63,7 +63,7 @@
 	"base_maps": "Base maps",
 	"kyros_devices": "Kyros devices",
 	"tracking": "Tracking",
-	"geocoging": "Location",
+	"geocoding": "Location",
 	"geocoding_unknown": "Unknown",
 	"altitude": "Altitude",
 	"select_vehicle_error": "Select device error",
@@ -116,5 +116,7 @@
 	"config_account": "Config account",
 	"recover_passsword": "Recover password",
 	"next": "Next",
-	"previous": "Previous"
+	"previous": "Previous",
+	"select_vehicle": "Select a vehicle",
+	"select_vehicle_explanation": "Use some main menu option"
 }

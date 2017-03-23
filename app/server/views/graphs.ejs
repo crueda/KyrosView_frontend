@@ -385,6 +385,7 @@
 </head>
 <body>
 
+
    <form id="myformLogout" action="/logout" method="POST">
    </form>
 
@@ -398,6 +399,10 @@
         var protocol = pathArray[0];
         var host = pathArray[2];
         baseurl = protocol + '//' + host;
+
+         if ('<%=vehicleLicense%>'=='') {
+            location.href=baseurl+'/map';
+          } 
 
        var height = $(window).height();  //getting windows height
        var width = $(window).width();  //getting windows width

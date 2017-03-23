@@ -71,7 +71,7 @@
 	"pois": "PDIs",
 	"test": "Probar",
 	"map_ol": "Mapa",
-	"real_time": "Select.",
+	"real_time": "Seleccionado",
 	"map_g": "Mapa G.",
 	"globe": "Globo",
 	"all": "Todos",
@@ -119,7 +119,9 @@
 	"config_account": "Configuración de la cuenta",
 	"recover_passsword": "Recuperar contraseña",
 	"next": "Siguiente",
-	"previous": "Anterior"
+	"previous": "Anterior",
+	"select_vehicle": "Seleccione un vehículo",
+	"select_vehicle_explanation": "Utilice alguna opcion del menu principal"
 
 
 }

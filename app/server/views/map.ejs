@@ -176,33 +176,40 @@
 }
 
 function loadDefaultVehicleDataSync() {
-  // Leer los datos de los vehiculos en modo sincrono
-  $.ajax({
-    url: "/api/vehicle/<%=vehicleLicense%>",
-    dataType: 'json',
-    async: false,
-    success: function(data){
-        //Proceso de los datos recibidos
-        $.each( data, function( key, val ) {
-          iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
-          iconCoverDict[val.vehicle_license] = val.icon_cover;
-          iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-          aliasDict[val.vehicle_license] = val.alias;
-          deviceIdDict[val.vehicle_license] = val.device_id;
-        });
-      }
-    });
+  if ('<%=vehicleLicense%>'=='') {
+    $('#myModalMsgLabel').text("<%= __('select_vehicle') %>");
+    $('#myModalMsgLabel').css({ "color" : 'red' });
+    $('#myModalMsgLabel2').text("<%= __('select_vehicle_explanation') %>");
+    $('#myModalMsg').modal('show');
+  } else {
+    // Leer los datos de los vehiculos en modo sincrono
+    $.ajax({
+      url: "/api/vehicle/<%=vehicleLicense%>",
+      dataType: 'json',
+      async: false,
+      success: function(data){
+          //Proceso de los datos recibidos
+          $.each( data, function( key, val ) {
+            iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
+            iconCoverDict[val.vehicle_license] = val.icon_cover;
+            iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+            aliasDict[val.vehicle_license] = val.alias;
+            deviceIdDict[val.vehicle_license] = val.device_id;
+          });
+        }
+      });
 
-  // Leer el icono del vehiculo en base64 modo sincrono
-  $.ajax({
-    url: "/api/icon/vehicle/<%=vehicleLicense%>",
-    dataType: 'json',
-    async: false,
-    success: function(data){
-        //almacenar el icono recibido
-        iconBase64Dict['<%=vehicleLicense%>'] = data;
-      }
-    });
+    // Leer el icono del vehiculo en base64 modo sincrono
+    $.ajax({
+      url: "/api/icon/vehicle/<%=vehicleLicense%>",
+      dataType: 'json',
+      async: false,
+      success: function(data){
+          //almacenar el icono recibido
+          iconBase64Dict['<%=vehicleLicense%>'] = data;
+        }
+      });
+  }
 }
 
 function reloadVehiclesData() {
@@ -222,10 +229,6 @@ function reloadVehiclesData() {
        //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
        //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
        moveMap2Vehicle(val.vehicle_license);
-
-
-
-
      });
    });
   } else if (mapmode==2) {
@@ -1027,24 +1030,15 @@ this.mychart = Highcharts.chart('containerG', {
     });
     */
 
-//$('#containerG').width($(window).width()-400);
-//$("#containerG").style.left = 0;
-
-//$("#button-close-chart").style.bottom = 0;
 
 $('#aboutDiv').height($(window).height()-100);
 $('#aboutTextDiv').height($(window).height()-100);
-//$('#myModalAbout').width($(window).width()-200);
-
-//$('#aboutDiv').width($(window).width()-200);
 $('#aboutDiv').width(540);
-//$('#aboutTextDiv').width($(window).width()-200);
 $('#aboutTextDiv').width(540);
 
 
 $("#slider_distance_devices").slider({
   ticks: [10, 100, 200, 300, 400, 500, 600],
-    //ticks_labels: ['10', '100', '200', '300', '400', '500', '600'],
     ticks_snap_bounds: 50,
     value: 300,
     tooltip: 'always'
@@ -1120,15 +1114,7 @@ $('#datetimepicker1').datetimepicker({
 $('#datetimepicker2').datetimepicker({
   locale: 'es',
   defaultDate: today2
-      //defaultDate: nowDate
     });
-
-  /*
-  var dateNow = new Date();
-  $('#datetimepicker1').datetimepicker();
-  $('#datetimepicker2').datetimepicker({
-    useCurrent: false //Important! See issue #1075
-  });*/
 
   $("#datetimepicker1").on("dp.change", function (e) {
     $('#datetimepicker2').data("DateTimePicker").minDate(e.date);
