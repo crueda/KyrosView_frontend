@@ -29,7 +29,7 @@
 	    z-index:100; 
 	    width:48px; 
 	    height:48px; 
-	    background-image: url("./img/button_map.png");
+	    background-image: url("./img/buttons/button_map.png");
 	}
 
 	#attr-button-gmap
@@ -38,7 +38,7 @@
 	    z-index:100; 
 	    width:48px; 
 	    height:48px; 
-	    background-image: url("./img/button_gmap.png");
+	    background-image: url("./img/buttons/button_gmap.png");
 	}
 
 	#attr-button-globe
@@ -47,7 +47,7 @@
 	    z-index:100; 
 	    width:48px; 
 	    height:48px; 
-	    background-image: url("./img/button_globe.png");
+	    background-image: url("./img/buttons/button_globe.png");
 	}
 
 	#attr-button-graphs
@@ -56,7 +56,7 @@
 	    z-index:100; 
 	    width:48px; 
 	    height:48px; 
-	    background-image: url("./img/button_graph.png");
+	    background-image: url("./img/buttons/button_graph.png");
 	}
 
 	#attr-button-device
@@ -65,7 +65,7 @@
 	    z-index:100; 
 	    width:48px; 
 	    height:48px; 
-	    background-image: url("./img/button_device.png");
+	    background-image: url("./img/buttons/button_device.png");
 	}
 
 	#attr-button-conf
@@ -74,7 +74,7 @@
 	    z-index:100; 
 	    width:48px; 
 	    height:48px; 
-	    background-image: url("./img/conf.png");
+	    background-image: url("./img/buttons/button_conf.png");
 	}
 	</style>
 
@@ -86,32 +86,34 @@
     <script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 	<script>
+	var baseurl = "";
+
 	function validarEmail( email ) {
 	    expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-	    if ( !expr.test(email) )
-	        alert("Error: La dirección de correo " + email + " es incorrecta.");
+	    if ( !expr.test(email) ) {
+	        //alert("<%= __('email_address_nok') %>");
+			$('.modal-title').css({ "color" : "red" });
+			$('.modal-title').text("<%= __('email_address_nok') %>");
+			$('#confForm').submit();				
+			
+	    }
 	}
 	</script>
 
 </head>
 <body>
 
-
-<!--a href="" data-toggle="modal" data-target="#myModal">ss</a-->
-
 <div class="main-div">
-<br><br>
-       <div id="attr-button-map" onclick="javascript:location.href='http://view.kyroslbs.com/map'"></div>
-       <br>
-       <div id="attr-button-gmap" onclick="javascript:location.href='http://view.kyroslbs.com/gmap'"></div>
-       <br>
-       <div id="attr-button-globe" onclick="javascript:location.href='http://view.kyroslbs.com/globe'"></div>
-       <br>
-       <div id="attr-button-graphs" onclick="javascript:location.href='http://view.kyroslbs.com/graphs'"></div>
-
-       <!--div id="attr-button-device" onclick="javascript:location.href='http://view.kyroslbs.com/device'"></div-->
-       <br>
-       <div id="attr-button-conf" onclick="javascript:location.href='http://view.kyroslbs.com/home'"></div>
+	<br><br>
+	<div id="attr-button-map" onclick="javascript:location.href=baseurl+'/map'"></div>
+	<br>
+	<!--div id="attr-button-gmap" onclick="javascript:location.href=baseurl+'/gmap'"></div>
+	<br>
+	<div id="attr-button-globe" onclick="javascript:location.href=baseurl+'/globe'"></div>
+	<br-->
+	<div id="attr-button-graphs" onclick="javascript:location.href=baseurl+'/graphs'"></div>
+	<br>
+	<div id="attr-button-conf" onclick="javascript:location.href=baseurl+'/home'"></div>
 </div>
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -120,7 +122,7 @@
 
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="myModalLabel">Configuración de la cuenta</h4>
+				<h4 class="modal-title" id="myModalLabel"><%= __('config_account') %></h4>
 			</div> <!-- /.modal-header -->
 
 			<div class="modal-body">
@@ -162,7 +164,7 @@
 			</div> <!-- /.modal-body -->
 
 			<div class="modal-footer">
-				<button class="form-control btn btn-primary">Actualizar</button>
+				<button class="form-control btn btn-primary"><%= __('update') %></button>
 
 				
 			</div> <!-- /.modal-footer -->
@@ -174,6 +176,12 @@
 <script>
 $(document).ready(function(){
 	
+	var pathArray = location.href.split( '/' );
+	var protocol = pathArray[0];
+	var host = pathArray[2];
+	baseurl = protocol + '//' + host;
+
+
 	setTimeout(function(){
   		$('#myModal').modal('show');
 	}, 200);
@@ -193,11 +201,11 @@ $(document).ready(function(){
 			
 			if (document.getElementById('uPassword').value == '') {
 				$('.modal-title').css({ "color" : "red" });
-				$('.modal-title').text("La contraseña esta vacia");
+				$('.modal-title').text("<%= __('password_empty') %>");
 			}
 			else if (document.getElementById('uPassword').value != document.getElementById('uPassword2').value) {
 				$('.modal-title').css({ "color" : "red" });
-				$('.modal-title').text("Las contraseñas no coinciden");
+				$('.modal-title').text("<%= __('passwords_not_equals') %>");
 			} else {
 				//$("#uLogin").prop('disabled', 'false');
 				$('#confForm').submit();				
@@ -212,8 +220,6 @@ $(document).ready(function(){
 		var button = $('.modal-footer button');
 
 		inputs.removeAttr("disabled");
-
-		//title.text("Log in");
 
 		progressBar.css({ "width" : "0%" });
 

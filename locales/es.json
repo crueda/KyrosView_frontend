@@ -8,6 +8,8 @@
 	"forgot_password_error": "Error al recuperar contraseña",
 	"password_updated": "Contraseña actualizada",
 	"update_password_error": "Error al actualizar la contraseña",
+	"passwords_not_equals": "Las contraseñas no coinciden",
+	"password_empty": "La contraseña esta vacia",
 	"user_not_found": "El usuario no existe",
 	"operation_error": "Error al realizar la operación, intentelo de nuevo",
 	"send_email_error": "Error al enviar el email",
@@ -112,5 +114,6 @@
 	"Ok": "Ok",
 	"user_not_found": "user_not_found",
 	"username": "Usuario",
-	"password": "Contraseña"
+	"password": "Contraseña",
+	"config_account": "Configuración de la cuenta"
 }

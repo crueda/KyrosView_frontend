@@ -544,6 +544,7 @@ function addVehicleSelectedToMap(vehicleLicense) {
     var lat_anterior=0;
     var initPos=true;
     var index = 0;
+    var baseurl = "";
 
     var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
     //console.log(urlJson);
@@ -937,6 +938,12 @@ var mapPointSource = new ol.source.Vector({
 
 //alert ('<%=user_type%>');
 
+var pathArray = location.href.split( '/' );
+var protocol = pathArray[0];
+var host = pathArray[2];
+baseurl = protocol + '//' + host;
+//alert (baseurl);
+
 //createChart(0,0);
 // var now = new Date();
 // var m = moment(now);
@@ -1324,13 +1331,13 @@ $("#vehiclePhoto").fileinput({
         <button onclick="javascript:menuHistoric();" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_calendar.png"/><br><%= __('historic') %></button>
       </td>
     <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
+        <button onclick="javascript:location.href=baseurl+'/graphs'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_graph.png"/><br><%= __('graphs') %></button>
       </td>
     </tr>
     <tr><td>&nbsp;</td><td></td></tr>
     <tr>
       <td align="center">
-        <button onclick="javascript:location.href='http://view.kyroslbs.com/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
+        <button onclick="javascript:location.href=baseurl+'/home'" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_conf.png"/><br><%= __('config') %></button>
       </td>
       <td align="center">
         <button onclick="javascript:menuPois('<%=user%>');" type="button" class="btn btn-primary raised"><img src="./img/buttons/button_pois.png"/><br><%= __('pois') %></button>
