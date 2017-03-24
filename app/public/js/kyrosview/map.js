@@ -716,12 +716,14 @@ $('#datetimepicker2').datetimepicker('update');
   function showRecentPos() {
 
       // Llamada a la api
+      var i=1;
+      var j=1;
+
       $.getJSON( '/api/tracking1', function( data ) {
-        var i=1;
-        var j=1;
+
         $.each( data, function( key, val ) {
           // comprobar si monitorizo el vehiculo
-          //if (i<20) {
+          var veh = val.vehicle_license;
           if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1 && i<20) {
 
             var icon = "";
@@ -759,8 +761,9 @@ $('#datetimepicker2').datetimepicker('update');
             $('#tab_logic').append('<tr id="addr'+(j+1)+'" name="" class="clickable-row"></tr>');
 
             j++;
+            i++;
           }
-          i++;
+          
         });
 
 		    //$('#recentDiv').height($(window).height()-200);
