@@ -70,10 +70,22 @@ monitorModel.putElement = function(element, depth)
 
 monitorModel.getMonitorFromUser = function(username,callback)
 {
-    mongoose.connection.db.collection('TREE', function (err, collection) {
-        collection.find({'username': username}).toArray(function(err, docs) {
-            //log.info(JSON.stringify(docs));
-            callback(null, docs);
+    // comprobar si es usuario de sistema
+    mongoose.connection.db.collection('USER', function (err, collection) {
+        collection.find({'username': username}).toArray(function(err, docsUser) {
+            if (docsUser[0].kind_monitor==2) {
+                mongoose.connection.db.collection('TREE', function (err, collection) {
+                    collection.find({'username': 'system'}).toArray(function(err, docs) {
+                        callback(null, docs);
+                    });
+                });
+            } else {
+                mongoose.connection.db.collection('TREE', function (err, collection) {
+                    collection.find({'username': username}).toArray(function(err, docs) {
+                        callback(null, docs);
+                    });
+                });
+            }
         });
     });
 }
