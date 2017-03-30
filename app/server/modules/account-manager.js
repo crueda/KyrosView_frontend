@@ -140,6 +140,7 @@ exports.manualLogin = function(user, pass, callback)
                                       "firstname" : rows[0]['firstname'],
                                       "language" : rows[0]['lang'],
                                       "vehicle_license" : "",
+                                      "device_id": 0,
                                       "push_enabled" : 1,
                                       "group_notifications" : 0,
                                       "token" : "",
@@ -171,10 +172,10 @@ exports.loadDefaultVehicle = function(username, callback)
 {
     mongoose.connection.db.collection('USER', function (err, collection) {
         collection.find({"username" : username}).toArray(function(err, docs) {
-          if (docs[0].vehicle_license == undefined) {
+          if (docs[0].device_id == undefined) {
             callback("");
           } else {
-            callback(docs[0].vehicle_license);
+            callback(docs[0].device_id);
           }
         });
   });
@@ -260,33 +261,8 @@ exports.updateAccount = function(newData, callback)
 
 exports.updateUserDevice = function(newData, callback)
 {
-  /*
-    pool.getConnection(function(err, connection) {
-        if (connection) {       
-            var sql = "UPDATE USER_GUI set DEFAULT_VEHICLE_LICENSE='" + newData.vehicleLicense + "' WHERE USERNAME= '" + newData.username + "'";
-            //log.info("-->"+sql);
-            console.log(colors.green('Query: %s'), sql);
-            connection.query(sql, function(error, result)
-            {
-              connection.release();
-              if(error)
-              {
-                  console.log(colors.red('Query error: %s'), error);
-                  callback('error');
-              }
-              else
-              {
-                  callback('ok', 'ok');
-              }
-            });
-        } else {
-            callback(null);
-        }
-    });*/     
   mongoose.connection.db.collection('USER', function (err, collection) { 
-    //debugger;
-      collection.update({ username: newData.username }, { $set: { vehicle_license: newData.vehicleLicense }}, function (err, doc) {
-        // doc contains the modified document
+      collection.update({ username: newData.username }, { $set: { device_id: newData.device_id }}, function (err, doc) {
         if(err) {
             console.log(colors.red('updateUserDevice error: %s'), err);
             callback('error');
