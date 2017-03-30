@@ -31,6 +31,14 @@ gulp.task('pro', ['apidoc', 'gen-changelog', 'upload-app-pro', 'upload-locales-p
 });
 
 // --------------------------------------------------------------------------------
+// Actualizar en demos
+// --------------------------------------------------------------------------------
+gulp.task('demos', ['upload-app-demos', 'upload-locales-demos', 'upload-appjs-demos'], function() {
+  console.log('Actualizado el entorno de demos!');
+});
+
+
+// --------------------------------------------------------------------------------
 // Actualizar en pre-produccion
 // --------------------------------------------------------------------------------
 gulp.task('pre', ['apidoc', 'gen-changelog', 'upload-app-pre', 'upload-locales-pre', 'upload-appjs-pre'], function() {
@@ -118,6 +126,46 @@ gulp.task('upload-appjs-pro', function () {
     gulp.src('/Users/Carlos/Workspace/Kyros/KyrosView/app.js')
         .pipe(scp({
             host: '192.168.28.248',
+            user: 'root',
+            port: 22,
+            path: '/opt/KyrosView_frontend'
+        }));
+});
+
+
+// --------------------------------------------------------------------------------
+// Subir ficheros a demos
+// --------------------------------------------------------------------------------
+gulp.task('upload-app-demos', function() {
+  rsync({
+    ssh: true,
+    src: '/Users/Carlos/Workspace/Kyros/KyrosView/app',
+    dest: 'root@192.168.28.244:/opt/KyrosView_frontend/',
+    recursive: true,
+    syncDest: true,
+    args: ['--verbose']
+  }, function(error, stdout, stderr, cmd) {
+      gutil.log(stdout);
+  });
+});
+
+gulp.task('upload-locales-demos', function() {
+  rsync({
+    ssh: true,
+    src: '/Users/Carlos/Workspace/Kyros/KyrosView/locales',
+    dest: 'root@192.168.28.244:/opt/KyrosView_frontend/',
+    recursive: true,
+    syncDest: true,
+    args: ['--verbose']
+  }, function(error, stdout, stderr, cmd) {
+      gutil.log(stdout);
+  });
+});
+
+gulp.task('upload-appjs-demos', function () {
+    gulp.src('/Users/Carlos/Workspace/Kyros/KyrosView/app.js')
+        .pipe(scp({
+            host: '192.168.28.244',
             user: 'root',
             port: 22,
             path: '/opt/KyrosView_frontend'

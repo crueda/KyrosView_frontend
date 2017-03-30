@@ -45,6 +45,7 @@ var greenFlagOverlay = null;
 var redFlagOverlay = null;
 var actualPosOverlay = null;
 var tooltipSelectedVehicleLicense = "";
+var tooltipSelectedDeviceId = 0;
 var selectedVehicles = new Array();
 var selectedRecentVehicles = new Array();
 var defaultVehicleLastLat = 0;
@@ -249,7 +250,7 @@ function showSelectedVehicles() {
     clearMap();
     mapmode = 2;
 
-	loadVehicleIcon(vehicleLicense);
+	  loadVehicleIcon(vehicleLicense);
     addVehicleFindToMap(vehicleLicense);
 }
 
@@ -303,8 +304,6 @@ function showSelectedVehicles() {
         id: trackingId,
         elementId: 'trackingPoint',
         vehicleLicense: vehicleLicense,
-        //name: "<%= __('tracking_point') %>"
-        //name: "Tracking"
         name: hours+":"+minutes+":"+seconds
       });
 
@@ -402,47 +401,7 @@ function showSelectedVehicles() {
 
       vehiclesHistSource.addFeature(iconFeature);
 
-      //var feature = new ol.Feature(geo_point);
-      /*var feature = new ol.Feature({
-        geometry: geo_point,
-        id: eventOrder,
-        vehicleLicense: vehicleLicense,
-        elementId: 'eventPoint',
-        name: getEventDescription(eventType)
-      });*/
       vehiclesEventHistSource.addFeature(iconFeature);
-
-
-  /*
-  var f, r = map.getView().getResolution() *10;
-  var f = new ol.Feature({
-        geometry: geo_point,
-        id: trackingId,
-        vehicleLicense: vehicleLicense,
-        elementId: 'trackingPoint',
-        lon: lon,
-        lat: lat,
-        //name: "<%= __('position_map') %>"
-        name: "Posición"
-  });
-  f.setStyle(iconStyle);
-vehiclesHistLayer.animateFeature (f,
-      [ new ol.featureAnimation["Drop"](
-        { speed: Number(1.4),
-          duration: Number(260),
-          side: false
-        }),
-        new ol.featureAnimation[
-        "Bounce"](
-        { speed: Number(0.8),
-          duration: Number(760),
-          horizontal: /Slide/.test("Shake")
-        })
-      ]);
-  */
-
-
-
   }
 
 
@@ -456,7 +415,6 @@ vehiclesHistLayer.animateFeature (f,
 
   function getEventIcon(eventType) {
     if (eventType==0) {
-      //return './images/multiEvent_40.png';
       //return './images/info.svg';
       return Constants['url_events'] + 'info.svg';
 
@@ -682,7 +640,7 @@ $('#datetimepicker2').datetimepicker('update');
     $.getJSON( api_url, function( data ) {
       $.each( data, function( key, val ) {
         if (monitorVehicleLicense.indexOf(val.vehicle_license) != -1) {
-          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
         }
 
         mapmode=2;
@@ -912,9 +870,9 @@ $('#datetimepicker2').datetimepicker('update');
 // Tooltip
 // --------------------------------------------------------------
 
-function updateTooltipData(vehicleLicense) {
+function updateTooltipData(deviceId) {
     //var date = new Date(dateDict[vehicleLicense]+date.getTimezoneOffset()*60*1000);
-    var date = new Date(dateDict[vehicleLicense]);
+    var date = new Date(dateDict[deviceId]);
     var year = date.getFullYear();
     var month = pad(date.getMonth() + 1);
     var day = pad(date.getDate());
@@ -923,24 +881,22 @@ function updateTooltipData(vehicleLicense) {
     var seconds = pad(date.getSeconds());
     document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
-    document.getElementById('tooltipAlias').innerHTML = aliasDict[vehicleLicense];
-    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[vehicleLicense].toFixed(4);
-    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[vehicleLicense].toFixed(4);
-    document.getElementById('tooltipLocation').innerHTML = geocodingDict[vehicleLicense];
-    document.getElementById('tooltipSpeed').innerHTML = speedDict[vehicleLicense].toFixed(1);
-    document.getElementById('tooltipHeading').innerHTML = headingDict[vehicleLicense].toFixed(1);
-    if (geocodingDict[vehicleLicense]=='' || geocodingDict[vehicleLicense]==undefined) {
+    document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
+    document.getElementById('tooltipLatitude').innerHTML = (latitudeDict[deviceId]).toFixed(4);
+    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId].toFixed(4);
+    document.getElementById('tooltipLocation').innerHTML = geocodingDict[deviceId];
+    document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId].toFixed(1);
+    document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId].toFixed(1);
+    if (geocodingDict[deviceId]=='' || geocodingDict[deviceId]==undefined) {
 
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
-      lat: latitudeDict[vehicleLicense],
-      lon: longitudeDict[vehicleLicense],
+      lat: latitudeDict[deviceId],
+      lon: longitudeDict[deviceId],
       format: 'json',
       }, function (result) {
         document.getElementById('tooltipLocation').innerHTML = result.display_name;
       });
-
     }
-
   }
 
 
@@ -952,9 +908,9 @@ function pad(value) {
     }
 }
 
-function openTooltipTrackingPoint(vehicleLicense, trackingId) {
+function openTooltipTrackingPoint(deviceId, trackingId) {
 
-    var urlJson = "/api/tracking?vehicleLicense="+vehicleLicense+"&trackingId="+trackingId;
+    var urlJson = "/api/tracking?id="+trackingId;
     //alert(urlJson);
       $.getJSON( urlJson, function( data ) {
       $.each( data, function( key, val ) {
@@ -1051,14 +1007,15 @@ function getVehicleIcon(vehicleLicense, vehicleState, posDate)
       }
     }
 
+    /*
     function centerMap2Vehicle(vehicleLicense) {
       map.getView().setCenter(ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'));
       map.getView().setZoom(14);
-    }
+    }*/
 
-    function moveMap2Vehicle(vehicleLicense) {
+    function moveMap2Vehicle(deviceId) {
         var new_view = new ol.View({
-          center: ol.proj.transform([longitudeDict[vehicleLicense], latitudeDict[vehicleLicense]], 'EPSG:4326', 'EPSG:3857'),
+          center: ol.proj.transform([longitudeDict[deviceId], latitudeDict[deviceId]], 'EPSG:4326', 'EPSG:3857'),
           zoom: map.getView().getZoom(),
           maxZoom:22,
           minZoom:3
@@ -1068,10 +1025,6 @@ function getVehicleIcon(vehicleLicense, vehicleState, posDate)
           duration: 3000,
           source:  (map.getView().getCenter()),
         });
-
-        //pan = ol.animation.pan({duration: 500, source: map.getView().getCenter()})
-        //zoom = ol.animation.zoom({duration: 500, resolution: map.getView().getResolution()})
-        //map.beforeRender(pan, zoom)
 
         map.beforeRender(pan);
         map.setView(new_view);
@@ -1132,7 +1085,7 @@ function loadVehiclesDataSync() {
         iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
         iconCoverDict[val.vehicle_license] = val.icon_cover;
         iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicle_license] = val.alias;
+        aliasDict[val.deviceId] = val.alias;
         deviceIdDict[val.vehicle_license] = val.device_id;
       });
     }
@@ -1146,7 +1099,7 @@ function loadVehiclesData() {
       iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
       iconCoverDict[val.vehicle_license] = val.icon_cover;
       iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-      aliasDict[val.vehicle_license] = val.alias;
+      aliasDict[val.deviceId] = val.alias;
       deviceIdDict[val.vehicle_license] = val.device_id;
       // Leer el icono de todos
       /*$.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
@@ -1168,7 +1121,7 @@ function loadVehiclesDataWithIconSync() {
         iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
         iconCoverDict[val.vehicle_license] = val.icon_cover;
         iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-        aliasDict[val.vehicle_license] = val.alias;
+        aliasDict[val.deviceId] = val.alias;
         deviceIdDict[val.vehicle_license] = val.device_id;
 
         // Leer el icono del vehiculo en base64 modo sincrono
@@ -1194,7 +1147,7 @@ function loadVehiclesDataWithIcon() {
       iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
       iconCoverDict[val.vehicle_license] = val.icon_cover;
       iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-      aliasDict[val.vehicle_license] = val.alias;
+      aliasDict[val.deviceId] = val.alias;
       deviceIdDict[val.vehicle_license] = val.device_id;
       // Leer el icono de todos
       $.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
@@ -1218,8 +1171,6 @@ function deleteIcon() {
 }
 
 function selectMonitor() {
-  //alert("aa");
-  //$('#treeview-checkable').treeview('checkNode', 655);
   $('#treeview-checkable').treeview('checkNode', [ 655, { silent: true } ]);
 }
 
@@ -1229,30 +1180,6 @@ function drawNavigationPosition() {
     addActualPosition(location.coords.latitude,location.coords.longitude,location.coords.accuracy);
   });
 }
-
-/*function initDefaultVehicleData() {
-
- $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
-   $.each( data, function( key, val ) {
-
-     processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
-
-     // comprobar eventos
-     if (val.events.length>0) {
-      for (var i=0; i<val.events.length; i++) {
-        addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
-      }
-     }
-
-     centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-
-     document.getElementById('attr-loading').style.display = 'none';
-
-    });
- });
-}*/
-
-
 
 function reloadSelectedVehiclesData() {
 
@@ -1265,24 +1192,24 @@ function reloadSelectedVehiclesData() {
     }
 }
 
-function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {
+function processDevice(trackingId,deviceId,vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState,  posDate, deviceId) {
   if (vehicleState==undefined)
     vehicleState = 0;
 
-  latitudeDict[vehicleLicense] = lat;
-  longitudeDict[vehicleLicense] = lon;
+  latitudeDict[deviceId] = lat;
+  longitudeDict[deviceId] = lon;
   if (geocoding!=null && geocoding!=undefined)
-    geocodingDict[vehicleLicense] = geocoding;
+    geocodingDict[deviceId] = geocoding;
   else
-    geocodingDict[vehicleLicense] = "";
+    geocodingDict[deviceId] = "";
 
-  speedDict[vehicleLicense] = speed;
-  headingDict[vehicleLicense] = heading;
+  speedDict[deviceId] = speed;
+  headingDict[deviceId] = heading;
 
 
-  if ( (dateDict[vehicleLicense]==null) || (dateDict[vehicleLicense]<posDate) )
+  if ( (dateDict[deviceId]==null) || (dateDict[deviceId]<posDate) )
   {
-    if ( dateDict[vehicleLicense]!=null) {
+    if ( dateDict[deviceId]!=null) {
       //grafico
       addSpeedToChart(posDate, speed);
     }
@@ -1299,26 +1226,23 @@ function processDevice(trackingId, vehicleLicense,alias,lon,lat,geocoding,speed,
     addLineTracking(vehicleLicense, posDate, defaultVehicleLastTrackingId, defaultVehicleLastLat,defaultVehicleLastLon, trackingId, lat, lon);
 
     // añadir el icono
-    add (vehicleLicense,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
+    add (vehicleLicense,deviceId,alias,lon,lat,speed,heading,vehicleState, deviceId, posDate);
 
     defaultVehicleLastLat = lat;
     defaultVehicleLastLon = lon;
     defaultVehicleLastTrackingId = trackingId;
 
-    updateTooltipData(vehicleLicense);
-
-
-
+    updateTooltipData(deviceId);
   }
-  dateDict[vehicleLicense] = posDate;
+  dateDict[deviceId] = posDate;
 }
 
-function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
+function add(vehicleLicense, deviceId, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
   var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
   var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: vehicleLicense,
+        id: deviceId,
         elementId: 'device',
         name: alias
   });
@@ -1343,7 +1267,7 @@ function add(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, devi
 function addVehicleToMap(vehicleLicense) {
   $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
     $.each( data, function( key, val ) {
-        processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+        processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
       });
   });
 }
@@ -1360,7 +1284,7 @@ function addVehicleFindToMap(vehicleLicense) {
         }
         else {
       $.each( data, function( key, val ) {
-          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
           // circulo animado?
           /*
@@ -1380,23 +1304,23 @@ function addVehicleFindToMap(vehicleLicense) {
   //}
 }
 
-function processDeviceSelected(trackingId,vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {
+function processDeviceSelected(trackingId,deviceId,vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {
   if (vehicleState==undefined)
     vehicleState = 0;
 
-  trackingIdDict[vehicleLicense]=trackingId;
+  trackingIdDict[deviceId]=trackingId;
   deviceIdDict[vehicleLicense]=deviceId;
-  vehicleLicenseDict[vehicleLicense] = vehicleLicense;
-  dateDict[vehicleLicense] = posDate;
-  aliasDict[vehicleLicense] = alias;
-  latitudeDict[vehicleLicense] = lat;
-  longitudeDict[vehicleLicense] = lon;
+  vehicleLicenseDict[deviceId] = vehicleLicense;
+  dateDict[deviceId] = posDate;
+  aliasDict[deviceId] = alias;
+  latitudeDict[deviceId] = lat;
+  longitudeDict[deviceId] = lon;
   if (geocoding!=null && geocoding!=undefined)
-    geocodingDict[vehicleLicense] = geocoding;
+    geocodingDict[deviceId] = geocoding;
   else
-    geocodingDict[vehicleLicense] = "";
-  speedDict[vehicleLicense] = speed;
-  headingDict[vehicleLicense] = heading;
+    geocodingDict[deviceId] = "";
+  speedDict[deviceId] = speed;
+  headingDict[deviceId] = heading;
 
    // añadir el icono
   addSelected (vehicleLicense,alias,lon,lat,speed,heading,vehicleState,deviceId,posDate);

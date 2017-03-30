@@ -28,7 +28,7 @@ module.exports = function(app) {
 				    // consultar vehiculo por defecto
 				    AM.loadDefaultVehicle(req.cookies.user , function(data){
 						if (data != null){
-				    		req.session.user.vehicleLicense = data;
+				    		req.session.user.device_id = data;
 				    		res.redirect('/map');
 				   		} else {
 				   			res.render('login.ejs', { msg: '', msg_color: 'black'});
@@ -74,7 +74,7 @@ module.exports = function(app) {
 				// consultar vehiculo por defecto
 				AM.loadDefaultVehicle(req.body['user'] , function(data){
 					if (data != null){
-				    	req.session.user.vehicleLicense = data;
+				    	req.session.user.deviceId = data;
 				    	req.session.user_type = o['user_type'];
 				    	res.redirect('/map');
 				   	} else {
@@ -98,7 +98,7 @@ module.exports = function(app) {
 		else{
         	res.render('globe.ejs', {
             	user : req.session.user.username,
-            	vehicleLicense : req.session.user.vehicleLicense
+            	deviceId : req.session.user.deviceId
 			});            
 		}
 	});
@@ -112,7 +112,7 @@ module.exports = function(app) {
             res.render('map.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense,
+                deviceId : req.session.user.deviceId,
                 user_type : req.session.user.user_type
 			});
             
@@ -121,14 +121,13 @@ module.exports = function(app) {
 
 	app.get('/map-mobile', function(req, res) {
 		if (req.session.user == null){
-	// if user is not logged-in redirect back to login page //
+			// if user is not logged-in redirect back to login page //
 			res.redirect('/mobile');
 		}	else{
-            //res.sendFile(__dirname+'/web/map.html');
             res.render('map.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense,
+                deviceId : req.session.user.deviceId,
                 user_type : req.session.user.user_type
 			});
             
@@ -143,7 +142,7 @@ module.exports = function(app) {
             res.render('gmap.ejs', {
             	msg : '',
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense,
+                deviceId : req.session.user.deviceId,
                 user_type : req.session.user.user_type                
 			});            
 		}
@@ -151,12 +150,12 @@ module.exports = function(app) {
 
     app.get('/graphs', function(req, res) {
 		if (req.session.user == null){
-		// if user is not logged-in redirect back to login page //
+			// if user is not logged-in redirect back to login page //
 			res.redirect('/');
 		}	else{
             res.render('graphs.ejs', {
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense
+                deviceId : req.session.user.deviceId
 			});
             
 		}
@@ -164,12 +163,12 @@ module.exports = function(app) {
 
     app.post('/graphs-hist', function(req, res) {
 		if (req.session.user == null){
-		// if user is not logged-in redirect back to login page //
+			// if user is not logged-in redirect back to login page //
 			res.redirect('/');
 		}	else{
             res.render('graphs-hist.ejs', {
                 user : req.session.user.username,
-                vehicleLicense : req.session.user.vehicleLicense,
+                deviceId : req.session.user.deviceId,
                 initDate : req.body['initDate'],
                 endDate : req.body['endDate']
 			});
@@ -181,29 +180,26 @@ module.exports = function(app) {
 		if (req.session.user == null){
 			res.redirect('/');
 		}	else{
-			//console.log(colors.red('--> %s'), req.body['vehicleLicense']);
 			AM.updateUserDevice({
 				username : req.session.user.username,
-				vehicleLicense : req.body['vehicleLicense']
+				deviceId : req.body['deviceId']
 			}, function(e, o){
 				if (e!='ok'){
-					//res.status(400).send('error-updating-device');
 					res.render('map.ejs', {
 						msg: res.__('select_vehicle_error'),
 						msg_color: 'red',
 						user : req.session.user.username,
-						vehicleLicense : req.session.user.vehicleLicense,
+						deviceId : req.session.user.deviceId,
 						user_type : req.session.user.user_type
-                		//vehicleLicense : req.body['vehicleLicense']
 					});
 
 				}	else{
-					req.session.user.vehicleLicense = req.body['vehicleLicense']; 
+					req.session.user.deviceId = req.body['deviceId']; 
 					res.render('map.ejs', {
 						msg: res.__('device_selected'),
 
                 		user : req.session.user.username,
-                		vehicleLicense : req.body['vehicleLicense'],
+                		deviceId : req.body['deviceId'],
                 		user_type : req.session.user.user_type
 					});					
 				}
@@ -212,10 +208,7 @@ module.exports = function(app) {
 	});
 
 	app.get('/home', function(req, res) {
-		//console.log ("-->" + req.session.user.username);
 		if (req.session.user == null){
-			// if user is not logged-in redirect back to login page //
-			//res.redirect('/');
 			res.render('login.ejs', { msg: '', msg_color: 'black'});
 		}	else{
 			res.render('home.ejs', {
@@ -233,7 +226,6 @@ module.exports = function(app) {
     
 	app.post('/home', function(req, res){
 		if (req.session.user == null){
-			//res.redirect('/');
 			res.render('login.ejs', { msg: '', msg_color: 'black'});
 		}	else{
 			AM.updateAccount({
@@ -246,7 +238,6 @@ module.exports = function(app) {
 				lastname	: req.body['lastname']
 			}, function(e, o){
 				if (e){
-					//res.status(400).send('error-updating-account');
 					res.render('home.ejs', { 
 						msg: res.__('update_error'),
 						msg_color: 'red',

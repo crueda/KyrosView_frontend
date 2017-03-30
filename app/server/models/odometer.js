@@ -10,7 +10,6 @@ var properties = PropertiesReader('./kyrosview.properties');
 var fs = require('fs');
 var log = require('tracer').console({
     transport : function(data) {
-        //console.log(data.output);
         fs.open(properties.get('main.log.file'), 'a', 0666, function(e, id) {
             fs.write(id, data.output+"\n", null, 'utf8', function() {
                 fs.close(id, function() {
@@ -30,19 +29,17 @@ mongoose.createConnection('mongodb://' + dbMongoHost + ':' + dbMongoPort + '/' +
     }
 });
 
-// Crear un objeto para ir almacenando todo lo necesario
 var odometerModel = {};
 
-odometerModel.getOdometerData = function(vehicleLicense,callback)
+odometerModel.getOdometerData = function(deviceId,callback)
 {
     mongoose.connection.db.collection('ODOMETER', function (err, collection) {
-        collection.find({'vehicle_license': vehicleLicense}).toArray(function(err, docs) {
+        collection.find({'device_id': parseInt(deviceId)}).toArray(function(err, docs) {
             callback(null, docs);
         });
     });
 
 }
 
-//exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = odometerModel;
 

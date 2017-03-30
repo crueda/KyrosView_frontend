@@ -150,14 +150,14 @@
  function initDefaultVehicleDataSync() {
 
   $.ajax({
-    url: '/api/tracking1/vehicle/<%=vehicleLicense%>',
+    url: '/api/tracking1/device/<%=deviceId%>',
     dataType: 'json',
     async: false,
     success: function(data){
 
      $.each( data, function( key, val ) {
 
-       processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+       processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
      // comprobar eventos
      if (val.events.length>0) {
@@ -176,15 +176,14 @@
 }
 
 function loadDefaultVehicleDataSync() {
-  if ('<%=vehicleLicense%>'=='') {
+  if ('<%=deviceId%>'=='') {
     $('#myModalMsgLabel').text("<%= __('select_vehicle') %>");
     $('#myModalMsgLabel').css({ "color" : 'red' });
     $('#myModalMsgLabel2').text("<%= __('select_vehicle_explanation') %>");
     $('#myModalMsg').modal('show');
   } else {
-    // Leer los datos de los vehiculos en modo sincrono
     $.ajax({
-      url: "/api/vehicle/<%=vehicleLicense%>",
+      url: "/api/device/<%=deviceId%>",
       dataType: 'json',
       async: false,
       success: function(data){
@@ -193,20 +192,9 @@ function loadDefaultVehicleDataSync() {
             iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
             iconCoverDict[val.vehicle_license] = val.icon_cover;
             iconAlarmDict[val.vehicle_license] = val.icon_alarm;
-            aliasDict[val.vehicle_license] = val.alias;
+            aliasDict[val.device_id] = val.alias;
             deviceIdDict[val.vehicle_license] = val.device_id;
           });
-        }
-      });
-
-    // Leer el icono del vehiculo en base64 modo sincrono
-    $.ajax({
-      url: "/api/icon/vehicle/<%=vehicleLicense%>",
-      dataType: 'json',
-      async: false,
-      success: function(data){
-          //almacenar el icono recibido
-          iconBase64Dict['<%=vehicleLicense%>'] = data;
         }
       });
   }
@@ -214,10 +202,10 @@ function loadDefaultVehicleDataSync() {
 
 function reloadVehiclesData() {
   if (mapmode==0) {
-    $.getJSON( '/api/tracking1/vehicle/<%=vehicleLicense%>', function( data ) {
+    $.getJSON( '/api/tracking1/device/<%=deviceId%>', function( data ) {
      $.each( data, function( key, val ) {
 
-       processDevice (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+       processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
        // comprobar eventos
        if (val.events.length>0) {
@@ -226,27 +214,15 @@ function reloadVehiclesData() {
         }
       }
 
-       //centerMap(val.location.coordinates[0],val.location.coordinates[1]);
-       //moveMap(val.location.coordinates[0],val.location.coordinates[1]);
-       moveMap2Vehicle(val.vehicle_license);
+       moveMap2Vehicle(val.device_id);
      });
    });
   } else if (mapmode==2) {
      //clearMapSelected();
 
-
      for (var i=0; i<selectedVehicles.length; i++) {
 
-      $.getJSON( '/api/tracking1/vehicle/'+selectedRecentVehicles[i], function( data ) {
-
-        /*if (data.result.length == 0) {
-          $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
-          $('#myModalMsgLabel').css({ "color" : 'red' });
-          $('#myModalMsgLabel2').text("<%= __('check_search') %>");
-          $('#myModalMsg').modal('show');
-        }
-        else {*/
-
+      $.getJSON( '/api/tracking1/device/'+selectedRecentVehicles[i], function( data ) {
           $.each( data, function( key, val ) {
 
           // añadir la linea
@@ -254,7 +230,7 @@ function reloadVehiclesData() {
             addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);
           }
 
-          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
          // comprobar eventos
          if (val.events.length>0) {
@@ -263,19 +239,14 @@ function reloadVehiclesData() {
           }
         }
       });
-
-        //}
       });
     }
-
-
-
 
   }  else if (mapmode==22) {
      //clearMapSelected();
      for (var i=0; i<selectedRecentVehicles.length; i++) {
 
-      $.getJSON( '/api/tracking1/vehicle/'+selectedRecentVehicles[i], function( data ) {
+      $.getJSON( '/api/tracking1/device/'+selectedRecentVehicles[i], function( data ) {
         if (data.result.length == 0) {
           $('#myModalMsgLabel').text("<%= __('no_tracking') %>");
           $('#myModalMsgLabel').css({ "color" : 'red' });
@@ -291,7 +262,7 @@ function reloadVehiclesData() {
             addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);
           }
 
-          processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
          // comprobar eventos
          if (val.events.length>0) {
@@ -316,15 +287,15 @@ function menuRealtime() {
   //clearMapSelected();
   clearMap();
   mapmode = 0;
-  dateDict['<%=vehicleLicense%>']=0;
+  dateDict['<%=deviceId%>']=0;
   initDefaultVehicleDataSync();
 }
 
-function addVehicleSelectedToMap(vehicleLicense) {
-  if (vehicleLicense!='<%=vehicleLicense%>') {
-    $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+function addVehicleSelectedToMap(deviceId) {
+  if (deviceId!='<%=deviceId%>') {
+    $.getJSON( '/api/tracking1/device/'+deviceId, function( data ) {
       $.each( data, function( key, val ) {
-        processDeviceSelected (val.tracking_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+        processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
       });
     });
   }
@@ -335,7 +306,7 @@ function openDefaultDevice() {
 
     // centrar el mapa
     var new_view = new ol.View({
-      center: ol.proj.transform([longitudeDict['<%=vehicleLicense%>'], latitudeDict['<%=vehicleLicense%>']], 'EPSG:4326', 'EPSG:3857'),
+      center: ol.proj.transform([longitudeDict['<%=deviceId%>'], latitudeDict['<%=deviceId%>']], 'EPSG:4326', 'EPSG:3857'),
       zoom: 12,
       maxZoom:22,
       minZoom:3
@@ -348,26 +319,26 @@ function openDefaultDevice() {
     map.beforeRender(pan);
     map.setView(new_view);
 
-    openTooltip('<%=vehicleLicense%>');
+    openTooltip('<%=deviceId%>');
   }
 
 
-  function openTooltip(vehicleLicense) {
-    tooltipSelectedVehicleLicense = vehicleLicense;
-    $("#uploadFormIcon").attr("action", "/api/icon/upload/" + vehicleLicense);
-    $("#uploadFormPhoto").attr("action", "/api/image/upload/" + vehicleLicense);
+  function openTooltip(deviceId) {
+    tooltipSelectedDeviceId = deviceId;
+    $("#uploadFormIcon").attr("action", "/api/icon/upload/" +  vehicleLicenseDict[deviceId]);
+    $("#uploadFormPhoto").attr("action", "/api/image/upload/" +  vehicleLicenseDict[deviceId]);
 
-    if (iconBase64Dict[vehicleLicense]!=null && iconBase64Dict[vehicleLicense]!='') {
-      document.getElementById('tooltipIcon').innerHTML = "<img src='data:image/png;base64," + iconBase64Dict[vehicleLicense] + "'/>";
+    if (iconBase64Dict[vehicleLicenseDict[deviceId]]!=null && iconBase64Dict[vehicleLicenseDict[deviceId]]!='') {
+      document.getElementById('tooltipIcon').innerHTML = "<img src='data:image/png;base64," + iconBase64Dict[vehicleLicenseDict[deviceId]] + "'/>";
     } else {
-      document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicense] + "'/>";
+      document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicenseDict[deviceId]] + "'/>";
     }
-    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicense;
+    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
 
-    document.getElementById('formVehicleLicense').value = vehicleLicense;
+    document.getElementById('formVehicleLicense').value = vehicleLicenseDict[deviceId];
 
 
-    var date = new Date(dateDict[vehicleLicense]);
+    var date = new Date(dateDict[deviceId]);
     var year = date.getFullYear();
     var month = pad(date.getMonth() + 1);
     var day = pad(date.getDate());
@@ -377,12 +348,12 @@ function openDefaultDevice() {
 
     document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
-    document.getElementById('tooltipAlias').innerHTML = aliasDict[vehicleLicense];
-    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[vehicleLicense].toFixed(4);
-    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[vehicleLicense].toFixed(4);
-    document.getElementById('tooltipLocation').innerHTML = geocodingDict[vehicleLicense];
-    document.getElementById('tooltipSpeed').innerHTML = speedDict[vehicleLicense].toFixed(1);
-    document.getElementById('tooltipHeading').innerHTML = headingDict[vehicleLicense].toFixed(1);
+    document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
+    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId].toFixed(4);
+    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId].toFixed(4);
+    document.getElementById('tooltipLocation').innerHTML = geocodingDict[deviceId];
+    document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId].toFixed(1);
+    document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId].toFixed(1);
 
     document.getElementById('tooltipDaySpeed').innerHTML = '---';
     document.getElementById('tooltipWeekSpeed').innerHTML = '---';
@@ -397,11 +368,11 @@ function openDefaultDevice() {
     document.getElementById('tooltipTotalSpeed').innerHTML = '---';
     document.getElementById('tooltipTotalConsume').innerHTML = '---';
 
-    if (geocodingDict[vehicleLicense]=='' || geocodingDict[vehicleLicense]==undefined) {
+    if (geocodingDict[deviceId]=='' || geocodingDict[deviceId]==undefined) {
 
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
-        lat: latitudeDict[vehicleLicense],
-        lon: longitudeDict[vehicleLicense],
+        lat: latitudeDict[deviceId],
+        lon: longitudeDict[deviceId],
         format: 'json',
       }, function (result) {
         document.getElementById('tooltipLocation').innerHTML = result.display_name;
@@ -409,7 +380,7 @@ function openDefaultDevice() {
 
     }
 
-    $.getJSON( '/api/odometer/'+vehicleLicense, function( data ) {
+    $.getJSON( '/api/odometer/'+deviceId, function( data ) {
       $.each( data, function( key, val ) {
         try {
           document.getElementById('tooltipDaySpeed').innerHTML = val.daySpeed.toFixed(1).replace(".",",");
@@ -432,7 +403,7 @@ function openDefaultDevice() {
       $('#myModal').modal('show');
     });
 
-    if (vehicleLicense == '<%=vehicleLicense%>') {
+    if (deviceId == '<%=deviceId%>') {
      $('#tooltipHeader').css('background-color', '#F7BE81');
      document.getElementById('selectButton').style.display = 'none';
    } else {
@@ -443,7 +414,7 @@ function openDefaultDevice() {
   }
 
     // Cargar el icono del vehiculo
-    var urlPostIconDevice = "/api/icon/vehicle/"+vehicleLicense;
+    var urlPostIconDevice = "/api/icon/vehicle/"+vehicleLicenseDict[deviceId];
     //alert(urlPostIconDevice);
     $.getJSON( urlPostIconDevice, function( data ) {
       if (data!='')
@@ -454,7 +425,7 @@ function openDefaultDevice() {
     });
 
     // Cargar la foto del vehiculo
-    var urlPostImageDevice = "/api/image/vehicle/"+vehicleLicense;
+    var urlPostImageDevice = "/api/image/vehicle/"+vehicleLicenseDict[deviceId];
     $.getJSON( urlPostImageDevice, function( data ) {
       if (data!='')
         document.getElementById('imageVehicle').setAttribute( 'src', 'data:image/png;base64,'+data);
@@ -528,7 +499,7 @@ function openDefaultDevice() {
  }
 }
 
-function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
+function showTrackingHist(deviceIdHist, finit_epoch, fend_epoch) {
     //clearMapHistoric();
     //clearMapSelected();
 
@@ -553,7 +524,7 @@ function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
     var index = 0;
     var baseurl = "";
 
-    var urlJson = "/api/tracking/vehicle/"+vehicleLicenseHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
+    var urlJson = "/api/tracking/device/"+deviceIdHist+"?initDate="+finit_epoch+"&endDate="+fend_epoch;
     //console.log(urlJson);
     document.getElementById('attr-loading').style.display = 'block';
     $.getJSON( urlJson, function( data ) {
@@ -795,7 +766,7 @@ function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
    features: []
  });
  var vehiclesRealTimeLayer = new ol.layer.Vector({
-   title: '<%=vehicleLicense%>',
+   title: aliasDict['<%=deviceId%>'],
    style: style,
    visible: true,
    source: vehiclesRealTimeSource
@@ -805,7 +776,7 @@ function showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch) {
    features: []
  });
  var vehiclesPointLayer = new ol.layer.Vector({
-   //title: '<%=vehicleLicense%> track',
+   //title: '<%=deviceId%> track',
    title: '',
    style: style,
    visible: true,
@@ -943,92 +914,12 @@ $(document).ready(function() {
   // deshabilitar el boton atras del navegador
   disabledBack();
 
-//alert ('<%=user_type%>');
 
-var pathArray = location.href.split( '/' );
-var protocol = pathArray[0];
-var host = pathArray[2];
-baseurl = protocol + '//' + host;
-//alert (baseurl);
+  var pathArray = location.href.split( '/' );
+  var protocol = pathArray[0];
+  var host = pathArray[2];
+  baseurl = protocol + '//' + host;
 
-//createChart(0,0);
-// var now = new Date();
-// var m = moment(now);
-// alert(m.valueOf());
-
- /*$(window).on('resize', function(){
-     if ($(this).height() <= 800){
-          $('.content').css('max-height', '500px'); //set max height
-     } else{
-          $('.content').css('max-height', '');
-     }
-   }).resize()*/
-
-/*
-this.mychart = Highcharts.chart('containerG', {
-        chart: {
-            type: 'scatter',
-            margin: [70, 50, 60, 80],
-            events: {
-                click: function (e) {
-                    // find the clicked values and the series
-                    var x = e.xAxis[0].value,
-                        y = e.yAxis[0].value,
-                        series = this.series[0];
-
-                    // Add it
-                    series.addPoint([x, y]);
-
-                }
-            }
-        },
-        title: {
-            text: 'Velocidad'
-        },
-        xAxis: {
-            gridLineWidth: 1,
-            minPadding: 0.2,
-            maxPadding: 0.2,
-            maxZoom: 60
-        },
-        yAxis: {
-            title: {
-                text: 'Value'
-            },
-            minPadding: 0.2,
-            maxPadding: 0.2,
-            maxZoom: 60,
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        legend: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        plotOptions: {
-            series: {
-                lineWidth: 1,
-                point: {
-                    events: {
-                        'click': function () {
-                            if (this.series.data.length > 1) {
-                                this.remove();
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        series: [{
-            data: [[1478531569000, 0]]
-        }]
-    });
-    */
 
 
 $('#aboutDiv').height($(window).height()-100);
@@ -1073,13 +964,13 @@ $("#slider_check_pois").click(function() {
 
 $('#tab_logic').on('click', '.clickable-row', function(event) {
   if($(this).hasClass('highlight')){
-    var index = selectedRecentVehicles.indexOf($(this).attr('name'));
+    var index = selectedRecentVehicles.indexOf($(this).attr('id'));
     if (index > -1) {
       selectedRecentVehicles.splice(index, 1);
     }
     $(this).removeClass('highlight');
   } else {
-    selectedRecentVehicles.push($(this).attr('name'));
+    selectedRecentVehicles.push($(this).attr('id'));
     $(this).addClass('highlight');
     //$(this).addClass('highlight').siblings().removeClass('highlight');
   }
@@ -1140,7 +1031,7 @@ $('#datetimepicker2').datetimepicker({
     document.getElementById('formGraphInitDate').value = finit_epoch.valueOf();
     document.getElementById('formGraphEndDate').value = fend_epoch.valueOf();
 
-    showTrackingHist(vehicleLicenseHist, finit_epoch, fend_epoch);
+    showTrackingHist(deviceIdHist, finit_epoch, fend_epoch);
 
     //document.getElementById('attr-graph-hist').style.display = 'block';
   });
@@ -2113,16 +2004,16 @@ function eachRecursive(obj)
         }
 
         function loadMonitor() {
-//function loadMonitorSync() {
-  $.getJSON( "/api/monitor/<%=user%>", function( data ) {
-  /*$.ajax({
-    url: "/api/monitor/<%=user%>",
-    dataType: 'json',
-    async: false,
-    success: function(data){ */
+        //function loadMonitorSync() {
+          $.getJSON( "/api/monitor/<%=user%>", function( data ) {
+          /*$.ajax({
+            url: "/api/monitor/<%=user%>",
+            dataType: 'json',
+            async: false,
+            success: function(data){ */
 
       jsonString = JSON.stringify(data[0].monitor)
-    //jsonString = JSON.stringify(data)
+       //jsonString = JSON.stringify(data)
 
     jsonObject = JSON.parse(jsonString);
     // Recorrer el json para quedarnos con los datos de los vehiculos que monitoriza el usuario
@@ -2131,8 +2022,8 @@ function eachRecursive(obj)
       //initSelectedVehicles();
 
     // Rellenar el control de la ventana de historico
-    $('#licenseHist').val('<%=vehicleLicense%>');
-    $('#licenseFind').val('<%=vehicleLicense%>');
+    $('#licenseHist').val(vehicleLicenseDict['<%=deviceId%>']);
+    $('#licenseFind').val(vehicleLicenseDict['<%=deviceId%>']);
 
 
     var strDevices = '[';
@@ -2283,17 +2174,17 @@ function eachRecursive(obj)
 }
 
 var sourceHeatmap3 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(15),
+  url: '/api/heatmap/<%=deviceId%>?initDate='+getInitDateLastDays(15),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
 var sourceHeatmap2 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7),
+  url: '/api/heatmap/<%=deviceId%>?initDate='+getInitDateLastDays(7),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
 var sourceHeatmap1 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1),
+  url: '/api/heatmap/<%=deviceId%>?initDate='+getInitDateLastDays(1),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
@@ -2319,7 +2210,7 @@ var heatmap1 = new ol.layer.Heatmap({
 
 
 var sourceCluster3 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(15),
+  url: '/api/heatmap/<%=deviceId%>?initDate='+getInitDateLastDays(15),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
@@ -2361,7 +2252,7 @@ var clusters3 = new ol.layer.Vector({
 });
 
 var sourceCluster2 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7),
+  url: '/api/heatmap/<%=deviceId%>?initDate='+getInitDateLastDays(7),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
@@ -2403,7 +2294,7 @@ var clusters2 = new ol.layer.Vector({
 });
 
 var sourceCluster1 = new ol.source.Vector({
-  url: '/api/heatmap/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1),
+  url: '/api/heatmap/<%=deviceId%>?initDate='+getInitDateLastDays(1),
   format: new ol.format.GeoJSON(),
   projection: 'EPSG:3857'
 });
@@ -2458,7 +2349,6 @@ var roads = new ol.layer.Tile({
  type: 'base',
  visible: true,
  source: new ol.source.XYZ({
-   //url: 'http://1.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=es&app_id=XauXjbuily9soJuafQ8d&token=qg4GasqCW0lTKZbyeID3_A'
    url: 'https://1.base.maps.cit.api.here.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?app_id=BHELBWHzWWwnQll4PUVG&app_code=ZlIIWfrVS_clbWI7x1-2Dg'
  })
 });
@@ -2599,7 +2489,7 @@ var displayFeatureInfo = function(pixel) {
           });
           if (feature) {
             if (feature.get('elementId')=='trackingPoint') {
-              openTooltipTrackingPoint(feature.get('vehicleLicense'), feature.get('id'));
+              openTooltipTrackingPoint(feature.get('id'));
             }
             else if (feature.get('elementId')=='eventPoint') {
               info.tooltip('hide');
@@ -2608,10 +2498,10 @@ var displayFeatureInfo = function(pixel) {
             else if (feature.get('elementId')=='device') {
               info.tooltip('hide');
     //if (isMobile()) {
-      openTooltip(feature.get('id'));
+              openTooltip(feature.get('id'));
 
       // Muestro ultimos trackings solo si no es el dispositivo por defecto
-      if (feature.get('id')!='<%=vehicleLicense%>')
+      if (feature.get('id')!='<%=deviceId%>')
         info.tooltip('hide');
       showLastTrackings(feature.get('id'), 7);
     //} else {

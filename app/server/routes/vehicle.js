@@ -24,22 +24,6 @@ var log = require('tracer').console({
   }
 });
 
-/**
- * @api {get} /api/vehicles  Todos los vehiculos
- * @apiName GetVehicles Obtener los datos de todos los vehiculos
- * @apiGroup Vehicle
- * @apiDescription Obtiene los vehículos dados de alta en Kyros
- * @apiVersion 1.0.2
- * @apiSampleRequest http://view.kyroslbs.com/api/vehicles
- *
- * @apiSuccess {json} vehiclesData Datos de los vehículos
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *
- *     }
- */
 router.get('/vehicles/', function(req, res)
 {
     if (req.session.user == null){
@@ -75,22 +59,6 @@ router.get('/vehicles/', function(req, res)
     }
 });
 
-/**
- * @api {get} /api/vehicle  Vehículo
- * @apiName GetVehicle Obtener los datos de un vehiculo
- * @apiGroup Vehicle
- * @apiDescription Obtiene un vehículo dado de alta en Kyros
- * @apiVersion 1.0.2
- * @apiSampleRequest http://view.kyroslbs.com/api/vehicle
- *
- * @apiSuccess {json} vehiclesData Datos de los vehículos
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *
- *     }
- */
 router.get('/vehicle/:vehicleLicense', function(req, res)
 {
     if (req.session.user == null){
@@ -108,7 +76,6 @@ router.get('/vehicle/:vehicleLicense', function(req, res)
           }
           else
           {
-            //si existe enviamos el json
             if (typeof data !== 'undefined' && data.length > 0)
             {
               res.status(200).json(data)
@@ -117,15 +84,46 @@ router.get('/vehicle/:vehicleLicense', function(req, res)
             {
               res.status(200).json([])
             }
-            //en otro caso mostramos un error
             else
             {
               res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
             }
           }
       });
-
     }
 });
 
+router.get('/device/:deviceId', function(req, res)
+{
+    if (req.session.user == null){
+      res.redirect('/');
+    }
+    else {
+      var deviceId = req.params.deviceId;
+      log.info("GET: /device/"+deviceId);
+
+      VehicleModel.getDevice(deviceId,function(error, data)
+      {
+          if (data == null)
+          {
+            res.status(202).json({"response": {"status":status.STATUS_FAILURE,"description":messages.DB_ERROR}})
+          }
+          else
+          {
+            if (typeof data !== 'undefined' && data.length > 0)
+            {
+              res.status(200).json(data)
+            }
+            else if (typeof data == 'undefined' || data.length == 0)
+            {
+              res.status(200).json([])
+            }
+            else
+            {
+              res.status(202).json({"response": {"status":status.STATUS_NOT_FOUND_REGISTER,"description":messages.MISSING_REGISTER}})
+            }
+          }
+      });
+    }
+});
 module.exports = router;

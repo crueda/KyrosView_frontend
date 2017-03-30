@@ -25,17 +25,17 @@ var log = require('tracer').console({
   }
 });
 
-router.get('/heatmap/:vehicleLicense', function(req, res)
+router.get('/heatmap/:deviceId', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var vehicleLicense = req.params.vehicleLicense;
+      var deviceId = req.params.deviceId;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /heatmap/"+ vehicleLicense);
+      log.info("GET: /heatmap/"+ deviceId);
 
       if (endDate==null) {
         endDate = (new Date).getTime()
@@ -45,7 +45,7 @@ router.get('/heatmap/:vehicleLicense', function(req, res)
       } 
       else {
         var requestData = {
-          vehicleLicense: vehicleLicense,
+          deviceId: deviceId,
           initDate : initDate,
           endDate : endDate
         };

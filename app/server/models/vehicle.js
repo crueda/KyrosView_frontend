@@ -50,6 +50,15 @@ vehicleModel.getVehicle = function(vehicleLicense, callback)
   });
 }
 
+vehicleModel.getDevice = function(deviceId, callback)
+{
+    mongoose.connection.db.collection('VEHICLE', function (err, collection) {
+        collection.find({"device_id" : parseInt(deviceId)}).toArray(function(err, docs) {
+            callback(null, docs);
+        });
+  });
+}
+
 vehicleModel.setAsDefault = function(username, vehicleLicense, callback)
 {
     mongoose.connection.db.collection('USER', function (err, collection) {

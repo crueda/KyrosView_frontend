@@ -51,7 +51,7 @@ mailmapModel.getPosition = function(resourceId, deviceId, callback)
                 if (docsVehicle.length==0) {
                     callback(null, {result: "nok", data: "notfound"});                
                 } else{
-                    mongoose.connection.db.collection('TRACKING_' + docsVehicle[0].vehicle_license, function (err, collection) {
+                    mongoose.connection.db.collection('TRACKING', function (err, collection) {
                         collection.find({"tracking_id": parseInt(trackingId)}).toArray(function(err, docsTracking) {
                             if (docsTracking.length==0) {
                                 callback(null, {result: "nok", data: "notfound"});                
