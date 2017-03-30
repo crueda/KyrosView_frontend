@@ -62,7 +62,7 @@ exports.autoLogin = function(user, pass, callback)
     pool.getConnection(function(err, connection) {
         if (connection) {        
             var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, LANGUAGE_USER as lang, DATE_END as dateEnd, BLOCKED as blocked FROM USER_GUI WHERE USERNAME= '" + user + "'";
-            console.log(colors.green('Query: %s'), sql);
+            //console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
               connection.release();
@@ -92,12 +92,12 @@ exports.manualLogin = function(user, pass, callback)
     pool.getConnection(function(err, connection) {
         if (connection) {        
             var sql = "SELECT USERNAME as username, PASSWORD as password, EMAIL as email, FIRSTNAME as firstname, LASTNAME as lastname, LANGUAGE_USER as lang FROM USER_GUI WHERE USERNAME= '" + user + "'";
-            console.log(colors.green('Query: %s'), sql);
+            //console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
               if(error)
               {
-                  console.log(colors.red('Query error: %s'), error);
+                  //console.log(colors.red('Query error: %s'), error);
                   callback(null);
               }
               else
@@ -117,14 +117,14 @@ exports.manualLogin = function(user, pass, callback)
                         connection.release();
                         if(error)
                         {
-                            console.log(colors.red('Query error: %s'), error);
+                            //console.log(colors.red('Query error: %s'), error);
                             callback(null);
                         }
                         else
                         {
                           if (rowsLite[0]!=undefined) {
                             // es usuario PRO
-                            console.log(rows[0]);
+                            //console.log(rows[0]);
                             rows[0]['user_type'] = "PRO";
                           } else {
                             // es usuario LITE
@@ -188,7 +188,7 @@ exports.addNewAccount = function(newData, callback)
     pool.getConnection(function(err, connection) {
         if (connection) {        
             var sqlUser = "SELECT * FROM USER_GUI WHERE USERNAME= '" + newData.user + "'";
-            console.log(colors.green('Query: %s'), sqlUser);
+            //console.log(colors.green('Query: %s'), sqlUser);
             connection.query(sqlUser, function(error, row) {
               if(error) {
                 callback('db-error');
@@ -197,7 +197,7 @@ exports.addNewAccount = function(newData, callback)
                       callback('username-taken');
                   } else {
                       var sqlEmail = "SELECT * FROM USER_GUI WHERE EMAIL= '" + newData.email + "'";
-                      console.log(colors.green('Query: %s'), sqlEmail);
+                      //console.log(colors.green('Query: %s'), sqlEmail);
                       connection.query(sqlEmail, function(error, row2) {
                       if(error) {
                         callback(null);
@@ -211,7 +211,7 @@ exports.addNewAccount = function(newData, callback)
           						      newData.date = moment().format('MMMM Do YYYY, h:mm:ss a');
 						                var cryptPass = crypt(newPass);
 					                  var sqlInsert = "INSERT INTO USER_GUI SET EMAIL= '" + newData.email + "',USERNAME='" + newData.user + "',PASSWORD='" + cryptPass + "' ,CREATED='" + newData.date + "'";
-                               console.log(colors.green('Query: %s'), sqlInsert);
+                               //console.log(colors.green('Query: %s'), sqlInsert);
                                connection.query(sqlInsert, function(error, result) {
                                 connection.release();
                                 if(error) {
@@ -239,13 +239,13 @@ exports.updateAccount = function(newData, callback)
         if (connection) {     
             var cryptPass = crypt(newData.pass, newData.passOld);   
             var sql = "UPDATE USER_GUI set UUID='0', FIRSTNAME='" + newData.firstname + "',LASTNAME='" + newData.lastname + "' ,PASSWORD='" + cryptPass + "',EMAIL='" + newData.email + "' WHERE USERNAME= '" + newData.user + "'";
-            console.log(colors.green('Query: %s'), sql);
+            //console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, result)
             {
               connection.release();
               if(error)
               {
-                  console.log(colors.red('Query error: %s'), error);
+                  //console.log(colors.red('Query error: %s'), error);
                   callback('db-error');
               }
               else
@@ -262,9 +262,9 @@ exports.updateAccount = function(newData, callback)
 exports.updateUserDevice = function(newData, callback)
 {
   mongoose.connection.db.collection('USER', function (err, collection) { 
-      collection.update({ username: newData.username }, { $set: { device_id: newData.device_id }}, function (err, doc) {
+      collection.update({ username: newData.username }, { $set: { device_id: parseInt(newData.deviceId) }}, function (err, doc) {
         if(err) {
-            console.log(colors.red('updateUserDevice error: %s'), err);
+            //console.log(colors.red('updateUserDevice error: %s'), err);
             callback('error');
         }
         else {
@@ -280,13 +280,11 @@ exports.generateUserUUID = function(user, callback)
         if (connection) {    
             user.uuid = uuid.v1();    
             var sql = "UPDATE USER_GUI set UUID='" + user.uuid + "' WHERE USERNAME= '" + user.user + "'";   
-            console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, result)
             {
               connection.release();
               if(error)
               {
-                  console.log(colors.red('Query error: %s'), error);
                   callback(null);
               }
               else
@@ -305,7 +303,6 @@ exports.updatePassword = function(user, newPass, callback)
      pool.getConnection(function(err, connection) {
         if (connection) {        
             var sql = "SELECT USERNAME as user, PASSWORD as pass FROM USER_GUI WHERE USERNAME= '" + user + "'";
-            console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
               if(error || rows[0]==undefined)
@@ -317,7 +314,6 @@ exports.updatePassword = function(user, newPass, callback)
                   // actualizar la password
                     var cryptPass = crypt(newPass, rows[0].pass);
                     var sqlUpdate = "UPDATE USER_GUI set UUID='0', PASSWORD='" + cryptPass + "' WHERE USERNAME= '" + user + "'";
-                    console.log(colors.green('Query: %s'), sqlUpdate);
                     connection.query(sqlUpdate, function(error, result)
                     {
                         connection.release();
@@ -347,7 +343,6 @@ exports.getAccountByEmail = function(email, callback)
      pool.getConnection(function(err, connection) {
         if (connection) {        
             var sql = "SELECT USERNAME as user, PASSWORD as pass, EMAIL as email FROM USER_GUI WHERE EMAIL= '" + email + "'";
-            console.log ("Query mail: "+sql);
             connection.query(sql, function(error, rows)
             {
               connection.release();
@@ -371,7 +366,6 @@ exports.getAccountByUsername = function(username, callback)
      pool.getConnection(function(err, connection) {
         if (connection) {        
             var sql = "SELECT USERNAME as user, FIRSTNAME as name, PASSWORD as pass, EMAIL as email FROM USER_GUI WHERE USERNAME= '" + username + "'";
-            console.log ("Query mail: "+sql);
             connection.query(sql, function(error, rows)
             {
               connection.release();
@@ -395,13 +389,11 @@ exports.validateResetLink = function(user, uuid, callback)
     pool.getConnection(function(err, connection) {
         if (connection) {        
             var sql = "SELECT * FROM USER_GUI WHERE USERNAME= '" + user + "' and UUID='" + uuid + "'" ;
-            console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, rows)
             {
               connection.release();
               if(error || rows[0]==undefined)
               {
-                  console.log(colors.red('Query error: %s'), error);
                   callback(null);
               }
               else

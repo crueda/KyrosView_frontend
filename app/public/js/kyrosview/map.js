@@ -1279,8 +1279,8 @@ function addVehicleToMap(vehicleLicense) {
 
 
 function addVehicleFindToMap(vehicleLicense) {
-  //if (vehicleLicense!='<%=vehicleLicense%>') {
-    $.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+    //$.getJSON( '/api/tracking1/vehicle/'+vehicleLicense, function( data ) {
+    $.getJSON( '/api/tracking1/device/'+deviceIdDict[vehicleLicense], function( data ) {
       if (data == undefined || data.length == 0) {
           $('#myModalMsgLabel').text("No existen puntos de tracking");
           $('#myModalMsgLabel').css({ "color" : 'red' });
@@ -1306,7 +1306,6 @@ function addVehicleFindToMap(vehicleLicense) {
       });
     }
     });
-  //}
 }
 
 function processDeviceSelected(trackingId,deviceId,vehicleLicense,alias,lon,lat,geocoding,speed,heading,vehicleState, posDate, deviceId) {
@@ -1328,15 +1327,15 @@ function processDeviceSelected(trackingId,deviceId,vehicleLicense,alias,lon,lat,
   headingDict[deviceId] = heading;
 
    // añadir el icono
-  addSelected (vehicleLicense,alias,lon,lat,speed,heading,vehicleState,deviceId,posDate);
+  addSelected (vehicleLicense,deviceId,alias,lon,lat,speed,heading,vehicleState,deviceId,posDate);
 }
 
-function addSelected(vehicleLicense, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
+function addSelected(vehicleLicense, deviceId, alias, lon, lat, speed, heading, vehicleState, deviceId, posDate) {
     var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
     var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: vehicleLicense,
+        id: deviceId,
         elementId: 'device',
         name: alias
     });

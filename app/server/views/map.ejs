@@ -335,7 +335,8 @@ function openDefaultDevice() {
       document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicenseDict[deviceId]] + "'/>";
     }
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
-    document.getElementById('formVehicleLicense').value = vehicleLicenseDict[deviceId];
+
+    document.getElementById('formDeviceId').value = deviceId;
 
 
     var date = new Date(dateDict[deviceId]);
@@ -1139,7 +1140,7 @@ $('#datetimepicker2').datetimepicker({
  </form>
 
  <form id="myform" action="/map" method="POST">
-   <input type="hidden" id="formVehicleLicense" name="vehicleLicense" value="" />
+   <input type="hidden" id="formDeviceId" name="deviceId" value="" />
  </form>
 
  <form id="myformGraphHist" action="/graphs-hist" method="POST">

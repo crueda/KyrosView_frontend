@@ -26,12 +26,6 @@ var api_login = require('./app/server/routes/login');
 var api_push = require('./app/server/routes/push');
 var api_icon = require('./app/server/routes/icon');
 
-var api_app_notification = require('./app/server/routes/app_notification');
-var api_app_tracking = require('./app/server/routes/app_tracking');
-var api_app_user = require('./app/server/routes/app_user');
-var api_app_vehicle = require('./app/server/routes/app_vehicle');
-var api_app_monitor = require('./app/server/routes/app_monitor');
-var api_app_graph = require('./app/server/routes/app_graph');
 
 var i18n = require("i18n");
 
@@ -99,9 +93,6 @@ var dbMongoPort = properties.get('bbdd.mongo.port');
         maxAge: 1000 * 60 * 60 * 24 // 1 day
       },
       store: store,
-      // Boilerplate options, see:
-      // * https://www.npmjs.com/package/express-session#resave
-      // * https://www.npmjs.com/package/express-session#saveuninitialized
       resave: true,
       saveUninitialized: true
     }));
@@ -143,12 +134,6 @@ app.use('/api', api_mailmap);
 // AUTENTICACION TOKEN
 //app.all('/*', [require('./app/server/middlewares/validateRequest')]);
 //app.all('/api/app/*', [require('./app/server/middlewares/validateRequest')]);
-app.use('/api', api_app_notification);
-app.use('/api', api_app_user);
-app.use('/api', api_app_tracking);
-app.use('/api', api_app_vehicle);
-app.use('/api', api_app_monitor);
-app.use('/api', api_app_graph);
 
 
 require('./app/server/routes/routes')(app);

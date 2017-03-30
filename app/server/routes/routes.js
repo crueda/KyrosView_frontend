@@ -368,7 +368,6 @@ module.exports = function(app) {
 	app.post('/reset-password', function(req, res) {
 		var user = req.body['user'];
 		var nPass = req.body['pass'];
-		//console.log("-->user:" + user);
 		req.session.destroy();
 		AM.updatePassword(user, nPass, function(e, o){
 			if (o){
