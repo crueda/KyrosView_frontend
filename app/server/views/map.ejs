@@ -44,7 +44,7 @@
   <% } %>
   <script type="text/javascript" src="js/kyrosview/constants.js"> </script>
 
-  <script type="text/javascript" src="js/kyrosview/map.js"> </script>
+  <script type="text/javascript" src="js/kyrosview/map-util.js"> </script>
   <!--script type="text/javascript" src="js/kyrosview_all.min.js"> </script-->
 
   <script src="/js/external/highcharts.js"></script>
@@ -243,7 +243,7 @@ function reloadVehiclesData() {
       });
     }
 
-  }  else if (mapmode==22) {
+  }  else if (mapmode==22) {   // BUSCAR DESDE LISTA DE POSICIONES RECIENTES
      //clearMapSelected();
      for (var i=0; i<selectedRecentVehicles.length; i++) {
 
@@ -584,7 +584,7 @@ function showTrackingHist(deviceIdHist, finit_epoch, fend_epoch) {
           posDateHist.push(posDate);
           groupEvent = [];
             // comprobar eventos
-            if (val.events.length>0) {
+            if (val.events!=undefined && val.events.length>0) {
               for (var i=0; i<val.events.length; i++) {
                 if (val.events.length==1) {
                   eventTrackingIdHist.push(trackingId);
@@ -965,13 +965,13 @@ $("#slider_check_pois").click(function() {
 
 $('#tab_logic').on('click', '.clickable-row', function(event) {
   if($(this).hasClass('highlight')){
-    var index = selectedRecentVehicles.indexOf($(this).attr('id'));
+    var index = selectedRecentVehicles.indexOf($(this).attr('deviceId'));
     if (index > -1) {
       selectedRecentVehicles.splice(index, 1);
     }
     $(this).removeClass('highlight');
   } else {
-    selectedRecentVehicles.push($(this).attr('id'));
+    selectedRecentVehicles.push($(this).attr('deviceId'));
     $(this).addClass('highlight');
     //$(this).addClass('highlight').siblings().removeClass('highlight');
   }
