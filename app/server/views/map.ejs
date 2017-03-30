@@ -192,6 +192,7 @@ function loadDefaultVehicleDataSync() {
             iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
             iconCoverDict[val.vehicle_license] = val.icon_cover;
             iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+            vehicleLicenseDict[val.device_id] = val.vehicle_license;
             aliasDict[val.device_id] = val.alias;
             deviceIdDict[val.vehicle_license] = val.device_id;
           });
@@ -334,7 +335,6 @@ function openDefaultDevice() {
       document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicenseDict[deviceId]] + "'/>";
     }
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
-
     document.getElementById('formVehicleLicense').value = vehicleLicenseDict[deviceId];
 
 

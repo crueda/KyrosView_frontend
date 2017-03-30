@@ -881,6 +881,7 @@ function updateTooltipData(deviceId) {
     var seconds = pad(date.getSeconds());
     document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
+    document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
     document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
     document.getElementById('tooltipLatitude').innerHTML = (latitudeDict[deviceId]).toFixed(4);
     document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId].toFixed(4);
@@ -1085,6 +1086,7 @@ function loadVehiclesDataSync() {
         iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
         iconCoverDict[val.vehicle_license] = val.icon_cover;
         iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+        vehicleLicenseDict[val.deviceId] = val.vehicle_license;
         aliasDict[val.deviceId] = val.alias;
         deviceIdDict[val.vehicle_license] = val.device_id;
       });
@@ -1099,6 +1101,7 @@ function loadVehiclesData() {
       iconRealTimeDict[val.vehicle_license] = val.icon_real_time;
       iconCoverDict[val.vehicle_license] = val.icon_cover;
       iconAlarmDict[val.vehicle_license] = val.icon_alarm;
+      vehicleLicenseDict[val.deviceId] = val.vehicle_license;
       aliasDict[val.deviceId] = val.alias;
       deviceIdDict[val.vehicle_license] = val.device_id;
       // Leer el icono de todos
@@ -1122,6 +1125,7 @@ function loadVehiclesDataWithIconSync() {
         iconCoverDict[val.vehicle_license] = val.icon_cover;
         iconAlarmDict[val.vehicle_license] = val.icon_alarm;
         aliasDict[val.deviceId] = val.alias;
+        vehicleLicenseDict[val.deviceId] = val.vehicle_license;
         deviceIdDict[val.vehicle_license] = val.device_id;
 
         // Leer el icono del vehiculo en base64 modo sincrono
@@ -1148,6 +1152,7 @@ function loadVehiclesDataWithIcon() {
       iconCoverDict[val.vehicle_license] = val.icon_cover;
       iconAlarmDict[val.vehicle_license] = val.icon_alarm;
       aliasDict[val.deviceId] = val.alias;
+      vehicleLicenseDict[val.deviceId] = val.vehicle_license;
       deviceIdDict[val.vehicle_license] = val.device_id;
       // Leer el icono de todos
       $.getJSON( "/api/icon/vehicle/"+val.vehicle_license, function( data ) {
