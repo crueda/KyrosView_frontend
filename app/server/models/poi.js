@@ -34,22 +34,48 @@ var poiModel = {};
 
 poiModel.getPoisFromBox = function(boxData,callback)
 {
-    mongoose.connection.db.collection('POI', function (err, collection) {
-        collection.find( { 'username': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
-            callback(null, docs);
+    // comprobar si es usuario de sistema
+    mongoose.connection.db.collection('USER', function (err, collection) {
+        collection.find({'username': boxData.username}).toArray(function(err, docsUser) {
+            if (docsUser[0].kind_monitor==2) {
+                mongoose.connection.db.collection('POI', function (err, collection) {
+                    collection.find( { 'username': 'system', 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
+                        callback(null, docs);
+                    });
+                });
+            } else {
+                mongoose.connection.db.collection('POI', function (err, collection) {
+                    collection.find( { 'username': boxData.username, 'location' :{ $geoWithin :{ $box : [ [ parseFloat(boxData.ullon) , parseFloat(boxData.ullat) ] ,[ parseFloat(boxData.drlon) , parseFloat(boxData.drlat) ]]}}}).toArray(function(err, docs) {
+                        callback(null, docs);
+                    });
+                });                
+            }
         });
     });
 }
 
 poiModel.getPoisFromRadio = function(username,lat, lon, radio, callback)
 {
-    mongoose.connection.db.collection('POIS', function (err, collection) {
-        collection.find({'username': username, 'location': {$near: { $geometry: { type: "Point" , coordinates: [ parseFloat(lon) , parseFloat(lat) ]}, $maxDistance: parseInt(radio)}}}).toArray(function(err, docs) {
-            callback(null, docs);
+    // comprobar si es usuario de sistema
+    mongoose.connection.db.collection('USER', function (err, collection) {
+        collection.find({'username': username}).toArray(function(err, docsUser) {
+            if (docsUser[0].kind_monitor==2) {
+                mongoose.connection.db.collection('POI', function (err, collection) {
+                    collection.find({'username': 'system', 'location': {$near: { $geometry: { type: "Point" , coordinates: [ parseFloat(lon) , parseFloat(lat) ]}, $maxDistance: parseInt(radio)}}}).toArray(function(err, docs) {
+                        callback(null, docs);
+                    });
+                });
+            } else {
+                mongoose.connection.db.collection('POI', function (err, collection) {
+                    collection.find({'username': username, 'location': {$near: { $geometry: { type: "Point" , coordinates: [ parseFloat(lon) , parseFloat(lat) ]}, $maxDistance: parseInt(radio)}}}).toArray(function(err, docs) {
+                        callback(null, docs);
+                    });
+                });                
+            }
         });
     });
+
 }
 
 //exportamos el objeto para tenerlo disponible en la zona de rutas
 module.exports = poiModel;
-
