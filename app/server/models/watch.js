@@ -45,9 +45,9 @@ watchModel.getPosition = function(uuid, callback)
                 if (docsShare[0].expiration<now) {
                     callback(null, {result: "nok", data: "expired"});                                    
                 } else {
-                    vehicleLicense = docsShare[0].vehicle_license;
-                    mongoose.connection.db.collection('TRACKING_' + vehicleLicense, function (err, collection) {
-                        collection.find().sort({"pos_date": -1}).limit(1).toArray(function(err, docs) {
+                    deviceId = docsShare[0].device_id;
+                    mongoose.connection.db.collection('TRACKING', function (err, collection) {
+                        collection.find().sort({"device_id": parseInt(deviceId), "pos_date": -1}).limit(1).toArray(function(err, docs) {
                             callback(null, {result: "ok", data: {vehicle: docsShare, tracking: docs}});
                         });
                     });                    

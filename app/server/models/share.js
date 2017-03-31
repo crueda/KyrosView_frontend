@@ -48,6 +48,7 @@ shareModel.addSharing = function(requestData, callback)
 
                     var shareCollection = {
                         vehicle_license: requestData.vehicleLicense,
+                        device_id: docsVehicle[0].device_id,
                         email: requestData.email,
                         username: requestData.username,
                         timestamp: timestamp,

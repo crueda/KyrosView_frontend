@@ -36,7 +36,7 @@ var numpositionsModel = {};
 numpositionsModel.getNumpositions = function(requestData,callback)
 {
         mongoose.connection.db.collection('TRACKING', function (err, collection) {
-        collection.find({'device_id': requestData.deviceId, 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
+        collection.find({'device_id': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"dataset": 
@@ -84,7 +84,7 @@ numpositionsModel.getNumpositions = function(requestData,callback)
 numpositionsModel.getNumpositionsGroupByHeading = function(requestData,callback)
 {
         mongoose.connection.db.collection('TRACKING', function (err, collection) {
-        collection.find({'device_id': requestData.deviceId, 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
+        collection.find({'device_id': parseInt(requestData.deviceId), 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"dataset": 
