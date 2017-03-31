@@ -144,7 +144,7 @@
     }
 
     // Grafica 1: actividad
-    var urlJson = '/api/activity/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>';
+    var urlJson = '/api/activity/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>';
     console.log(urlJson);
     $.getJSON(urlJson, function (activity) {
         $.each(activity.datasets, function (i, dataset) {
@@ -236,7 +236,7 @@
 
 
     // Grafica 2. Numero de posiciones
-    $.getJSON('/api/numpositions/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10', function (numpositions) {
+    $.getJSON('/api/numpositions/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>&slots=10', function (numpositions) {
         $('<div class="chart">')
         .appendTo('#container2')
         .highcharts({
@@ -313,7 +313,7 @@
     });
 
     // Grafica 3: Numero de posiciones por heading
-    $.getJSON('/api/numpositionsGroupByHeading/<%=vehicleLicense%>?initDate=<%=initDate%>&endDate=<%=endDate%>', function (numpositions) {
+    $.getJSON('/api/numpositionsGroupByHeading/<%=deviceId%>?initDate=<%=initDate%>&endDate=<%=endDate%>', function (numpositions) {
         $('<div class="chart">')
         .appendTo('#container3')
         .highcharts({

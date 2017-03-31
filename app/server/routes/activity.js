@@ -26,57 +26,18 @@ var log = require('tracer').console({
   }
 });
 
-/**
- * @api {get} /api/activity/:vehicleLicense Actividad de un dispositivo
- * @apiName GetActivity Obtener información de actividad de un determinado dispositivo
- * @apiGroup Activity
- * @apiDescription Últimos datos de actividad de un determinado dispositivo
- * @apiVersion 1.0.1
- * @apiSampleRequest http://view.kyroslbs.com/api/activity/1615-FDW?initDate=1473915536000&endDate=1473915736000
- *
- * @apiParam {String} vehicleLicense Identificador del dispositivo en Kyros
- * @apiParam {Number} initDate Fecha inicial de consulta (epoch)
- * @apiParam {Number} [endDate] Fecha final de consulta (epoch)
- *
- * @apiSuccess {json} activityData Datos de actividad
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *      "datasets": [
- *        {
- *         "type": "line", 
- *         "valueDecimals": 1, 
- *         "data": [0.05556, 0.05556, 0.018520000000000002], 
- *         "name": "Velocidad", "unit": "km/h"
- *        }, 
- *        {
- *         "type": "area", 
- *         "valueDecimals": 0, 
- *         "data": [608.5380249, 608.3743286, 608.6254272], 
- *         "name": "Altitud", "unit": "m"
- *        },
- *        {
- *         "type": "area", 
- *         "valueDecimals": 0, 
- *         "data": [0, 0.007701859186446499, 0.01525227827848508], 
- *         "name": "Distancia", "unit": "m"
- *         }
- *        ],
- *        "xData": [1472725489000, 1472726070000, 1472729044000]
- *     }
- */
-router.get('/activity/:vehicleLicense', function(req, res)
+
+router.get('/activity/:deviceId', function(req, res)
 {
     if (req.session.user == null){
       res.redirect('/');
     } 
     else {
-      var vehicleLicense = req.params.vehicleLicense;
+      var deviceId = req.params.deviceId;
       var initDate = req.query.initDate;
       var endDate = req.query.endDate;
 
-      log.info("GET: /activity/"+vehicleLicense);
+      log.info("GET: /activity/"+deviceId);
 
       if (endDate==null) {
         endDate = (new Date).getTime()
@@ -87,7 +48,7 @@ router.get('/activity/:vehicleLicense', function(req, res)
       } 
       else {
         var requestData = {
-          vehicleLicense : vehicleLicense,
+          deviceId : deviceId,
           initDate : initDate,
           endDate : endDate
         };

@@ -168,7 +168,8 @@ module.exports = function(app) {
 		}	else{
             res.render('graphs-hist.ejs', {
                 user : req.session.user.username,
-                deviceId : req.session.user.deviceId,
+                //deviceId : req.session.user.deviceId,
+                deviceId : req.body['deviceId'],
                 initDate : req.body['initDate'],
                 endDate : req.body['endDate']
 			});
@@ -340,7 +341,7 @@ module.exports = function(app) {
 				});
 
 			}	else{
-				res.render('passwd.ejs', { msg: res.__('user_not_found'), msg_color: 'red', msg2: ''});
+				res.render('passwd.ejs', { msg: res.__('user_not_exist'), msg_color: 'red', msg2: ''});
 			}
 		});
 	});

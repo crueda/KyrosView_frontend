@@ -11,7 +11,7 @@
 	"update_password_error": "Error al actualizar la contraseña",
 	"passwords_not_equals": "Las contraseñas no coinciden",
 	"password_empty": "La contraseña esta vacia",
-	"user_not_found": "El usuario no existe",
+	"user_not_exist": "El usuario no existe",
 	"operation_error": "Error al realizar la operación, intentelo de nuevo",
 	"send_email_error": "Error al enviar el email",
 	"email_sent": "Email enviado a: ",

@@ -36,10 +36,8 @@ var activityModel = {};
 activityModel.getActivity = function(requestData,callback)
 {
 
-        mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
-        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
-        //collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).limit(1000).sort({'pos_date': 1}).toArray(function(err, docs) {
-            log.info(docs);
+        mongoose.connection.db.collection('TRACKING', function (err, collection) {
+        collection.find({'device_id': requestData.deviceId, 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"datasets": 
@@ -79,7 +77,6 @@ activityModel.getActivity = function(requestData,callback)
                 if (jsondocs[item].distance!=null)
                     total_distance = total_distance + jsondocs[item].distance;
             }
-            //console.log(json_graphs);
             callback(null, JSON.stringify(json_graphs));
         });
         });
@@ -89,8 +86,8 @@ activityModel.getActivity = function(requestData,callback)
 activityModel.getActivityWithHR = function(requestData,callback)
 {
 
-        mongoose.connection.db.collection('TRACKING_'+requestData.vehicleLicense, function (err, collection) {
-        collection.find({'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).limit(1000).sort({'pos_date': 1}).toArray(function(err, docs) {
+        mongoose.connection.db.collection('TRACKING', function (err, collection) {
+        collection.find({'device_id': requestData.deviceId, 'pos_date': {$gt: parseInt(requestData.initDate), $lt: parseInt(requestData.endDate)}}).limit(1000).sort({'pos_date': 1}).toArray(function(err, docs) {
             var jsondocs = jsonfy(JSON.stringify(docs)); 
 
             var json_graphs = {"datasets": 

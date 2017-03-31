@@ -422,11 +422,7 @@ router.get('/tracking', function(req, res)
       }
       else {
         log.info("GET: /tracking?trackingId="+trackingId);
-        var requestData = {
-          vehicleLicense : vehicleLicense,
-          trackingId : trackingId
-        };
-        TrackingModel.getTrackingFromId(requestData, function(error, data)
+        TrackingModel.getTrackingFromId(trackingId, function(error, data)
         {
           if (data == null)
           {

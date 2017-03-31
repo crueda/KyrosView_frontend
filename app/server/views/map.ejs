@@ -1027,7 +1027,7 @@ $('#datetimepicker2').datetimepicker({
     var fend_epoch = moment(moment(fend, "DD/MM/YYYY H:m").unix()*1000);
 
     var deviceIdHist = monitorDevices[$('#licenseHist').val()];
-    var vehicleLicenseHist = $('#licenseHist').val();
+    vehicleLicenseHist = $('#licenseHist').val();
 
     document.getElementById('formGraphDeviceId').value = deviceIdHist;
     document.getElementById('formGraphInitDate').value = finit_epoch.valueOf();

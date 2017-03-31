@@ -34,7 +34,6 @@ var eventGeocodingDict = {};
 var eventSpeedDict = {};
 var eventAltitudeDict = {};
 var eventHeadingDict = {};
-var eventGeocodingDict = {};
 var dayHoursDict = {};
 var weekHoursDict = {};
 var monthHoursDict = {};
@@ -59,6 +58,7 @@ var encontradoElementoName = false;
 var encontradoVehiculo = false;
 var eventIndex = 1;
 var realTimePoints = [];
+var vehicleLicenseHist = "";
 
 
 function isMobile(){
@@ -910,9 +910,9 @@ function pad(value) {
     }
 }
 
-function openTooltipTrackingPoint(deviceId, trackingId) {
+function openTooltipTrackingPoint(trackingId) {
 
-    var urlJson = "/api/tracking?id="+trackingId;
+    var urlJson = "/api/tracking?trackingId="+trackingId;
     //alert(urlJson);
       $.getJSON( urlJson, function( data ) {
       $.each( data, function( key, val ) {
@@ -934,8 +934,14 @@ function openTooltipTrackingPoint(deviceId, trackingId) {
         document.getElementById('tooltipTrackingSpeed').innerHTML = '';
       else
         document.getElementById('tooltipTrackingSpeed').innerHTML = val.speed.toFixed(1);
-      document.getElementById('tooltipTrackingAltitude').innerHTML = val.altitude.toFixed(1);
-      document.getElementById('tooltipTrackingHeading').innerHTML = val.heading.toFixed(1);
+      if (val.altitude == undefined)
+        document.getElementById('tooltipTrackingAltitude').innerHTML = '';
+      else
+        document.getElementById('tooltipTrackingAltitude').innerHTML = val.altitude.toFixed(1);
+      if (val.heading == undefined)
+        document.getElementById('tooltipTrackingHeading').innerHTML = '';
+      else
+        document.getElementById('tooltipTrackingHeading').innerHTML = val.heading.toFixed(1);
       $.getJSON('https://nominatim.openstreetmap.org/reverse', {
         lat: val.location.coordinates[1],
         lon: val.location.coordinates[0],
