@@ -1,0 +1,5 @@
+projectKey=org.familysearch:fs-reservations
+serverUrl=http://localhost:9000
+dashboardUrl=http://localhost:9000/dashboard/index/org.familysearch:fs-reservations
+ceTaskId=AVsjfykpF8sTD9hHmS5i
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AVsjfykpF8sTD9hHmS5i

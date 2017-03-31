@@ -134,8 +134,7 @@
     }
 
     // Get the data. 
-    //alert('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1));
-    $.getJSON('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(1), function (activity) {
+    $.getJSON('/api/activity/<%=deviceId%>?initDate='+getInitDateLastDays(1), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
             // Add X values
@@ -220,8 +219,7 @@
         });
     });
     
-    //alert('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7));    
-    $.getJSON('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(7), function (activity) {
+    $.getJSON('/api/activity/<%=deviceId%>?initDate='+getInitDateLastDays(7), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
             // Add X values
@@ -300,7 +298,7 @@
         });
     });
     
-    $.getJSON('/api/activity/<%=vehicleLicense%>?initDate='+getInitDateLastDays(15), function (activity) {
+    $.getJSON('/api/activity/<%=deviceId%>?initDate='+getInitDateLastDays(15), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
             // Add X values
@@ -400,7 +398,7 @@
         var host = pathArray[2];
         baseurl = protocol + '//' + host;
 
-         if ('<%=vehicleLicense%>'=='') {
+         if ('<%=deviceId%>'==0) {
             location.href=baseurl+'/map';
           } 
 
