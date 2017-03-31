@@ -293,13 +293,13 @@ function menuRealtime() {
 }
 
 function addVehicleSelectedToMap(deviceId) {
-  if (deviceId!='<%=deviceId%>') {
+  //if (deviceId!='<%=deviceId%>') {
     $.getJSON( '/api/tracking1/device/'+deviceId, function( data ) {
       $.each( data, function( key, val ) {
         processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
       });
     });
-  }
+  //}
 }
 
 function openDefaultDevice() {
@@ -335,6 +335,7 @@ function openDefaultDevice() {
       document.getElementById('tooltipIcon').innerHTML = "<img src='./images/" + iconDict[vehicleLicenseDict[deviceId]] + "'/>";
     }
     document.getElementById('tooltipVehicleLicense').innerHTML = vehicleLicenseDict[deviceId];
+    tooltipSelectedVehicleLicense = vehicleLicenseDict[deviceId];
 
     document.getElementById('formDeviceId').value = deviceId;
 
@@ -1013,7 +1014,7 @@ $('#datetimepicker2').datetimepicker({
   });
 
   $('#showDevicesMapButton').click(function(){
-    saveSelectedVehicles('<%=user%>');
+    //saveSelectedVehicles('<%=user%>');
     showSelectedVehicles();
   });
 
@@ -2004,7 +2005,8 @@ function eachRecursive(obj)
           }
         }
 
-        function loadMonitor() {
+ function loadMonitor() 
+ {
         //function loadMonitorSync() {
           $.getJSON( "/api/monitor/<%=user%>", function( data ) {
           /*$.ajax({
@@ -2066,56 +2068,12 @@ function eachRecursive(obj)
     jsonString = jsonString.split('"true"').join('true');
     jsonString = jsonString.split("checked").join("selected");
 
-    var tree = [
-    {
-      text: "Parent 1",
-      tags: ['1','3'],
-
-      nodes: [
-      {
-        text: "Child 1",
-        tags: ['1','3'],
-        //tags: [1, 3]
-        nodes: [
-        {
-          text: "Grandchild 1",
-          expanded: false,
-        },
-        {
-          text: "Grandchild 2"
-        }
-        ]
-      },
-      {
-        text: "Child 2"
-      }
-      ]
-    },
-    {
-      text: "Parent 2",
-      tags: ['1','3'],
-    //tags: [1, 3]
-  },
-  {
-    text: "Parent 3",
-    tags: ['1','3'],
-
-    //tags: [1, 3]
-  },
-  {
-    text: "Parent 4"
-  },
-  {
-    text: "Parent 5"
-  }
-  ];
-
+    
     //console.log(jsonString);
     jsonObject = JSON.parse(jsonString);
     $('#monitorDiv').height($(window).height()-200);
     var $checkableTree = $('#treeview-checkable').treeview({
-      data: jsonObject,
-          //data: tree,
+        data: jsonObject,
           showIcon: true,
           showCheckbox: false,
           highlightSelected: true,
@@ -2138,14 +2096,15 @@ function eachRecursive(obj)
               }
             }
             else if (node.type == 1)
-              selectedVehicles.push(node.text);
+              selectedVehicles.push(node.id);
+              //selectedVehicles.push(node.text);
               //$('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
             },
             onNodeUnselected: function (event, node) {
           //onNodeUnchecked: function (event, node) {
             //console.log(node.text + ' was unchecked');
             if (node.type == 1) {
-              var index = selectedVehicles.indexOf(node.text);
+              var index = selectedVehicles.indexOf(node.id);
               if (index > -1) {
                 selectedVehicles.splice(index, 1);
               }

@@ -183,6 +183,7 @@ function showLastTrackings(vehicleLicense, ntrackings) {
     });
 }
 
+/*
 function saveSelectedVehicles(username) {
     var selectedVehiclesStr = "";
     for (var i=0; i<selectedVehicles.length; i++) {
@@ -198,7 +199,7 @@ function saveSelectedVehicles(username) {
     var urlJson = "/api/monitor/checked/" + username + "?vehicleLicenseList="+selectedVehiclesStr;
     $.getJSON( urlJson, function( data ) {
     });
-}
+}*/
 
 function initSelectedVehicles() {
     // añadir el vehiculo por defecto en la capa de seleccion (para que salga en el centrado)
@@ -219,7 +220,7 @@ function showSelectedVehicles() {
       //addEmptyFeatureSelected(defaultVehicleLastLon, defaultVehicleLastLat);
 
       for (var i=0; i<selectedVehicles.length; i++) {
-        loadVehicleIcon(selectedVehicles[i]);
+        loadVehicleIcon(vehicleLicenseDict[selectedVehicles[i]]);
         addVehicleSelectedToMap(selectedVehicles[i]);
       }
     }
