@@ -556,6 +556,8 @@ function showSelectedVehicles() {
   function openHist() {
     $('#myModal').modal('hide');
     $('#licenseHist').val(tooltipSelectedVehicleLicense);
+    vehicleLicenseHist = tooltipSelectedVehicleLicense;
+
     /*
     var date = new Date(dateDict[tooltipSelectedVehicleLicense]);
 

@@ -366,9 +366,9 @@ function openDefaultDevice() {
     document.getElementById('tooltipDayConsume').innerHTML = '---';
     document.getElementById('tooltipWeekConsume').innerHTML = '---';
     document.getElementById('tooltipMonthConsume').innerHTML = '---';
-    document.getElementById('tooltipTotalDistance').innerHTML = '---';
-    document.getElementById('tooltipTotalSpeed').innerHTML = '---';
-    document.getElementById('tooltipTotalConsume').innerHTML = '---';
+    //document.getElementById('tooltipTotalDistance').innerHTML = '---';
+    //document.getElementById('tooltipTotalSpeed').innerHTML = '---';
+    //document.getElementById('tooltipTotalConsume').innerHTML = '---';
 
     if (geocodingDict[deviceId]=='' || geocodingDict[deviceId]==undefined) {
 
@@ -394,9 +394,9 @@ function openDefaultDevice() {
           document.getElementById('tooltipDayConsume').innerHTML = val.dayConsume.toFixed(2).replace(".",",");
           document.getElementById('tooltipWeekConsume').innerHTML = val.weekConsume.toFixed(2).replace(".",",");
           document.getElementById('tooltipMonthConsume').innerHTML = val.monthConsume.toFixed(2).replace(".",",");
-          document.getElementById('tooltipTotalSpeed').innerHTML = val.totalSpeed.toFixed(1).replace(".",",");
-          document.getElementById('tooltipTotalDistance').innerHTML = val.totalDistance.toFixed(3).replace(".",",");
-          document.getElementById('tooltipTotalConsume').innerHTML = val.totalConsume.toFixed(2).replace(".",",");
+          //document.getElementById('tooltipTotalSpeed').innerHTML = val.totalSpeed.toFixed(1).replace(".",",");
+          //document.getElementById('tooltipTotalDistance').innerHTML = val.totalDistance.toFixed(3).replace(".",",");
+          //document.getElementById('tooltipTotalConsume').innerHTML = val.totalConsume.toFixed(2).replace(".",",");
         }catch (err) {
         }
 
@@ -1646,7 +1646,8 @@ $('#datetimepicker2').datetimepicker({
                   </tbody>
                 </table>
                 <br>
-                <div class="table-responsive">
+                
+                <!--div class="table-responsive">
                   <table class="tooltip-details-table" border="0">
                     <tr>
                       <td width="30%"><b><%= __('distance') %>&nbsp;</b></td>
@@ -1661,7 +1662,7 @@ $('#datetimepicker2').datetimepicker({
                       <td><font color="black" id="tooltipTotalConsume">---</font></td>
                     </tr>
                   </table>
-                </div>
+                </div-->
 
               </div>
 
