@@ -238,7 +238,7 @@ exports.updateAccount = function(newData, callback)
     pool.getConnection(function(err, connection) {
         if (connection) {     
             var cryptPass = crypt(newData.pass, newData.passOld);   
-            var sql = "UPDATE USER_GUI set UUID='0', FIRSTNAME='" + newData.firstname + "',LASTNAME='" + newData.lastname + "' ,PASSWORD='" + cryptPass + "',EMAIL='" + newData.email + "' WHERE USERNAME= '" + newData.user + "'";
+            var sql = "UPDATE USER_GUI set FIRSTNAME='" + newData.firstname + "',LASTNAME='" + newData.lastname + "' ,PASSWORD='" + cryptPass + "',EMAIL='" + newData.email + "' WHERE USERNAME= '" + newData.user + "'";
             //console.log(colors.green('Query: %s'), sql);
             connection.query(sql, function(error, result)
             {
@@ -250,7 +250,17 @@ exports.updateAccount = function(newData, callback)
               }
               else
               {
-                  callback(null);
+                  // actualizar en mongo tb                  
+                  mongoose.connection.db.collection('USER', function (err, collection) { 
+                      collection.update({ username: newData.username }, { $set: { firstname: newData.firstname, lastname: newData.lastname, password: cryptPass, email: newData.email }}, function (err, doc) {
+                        if(err) {
+                            callback('db-error');
+                        }
+                        else {
+                          callback(null);
+                        }
+                      });    
+                  });     
               }
             });
         } else {
@@ -313,14 +323,25 @@ exports.updatePassword = function(user, newPass, callback)
               {
                   // actualizar la password
                     var cryptPass = crypt(newPass, rows[0].pass);
-                    var sqlUpdate = "UPDATE USER_GUI set UUID='0', PASSWORD='" + cryptPass + "' WHERE USERNAME= '" + user + "'";
+                    var sqlUpdate = "UPDATE USER_GUI set PASSWORD='" + cryptPass + "' WHERE USERNAME= '" + user + "'";
                     connection.query(sqlUpdate, function(error, result)
                     {
                         connection.release();
                         if(error) {
                             callback(error, null);
                         } else {
-                            callback('ok', 'ok');
+                          // actualizar en mongo tb                  
+                          mongoose.connection.db.collection('USER', function (err, collection) { 
+                              collection.update({ username: user }, { $set: { password: cryptPass }}, function (err, doc) {
+                                if(err) {
+                                    callback(error, null);
+                                }
+                                else {
+                                    callback('ok', 'ok');
+                                }
+                              });    
+                          });     
+
                         }
                     });  // update
               }
