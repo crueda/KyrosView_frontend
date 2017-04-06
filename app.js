@@ -40,6 +40,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.locals.pretty = true;
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/app/server/views');
+
 app.set('view engine', 'jade');
 app.use(cookieParser());
 //app.use(bodyParser.json());

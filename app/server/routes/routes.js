@@ -30,6 +30,7 @@ module.exports = function(app) {
 						if (data != null){
 				    		req.session.user.device_id = data;
 				    		res.redirect('/map');
+				    		//res.redirect('/blur/index.html');
 				   		} else {
 				   			res.render('login.ejs', { msg: '', msg_color: 'black'});
 				   		} 
@@ -105,16 +106,25 @@ module.exports = function(app) {
 
     app.get('/map', function(req, res) {
 		if (req.session.user == null){
-	// if user is not logged-in redirect back to login page //
 			res.redirect('/');
 		}	else{
-            //res.sendFile(__dirname+'/web/map.html');
-            res.render('map.ejs', {
-            	msg : '',
-                user : req.session.user.username,
-                deviceId : req.session.user.deviceId,
-                user_type : req.session.user.user_type
-			});
+            //console.log(req.session.user.lastname);
+			if (req.session.user.lastname=='blur') {
+        		res.render('blur.ejs', {
+	            	msg : '',
+	                user : req.session.user.username,
+	                deviceId : req.session.user.deviceId,
+	                user_type : req.session.user.user_type
+				});			
+			} else {
+	            res.render('map.ejs', {
+	            	msg : '',
+	                user : req.session.user.username,
+	                deviceId : req.session.user.deviceId,
+	                user_type : req.session.user.user_type
+				});
+			}
+            
             
 		}
 	});
