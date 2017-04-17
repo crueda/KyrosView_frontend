@@ -110,12 +110,13 @@ module.exports = function(app) {
 		}	else{
             //console.log(req.session.user.lastname);
 			if (req.session.user.lastname=='blur') {
-        		res.render('blur.ejs', {
+        		res.render('index.html');
+        		/*res.render('blur.ejs', {
 	            	msg : '',
 	                user : req.session.user.username,
 	                deviceId : req.session.user.deviceId,
 	                user_type : req.session.user.user_type
-				});			
+				});*/
 			} else {
 	            res.render('map.ejs', {
 	            	msg : '',

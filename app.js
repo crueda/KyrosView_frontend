@@ -42,6 +42,8 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/app/server/views');
 
 app.set('view engine', 'jade');
+app.engine('html', require('ejs').renderFile);
+
 app.use(cookieParser());
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));

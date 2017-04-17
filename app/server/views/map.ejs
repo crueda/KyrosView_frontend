@@ -157,12 +157,12 @@
 
      $.each( data, function( key, val ) {
 
-       processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+       processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.device_id],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
      // comprobar eventos
      if (val.events.length>0) {
       for (var i=0; i<val.events.length; i++) {
-        addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+        addTrackingPointEvent(val.vehicle_license,val.device_id,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
       }
     }
 
@@ -206,12 +206,12 @@ function reloadVehiclesData() {
     $.getJSON( '/api/tracking1/device/<%=deviceId%>', function( data ) {
      $.each( data, function( key, val ) {
 
-       processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+       processDevice (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.device_id],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
        // comprobar eventos
        if (val.events.length>0) {
         for (var i=0; i<val.events.length; i++) {
-          addTrackingPointEvent(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+          addTrackingPointEvent(val.vehicle_license,val.device_id,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
         }
       }
 
@@ -231,12 +231,12 @@ function reloadVehiclesData() {
             addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);
           }
 
-          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.device_id],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
          // comprobar eventos
          if (val.events.length>0) {
           for (var i=0; i<val.events.length; i++) {
-            addTrackingPointEventSelected(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+            addTrackingPointEventSelected(val.vehicle_license,val.device_id,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
           }
         }
       });
@@ -263,12 +263,12 @@ function reloadVehiclesData() {
             addLineTracking(val.vehicle_license, trackingIdDict[val.vehicle_license], latitudeDict[val.vehicle_license],longitudeDict[val.vehicle_license], val.tracking_id, val.location.coordinates[1], val.location.coordinates[0]);
           }
 
-          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+          processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.device_id],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
 
          // comprobar eventos
          if (val.events.length>0) {
           for (var i=0; i<val.events.length; i++) {
-            addTrackingPointEventSelected(val.vehicle_license,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
+            addTrackingPointEventSelected(val.vehicle_license,val.device_id,val.tracking_id,val.events[i].event_type, val.events[i].event_date,val.location.coordinates[1],val.location.coordinates[0]);
           }
         }
       });
@@ -296,7 +296,7 @@ function addVehicleSelectedToMap(deviceId) {
   //if (deviceId!='<%=deviceId%>') {
     $.getJSON( '/api/tracking1/device/'+deviceId, function( data ) {
       $.each( data, function( key, val ) {
-        processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.vehicle_license],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
+        processDeviceSelected (val.tracking_id,val.device_id,val.vehicle_license,aliasDict[val.device_id],val.location.coordinates[0],val.location.coordinates[1],val.geocoding,val.speed,val.heading,val.alarm_activated, val.pos_date, val.device_id);
       });
     });
   //}
@@ -351,11 +351,13 @@ function openDefaultDevice() {
     document.getElementById('tooltipDate').innerHTML = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
 
     document.getElementById('tooltipAlias').innerHTML = aliasDict[deviceId];
-    document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId].toFixed(4);
-    document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId].toFixed(4);
     document.getElementById('tooltipLocation').innerHTML = geocodingDict[deviceId];
-    document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId].toFixed(1);
-    document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId].toFixed(1);
+    try {
+      document.getElementById('tooltipLatitude').innerHTML = latitudeDict[deviceId].toFixed(4);
+      document.getElementById('tooltipLongitude').innerHTML = longitudeDict[deviceId].toFixed(4);
+      document.getElementById('tooltipSpeed').innerHTML = speedDict[deviceId].toFixed(1);
+      document.getElementById('tooltipHeading').innerHTML = headingDict[deviceId].toFixed(1);
+    }catch(err) {}
 
     document.getElementById('tooltipDaySpeed').innerHTML = '---';
     document.getElementById('tooltipWeekSpeed').innerHTML = '---';
@@ -2310,7 +2312,7 @@ var roads = new ol.layer.Tile({
  type: 'base',
  visible: true,
  source: new ol.source.XYZ({
-   url: 'https://1.base.maps.cit.api.here.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?app_id=BHELBWHzWWwnQll4PUVG&app_code=ZlIIWfrVS_clbWI7x1-2Dg'
+   url: 'https://1.base.maps.cit.api.here.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?app_id=jxhurZsWU6pEpTeHmObE&app_code=_3AjuYgRNs8DnCewd94D8A'
  })
 });
 

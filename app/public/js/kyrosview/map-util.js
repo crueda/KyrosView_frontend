@@ -323,12 +323,12 @@ function showSelectedVehicles() {
       vehiclesHistSource.addFeature(iconFeature);
   }
 
-  function addTrackingPointEvent(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
+  function addTrackingPointEvent(vehicleLicense,deviceId,trackingId,eventType, eventDate, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
-        id: vehicleLicense,
+        id: deviceId,
         vehicleLicense: vehicleLicense,
         elementId: 'device',
         name: getEventDescription(eventType)
@@ -336,7 +336,6 @@ function showSelectedVehicles() {
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         //scale: 0.6,
          scale: 0.07,
          rotation: 0,
          src: getEventIcon(eventType)
@@ -348,22 +347,19 @@ function showSelectedVehicles() {
       vehiclesRealTimeSource.addFeature(iconFeature);
   }
 
-  function addTrackingPointEventSelected(vehicleLicense,trackingId,eventType, eventDate, lat, lon) {
+  function addTrackingPointEventSelected(vehicleLicense,deviceId,trackingId,eventType, eventDate, lat, lon) {
       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
 
       var iconFeature = new ol.Feature({
         geometry: geo_point,
-        //id: trackingId,
-        id: vehicleLicense,
+        id: deviceId,
         vehicleLicense: vehicleLicense,
-        //elementId: 'trackingPoint',
         elementId: 'device',
         name: getEventDescription(eventType)
       });
 
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-         //scale: 0.6,
          scale: 0.07,
          rotation: 0,
          src: getEventIcon(eventType)
@@ -499,7 +495,7 @@ function showSelectedVehicles() {
 
       var iconFeatureVehicle = new ol.Feature({
         geometry: geo_point,
-        id: vehicleLicense,
+        id: deviceIdDict[vehicleLicense],
         elementId: 'device',
         vehicleLicense: vehicleLicense,
         //name: "<%= __('end_tracking_point') %>"
