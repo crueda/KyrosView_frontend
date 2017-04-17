@@ -33,14 +33,19 @@ var imageModel = {};
 imageModel.getImageVehicle = function(vehicleLicense,callback)
 {
     db.open(function(err, db) {
-        if (err)
-             callback(null, '');
+        if (err) {
+            //db.close();
+            callback(null, '');
+        }
         else {
             var gridStore = new GridStore(db, vehicleLicense, "r").open(function(err, gridStore) {
-                if (err)
+                if (err) {
+                    //db.close();
                     callback(null, '');
+                }
                 else {
                     gridStore.read(function(err, data) {
+                        //db.close();
                         if (err)
                             callback(null, '');
                         else
@@ -49,30 +54,36 @@ imageModel.getImageVehicle = function(vehicleLicense,callback)
                 }
             });            
         }
-        db.close();
     });
 }
 
 imageModel.getIconVehicle = function(vehicleLicense,callback)
 {
     db.open(function(err, db) {
-        if (err)
-             callback(null, '');
+        if (err) {            
+            //db.close();
+            callback(null, '');
+        }
         else {
             var gridStore = new GridStore(db, 'icon_'+vehicleLicense, "r").open(function(err, gridStore) {
-                if (err)
+                if (err) {
+                    //db.close();
                     callback(null, '');
+                }
                 else {
                     gridStore.read(function(err, data) {
-                        if (err)
+                        if (err) {
+                            //db.close();
                             callback(null, '');
-                        else
+                        }
+                        else {
+                            //db.close();
                             callback(null, data.toString('base64'));
+                        }
                     });            
                 }
             });            
         }
-        db.close();
     });
 }
 
@@ -80,8 +91,10 @@ imageModel.getIconVehicles = function(vehicleLicenseList,callback)
 {
     var result = [];
     db.open(function(err, db) {
-        if (err)
-             callback(null, '');
+        if (err) {
+            db.close();
+            callback(null, '');
+        }
         else {
             var array = vehicleLicenseList.split(',');
             for (var i=0; i<array.length; i++) {
@@ -103,9 +116,9 @@ imageModel.getIconVehicles = function(vehicleLicenseList,callback)
                     }
                 });  
             }
+            db.close();
             callback(null, result);          
         }
-    db.close();
     });
 }
 
